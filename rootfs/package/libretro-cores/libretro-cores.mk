@@ -14,12 +14,34 @@ LIBRETRO_CORES_DEPENDENCIES = zlib host-cmake
 
 LIBRETRO_MAJOR_CORES_LIST = \
 	fceumm \
+	nestopia \
 	snes9x2005 \
+	snes9x2010 \
 	genesis_plus_gx \
+	picodrive \
 	quicknes \
 	dosbox \
 	pcsx_rearmed \
-	gambatte
+	gambatte \
+	gpsp \
+	mednafen_pce_fast \
+	mednafen_supergrafx \
+	fbneo \
+	mame2003_plus \
+	stella2014 \
+	prosystem \
+	handy \
+	mednafen_ngp \
+	mednafen_wswan \
+	mednafen_vb \
+	pokemini \
+	vecx \
+	o2em \
+	fuse \
+	bluemsx \
+	gw \
+	freeintv \
+	cap32
 
 CMAKE_LIBRETRO_CORES_LIST = \
 	mgba

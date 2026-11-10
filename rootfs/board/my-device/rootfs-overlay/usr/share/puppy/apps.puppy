@@ -134,6 +134,15 @@ DEFAULT_ICON=/usr/share/icons/gba.png
 COMMAND=retroarch -L /usr/lib/libretro/mgba_libretro.so %s
 
 [ARCHIVE]
+NAME=Nintendo 64
+Description=N64 (ParaLLEl N64, tuned for the GA36)
+ENTRY_DIRECTORIES=/home/player/roms/n64;/media/external/roms/n64
+ENTRY_EXTENSIONS=z64;n64;v64;zip
+ENTRY_ICONS_DIRECTORIES=/home/player/roms/n64/icons;/media/external/roms/n64/icons
+DEFAULT_ICON=/usr/share/icons/n64.png
+COMMAND=retroarch -L /usr/lib/libretro/parallel_n64_libretro.so %s
+
+[ARCHIVE]
 NAME=Nintendo Entertainment System
 Description=NES (Nintendo Entertainment System)
 ENTRY_DIRECTORIES=/home/player/roms/nes;/media/external/roms/nes

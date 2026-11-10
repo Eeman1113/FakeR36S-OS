@@ -1,4 +1,6 @@
-NAME="goodluckOS"
-ID=goodluckos
-VERSION="0.0.1"
-PRETTY_NAME="goodluckOS 0.0.1"
+NAME="FakeR36S-OS"
+ID=fakers36s
+PRETTY_NAME="FakeR36S-OS (GA36-MB A23)"
+VERSION_ID=1.0
+HOME_URL="https://github.com/Eeman1113/FakeR36S-OS"
+ID_LIKE=goodluckos

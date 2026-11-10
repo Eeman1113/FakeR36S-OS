@@ -1,0 +1,14 @@
+#!/bin/sh
+# FakeR36S-OS: stop headphone pops/spikes on the GA36 (A23 codec, direct-drive HP, no jack detect).
+# ASoC powers the HP amp down ~5 s after the last sound and back up for the next one; every
+# up/down step is an audible pop in headphones (worst with EmulationStation menu sounds).
+# Keep the path powered while the system is up by raising each card's pmdown_time.
+case "$1" in
+  start)
+    for f in $(find /sys/devices -name pmdown_time 2>/dev/null); do
+      echo 2147483647 > "$f" 2>/dev/null
+    done
+    # Re-apply the remembered volume for the current output, faded in (no spike at boot).
+    /usr/local/bin/audio-output.sh apply >/dev/null 2>&1 &
+  ;;
+esac

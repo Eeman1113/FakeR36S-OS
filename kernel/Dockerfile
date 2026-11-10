@@ -27,7 +27,7 @@ WORKDIR /src/linux
 RUN make sunxi_defconfig
 RUN ./scripts/config --enable CONFIG_ARM_APPENDED_DTB && \
     ./scripts/config --enable CONFIG_ARM_ATAG_DTB_COMPAT && \
-    ./scripts/config --set-str CONFIG_CMDLINE "root=/dev/mmcblk0p1 rootfstype=ext4 rootwait rw init=/sbin/init coherent_pool=4m loglevel=8" && \
+    ./scripts/config --set-str CONFIG_CMDLINE "root=/dev/mmcblk0p1 rootfstype=ext4 rootwait rw init=/sbin/init coherent_pool=4m quiet loglevel=3 vt.global_cursor_default=0" && \
     ./scripts/config --enable CONFIG_CMDLINE_FORCE && \
     ./scripts/config --enable CONFIG_EXT4_FS && \
     ./scripts/config --enable CONFIG_DEVTMPFS && \
@@ -41,6 +41,8 @@ RUN ./scripts/config --enable CONFIG_ARM_APPENDED_DTB && \
     ./scripts/config --enable CONFIG_MACH_SUN8I && \
     ./scripts/config --enable CONFIG_PREEMPT && \
     ./scripts/config --enable CONFIG_CPU_FREQ && \
+    ./scripts/config --enable CONFIG_CPUFREQ_DT && \
+    ./scripts/config --enable CONFIG_CPU_FREQ_STAT && \
     ./scripts/config --enable CONFIG_CPU_FREQ_DEFAULT_GOV_ONDEMAND && \
     ./scripts/config --enable CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE && \
     ./scripts/config --enable CONFIG_POWER_SUPPLY && \

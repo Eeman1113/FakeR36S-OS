@@ -1,0 +1,6 @@
+config BR2_PACKAGE_PARALLEL_N64
+	bool "parallel-n64"
+	depends on BR2_PACKAGE_MESA3D_OPENGL_ES
+	help
+	  ParaLLEl N64 libretro core, built for the GA36's Cortex-A7
+	  (classic_armv7_a7: NEON, GLES2, ARM dynarec).

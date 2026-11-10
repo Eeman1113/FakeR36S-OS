@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<gameList>
+	<game><path>./System Dashboard.sh</path><name>System Dashboard</name><desc>Live CPU, battery, memory, storage and temperature graphs. Performance mode (1.2 GHz) switch.</desc></game>
+	<game><path>./System Settings.sh</path><name>System Settings</name><desc>Brightness and volume.</desc></game>
+	<game><path>./Switch Audio Output.sh</path><name>Switch Audio Output</name><desc>Toggle speaker / headphones. Each output remembers its own volume. Also: FN + D-pad down.</desc></game>
+	<game><path>./Classic Launcher (Puppy).sh</path><name>Classic Launcher (Puppy)</name><desc>goodluckOS's original launcher and its apps and ports.</desc></game>
+	<game><path>./Reboot.sh</path><name>Reboot</name></game>
+	<game><path>./Power Off.sh</path><name>Power Off</name></game>
+</gameList>

@@ -1,0 +1,9 @@
+# FakeR36S-OS "sharp": 2x nearest prescale, then bilinear fit (FP16-safe on Mali-400)
+shaders = "2"
+shader0 = "/usr/share/fakers36s/shaders/passthrough.glsl"
+filter_linear0 = "false"
+scale_type0 = "source"
+scale0 = "2.0"
+shader1 = "/usr/share/fakers36s/shaders/passthrough.glsl"
+filter_linear1 = "true"
+scale_type1 = "viewport"

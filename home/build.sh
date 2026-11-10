@@ -11,6 +11,7 @@ mkdir -p overlay/roms
 mkdir -p overlay/roms/nes/icons
 mkdir -p overlay/roms/snes/icons
 mkdir -p overlay/roms/gba/icons
+mkdir -p overlay/roms/n64/icons
 mkdir -p overlay/roms/gbc/icons
 mkdir -p overlay/roms/gb/icons
 mkdir -p overlay/roms/psx/icons
@@ -18,6 +19,9 @@ mkdir -p overlay/roms/genesis/icons
 mkdir -p overlay/roms/sms/icons
 mkdir -p overlay/roms/gg/icons
 mkdir -p overlay/roms/segacd/icons
+# FakeR36S-OS: one folder per EmulationStation system (same names as the stock GA36 card)
+while read -r d; do [ -n "$d" ] && mkdir -p "overlay/roms/$d"; done < overlay/.romdirs
+mkdir -p overlay/tools
 mkdir -p overlay/.config/retroarch/cores
 
 rm -rf staging

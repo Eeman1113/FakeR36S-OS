@@ -1,0 +1,4 @@
+#!/bin/sh
+# Restore the user's Performance mode choice (default: off = stock clocks)
+[ "$1" = start ] && /usr/local/bin/perfmode boot
+exit 0

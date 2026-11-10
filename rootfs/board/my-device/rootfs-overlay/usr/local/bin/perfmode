@@ -1,0 +1,12 @@
+#!/bin/sh
+# perfmode on|off|get: toggle the A23's 1.2 GHz turbo OPP (vendor max_freq, 1.32 V).
+# Off = stock behaviour (648-1008 MHz). State persists in /etc/player-flags/perfmode.
+B=/sys/devices/system/cpu/cpufreq/boost
+F=/etc/player-flags/perfmode
+case "$1" in
+  on)  echo 1 > "$B" && echo on > "$F" ;;
+  off) echo 0 > "$B"; echo off > "$F" ;;
+  get) [ "$(cat $B 2>/dev/null)" = 1 ] && echo on || echo off ;;
+  boot) [ "$(cat $F 2>/dev/null)" = on ] && echo 1 > "$B" ;;
+  *) echo "usage: perfmode on|off|get" >&2; exit 2 ;;
+esac

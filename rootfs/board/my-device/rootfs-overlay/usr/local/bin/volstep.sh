@@ -15,3 +15,9 @@ if [ "$new" -eq 0 ]; then
 else
     amixer -q -c "$CARD" sset "$CONTROL" "${new}%" unmute
 fi
+
+# FakeR36S-OS: remember this level for the current output (speaker / headphones)
+out=$(/usr/local/bin/audio-output.sh get 2>/dev/null)
+[ -n "$out" ] && { mkdir -p /home/player/.config/audio; echo "$new" > "/home/player/.config/audio/$out.vol"; }
+[ "$(id -u)" = 0 ] && chown -R player:player /home/player/.config/audio 2>/dev/null
+exit 0

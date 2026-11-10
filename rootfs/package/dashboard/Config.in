@@ -1,0 +1,7 @@
+config BR2_PACKAGE_DASHBOARD
+	bool "dashboard"
+	depends on BR2_PACKAGE_SDL2
+	select BR2_PACKAGE_IMGUI
+	help
+	  FakeR36S-OS system dashboard: live CPU, battery, memory,
+	  storage and temperature stats with graphs.
