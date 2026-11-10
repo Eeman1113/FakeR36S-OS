@@ -118,13 +118,48 @@ Plug the card into your computer: the **HOME** partition mounts normally. Put RO
 GitHub Actions builds everything (kernel, Buildroot rootfs, home, base image) on every push to `main`.
 See [BUILD.md](BUILD.md) to build locally with Docker.
 
-## Credits
-Built on **[goodluckOS](https://github.com/CodeZombie/goodluckOS)** by CodeZombie and contributors (GPL-2.0):
-the A23 device tree, the JD9366 panel driver and the GA36-MB gamepad driver come from there.
-The N64 and EmulationStation recipes, pins and patches come from **[Debianator](https://github.com/Bepok/Debianator)** (GPL-2.0).
-EmulationStation fcamod by christianhaitian; carbon theme by the RetroPie project; RetroArch and libretro cores by their authors.
+## Credits and thanks
 
-FakeR36S-OS by **Eeman1113** (EemanSleepDeeprived). Licensed GPL-2.0, like goodluckOS.
+FakeR36S-OS stands on the shoulders of people who did the hard work first. Huge thanks to all of them.
+
+### The foundation
+- **[goodluckOS](https://github.com/CodeZombie/goodluckOS)** by **CodeZombie** and contributors (GPL-2.0).
+  The project that made Linux run on the GA36-MB at all: the A23 and A33 device trees, the reverse-engineered
+  JD9366 panel driver (both panels), the GA36-MB gamepad and analog-stick driver, audio, USB, power, the
+  appd supervisor, the Buildroot setup and the Firmware Builder idea of reusing the stock boot region.
+  FakeR36S-OS is a fork of goodluckOS. If this OS helps you, go star theirs.
+- **[Debianator](https://github.com/Bepok/Debianator)** by **Bepok** (GPL-2.0).
+  The N64 research and recipe (ParaLLEl N64 with gln64 on the Mali-400), the EmulationStation fcamod build
+  and its five patches for this hardware, plus the pins and tuned core options used here.
+
+### The software we package
+- **[EmulationStation fcamod](https://github.com/christianhaitian/EmulationStation-fcamod)** and
+  **[ArkOS](https://github.com/christianhaitian/arkos)** by **christianhaitian**: the frontend, and the OS whose
+  look and feel FakeR36S-OS aims for.
+- **[RetroArch](https://github.com/libretro/RetroArch)** and the **[libretro](https://www.libretro.com)** team,
+  plus the authors of every core: FCEUmm, Nestopia, Snes9x 2005 / 2010, ParaLLEl N64, Gambatte, gpSP, mGBA,
+  PicoDrive, Genesis Plus GX, Beetle (Mednafen) PCE / SuperGrafx / NeoPop / WonderSwan / VB, PCSX ReARMed,
+  PPSSPP, FinalBurn Neo, MAME 2003-Plus, Stella 2014, ProSystem, Handy, PokeMini, VecX, O2EM, Fuse, blueMSX,
+  Game & Watch, FreeIntv, Caprice32, DOSBox and QuickNES.
+- **[es-theme-carbon](https://github.com/RetroPie/es-theme-carbon)** by the **RetroPie** project (CC BY-NC-SA).
+- **[Buildroot](https://buildroot.org)**, the **[Linux kernel](https://kernel.org)** and the
+  **[linux-sunxi](https://linux-sunxi.org)** community for mainline Allwinner support.
+- **[Mesa](https://mesa3d.org)** and its **Lima** driver for the Mali-400 GPU.
+- **[SDL](https://libsdl.org)** and **[Dear ImGui](https://github.com/ocornut/imgui)** (Omar Cornut), which the
+  dashboard and the boot splash are built with.
+- **[Inter](https://rsms.me/inter/)** by Rasmus Andersson (OFL), the UI font.
+
+### The detectives
+Thanks to the people who took these fakes apart and wrote down what they found:
+**phaseloop**, **vaboston**, **Moi-x**, **madeiragab**, **ricardomm7** (ga36-bsp), **douglaspands**, the
+**[handhelds.wiki](https://handhelds.wiki/R36S_Clones)** editors, and everyone in the R36S community who
+shared stock card dumps and photos.
+
+### FakeR36S-OS
+Made by **Eeman1113** (EemanSleepDeeprived): the A23 Esisla tuning, CPU frequency table, automatic scaling,
+dashboard, boot splash and chime, headphone fix, systems and migration tools.
+
+Licensed **GPL-2.0**, like goodluckOS. Third-party components keep their own licenses.
 
 <sub>Keywords: fake R36S, R36S clone, GA36, GA36-MB, Allwinner A23, Allwinner A33, R36S custom firmware,
 ArkOS alternative, R36S fake fix, EmuELEC clone, retro handheld.</sub>
