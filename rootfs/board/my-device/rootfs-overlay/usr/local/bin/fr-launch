@@ -1,0 +1,10 @@
+#!/bin/sh
+# fr-launch <light|normal> <core> <rom>: run a game with the right CPU profile, restore afterwards.
+# Battery saver can be switched off from the System Dashboard.
+profile=$1; core=$2; shift 2
+[ -e /home/player/.config/fakers36s/battery-saver-off ] && profile=normal
+doas /usr/local/bin/cpuprofile "$profile" 2>/dev/null
+retroarch -L "/usr/lib/libretro/${core}_libretro.so" "$@"
+rc=$?
+doas /usr/local/bin/cpuprofile normal 2>/dev/null
+exit $rc

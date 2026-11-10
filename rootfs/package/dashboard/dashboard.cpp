@@ -334,6 +334,16 @@ int main(int, char**) {
             perf = boost_on();
         }
         ImGui::TextDisabled("%s", perf ? "boost on: more speed, more heat" : "stock: 648-1008 MHz");
+        {
+            const char* flag = "/home/player/.config/fakers36s/battery-saver-off";
+            FILE* ff = fopen(flag, "r");
+            bool saver = (ff == nullptr);
+            if (ff) fclose(ff);
+            if (ImGui::Checkbox("Battery saver (816 MHz for 8/16-bit)", &saver)) {
+                if (saver) remove(flag);
+                else { system("mkdir -p /home/player/.config/fakers36s"); if (FILE* w = fopen(flag, "w")) fclose(w); }
+            }
+        }
         ImGui::EndChild();
 
         ImGui::TextDisabled("%s %s  |  B / Start: back", un.sysname, un.release);

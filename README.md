@@ -23,6 +23,8 @@ A fast, clean, ArkOS-style OS: EmulationStation, RetroArch, N64, auto-scaling, l
   storage, temperature, with graphs
 - **No headphone pops or volume spikes**: the codec stays powered, and speaker / headphones keep
   separate volumes with a fade-in on switch
+- **Automatic battery saver**: 8/16-bit systems run with the CPU capped at 816 MHz (full speed there, less power);
+  heavier systems get the full clock. Switch it off in the System Dashboard
 - Animated boot splash with chime, quiet boot, custom boot logo
 
 ## Supported hardware
@@ -110,6 +112,9 @@ sudo dd if=fakers36s.img of=/dev/rdiskN bs=4m      # make sure N is the NEW card
 Put it in slot **TF1** and power on. The first boot grows the HOME partition to fill the card.
 
 ### 5. Add your games
+**No BIOS files or games are included, and none ever will be.** Use your own legally obtained BIOS dumps
+and games.
+
 Plug the card into your computer: the **HOME** partition mounts normally. Put ROMs in `roms/<system>/`
 (folder names match the stock card: `nes`, `snes`, `gba`, `n64`, `psx`, `megadrive`, ...) and BIOS files in
 `.config/retroarch/system/`. Game saves (`.srm`) go next to the ROMs, as on the stock firmware.

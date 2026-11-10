@@ -1,0 +1,11 @@
+#!/bin/sh
+# cpuprofile light|normal: CPU ceiling for the running game (root, via doas).
+#   light  = 816 MHz (vendor 1.10 V point): 8/16-bit systems run full speed here, saves battery
+#   normal = no cap (1008 MHz, or 1200 MHz when Performance mode is on)
+P=/sys/devices/system/cpu/cpufreq/policy0
+[ -d "$P" ] || exit 0
+case "$1" in
+  light)  echo 816000 > "$P/scaling_max_freq" ;;
+  normal) cat "$P/cpuinfo_max_freq" > "$P/scaling_max_freq" ;;
+  *) echo "usage: cpuprofile light|normal" >&2; exit 2 ;;
+esac
