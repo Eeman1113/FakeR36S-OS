@@ -36,16 +36,83 @@ Check your board: open the back, or look at **System Information → CPU NUMBER*
 (2 = A23, 4 = A33). The image builder refuses to run on a stock card that is not a known A23 board.
 
 ## Install
-1. **Back up your original SD card first.** It holds the vendor bootloader; without it the device can't boot.
+
+### 1. Back up your original SD card (`stock_backup.img`)
+The stock card holds the vendor bootloader and your board's hardware config. **Without it this device
+cannot boot anything**, so back it up first and keep the original card untouched.
+The image builder only needs the first 128 MB, but a full backup also saves your games and saves.
+
+<details open>
+<summary><b>macOS</b></summary>
+
+1. Insert the stock card and find it (check the size matches the card):
    ```
-   sudo dd if=/dev/rdiskN of=stock_backup.img bs=4m
+   diskutil list external physical
    ```
-2. Download `FakeR36S-OS_base_a23_panel2` from the latest Actions run or Release.
-3. Build your flashable image. This copies your own card's boot region and checks the board variant:
+   It shows up as `/dev/diskN`, for example `/dev/disk4  *15.9 GB`.
+2. Back it up (use `rdiskN`, it is much faster; this only **reads** the card):
    ```
-   tools/make-flashable.sh goodluck_base_a23_panel2.img.xz stock_backup.img fakers36s.img
+   sudo dd if=/dev/rdiskN of=stock_backup.img bs=4m status=progress
+   sudo chown $(whoami) stock_backup.img
    ```
-4. Flash `fakers36s.img` to a **new** microSD card and boot it in slot TF1. Your stock card stays untouched.
+   A 16 GB card takes about 15 minutes over USB 2.0.
+3. Optional, quicker: only the part the builder needs:
+   ```
+   sudo dd if=/dev/rdiskN of=stock_backup.img bs=1m count=128
+   ```
+</details>
+
+<details>
+<summary><b>Linux</b></summary>
+
+1. Find the card: `lsblk` (for example `/dev/sdb` or `/dev/mmcblk0`; check the size).
+2. Back it up:
+   ```
+   sudo dd if=/dev/sdX of=stock_backup.img bs=4M status=progress conv=fsync
+   sudo chown $USER stock_backup.img
+   ```
+</details>
+
+<details>
+<summary><b>Windows</b></summary>
+
+Use **Win32 Disk Imager** (or HDD Raw Copy Tool): pick the card's drive letter, type a file name ending in
+`stock_backup.img`, and click **Read** (not Write). If Windows offers to format the card, click **Cancel**:
+its partitions are Linux ones that Windows can't read, and formatting would erase the bootloader.
+</details>
+
+**Verify the backup.** These two hashes should be identical for a full backup:
+```
+shasum -a 256 stock_backup.img
+sudo dd if=/dev/rdiskN bs=4m | shasum -a 256        # Linux: sha256sum and /dev/sdX
+```
+Keep `stock_backup.img` somewhere safe (external drive or cloud). To restore stock at any time:
+```
+sudo dd if=stock_backup.img of=/dev/rdiskN bs=4m
+```
+
+### 2. Download FakeR36S-OS
+Get `FakeR36S-OS_base_a23_panel2` (`goodluck_base_a23_panel2.img.xz`) from the latest
+[Actions run](../../actions) or Release.
+
+### 3. Build your flashable image
+This copies your own card's boot region, adds the boot logo, and refuses to run if the backup isn't a
+supported A23 board:
+```
+tools/make-flashable.sh goodluck_base_a23_panel2.img.xz stock_backup.img fakers36s.img
+```
+Needs `python3`, `xz` and `mtools` (`brew install mtools` / `apt install mtools`).
+
+### 4. Flash a NEW microSD card
+```
+sudo dd if=fakers36s.img of=/dev/rdiskN bs=4m      # make sure N is the NEW card!
+```
+Put it in slot **TF1** and power on. The first boot grows the HOME partition to fill the card.
+
+### 5. Add your games
+Plug the card into your computer: the **HOME** partition mounts normally. Put ROMs in `roms/<system>/`
+(folder names match the stock card: `nes`, `snes`, `gba`, `n64`, `psx`, `megadrive`, ...) and BIOS files in
+`.config/retroarch/system/`. Game saves (`.srm`) go next to the ROMs, as on the stock firmware.
 
 ## Building
 GitHub Actions builds everything (kernel, Buildroot rootfs, home, base image) on every push to `main`.
