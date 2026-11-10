@@ -6,6 +6,9 @@ on:
     branches: [main]
     paths-ignore: ["**.md", "docs/**"]
 
+permissions:
+  contents: write
+
 concurrency:
   group: build-${{ github.ref }}
   cancel-in-progress: true
@@ -103,9 +106,22 @@ jobs:
           cp ../dl/kernel/android_boot_${{ env.VARIANT }}.img staging/
           cp ../dl/rootfs/rootfs.tar ../dl/home/home.tar staging/
           docker buildx build --build-arg VARIANT=${{ env.VARIANT }} --output type=local,dest=./out .
-          cd out && xz -T0 -6 goodluck_base_${{ env.VARIANT }}.img
+          cd out
+          gzip -9 -k goodluck_base_${{ env.VARIANT }}.img      # gzip: browsers decompress it natively (web installer)
+          xz -T0 -6 goodluck_base_${{ env.VARIANT }}.img
+          sha256sum goodluck_base_${{ env.VARIANT }}.img.* > SHA256SUMS.txt
       - uses: actions/upload-artifact@v4
         with:
           name: FakeR36S-OS_base_${{ env.VARIANT }}
           path: image/out/goodluck_base_${{ env.VARIANT }}.img.xz
           compression-level: 0
+      - name: Publish release (latest build)
+        if: github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cd image/out
+          gh release view latest >/dev/null 2>&1 || \
+            gh release create latest --title "FakeR36S-OS (latest build)" --latest \
+              --notes "Base image for GA36-MB A23 (panel 2). Turn it into your flashable image with the web installer or tools/make-flashable.sh. No BIOS or games are included."
+          gh release upload latest goodluck_base_${{ env.VARIANT }}.img.gz goodluck_base_${{ env.VARIANT }}.img.xz SHA256SUMS.txt --clobber
