@@ -1,267 +1,193 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>goodluckOS</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FakeR36S-OS Installer</title>
+<meta name="description" content="Install FakeR36S-OS on a fake R36S (GA36-MB, Allwinner A23). Builds your SD card image in the browser. Nothing is uploaded.">
+<style>
+  :root {
+    --ink: #1f222c; --ink-2: #272b37; --slate: #5d6477; --slate-2: #8a91a3;
+    --paper: #f4efe6; --ok: #8fd3a6; --warn: #f2c66d; --bad: #ef8a80;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--ink); color: var(--paper);
+    font: 16px/1.55 Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  main { max-width: 720px; margin: 0 auto; padding: 48px 16px 64px; }
+  header { display: flex; align-items: center; gap: 16px; margin-bottom: 8px; }
+  header svg { width: 64px; height: auto; flex: none; }
+  h1 { margin: 0; font-size: 28px; letter-spacing: -0.01em; }
+  .tag { color: var(--slate-2); margin: 0 0 32px; }
+  .step { background: var(--ink-2); border: 1px solid #343949; border-radius: 12px; padding: 20px 20px 18px; margin: 16px 0; }
+  .step h2 { margin: 0 0 8px; font-size: 18px; display: flex; gap: 10px; align-items: center; }
+  .num { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%;
+         background: var(--slate); font-size: 14px; flex: none; }
+  .step.done .num { background: var(--ok); color: var(--ink); }
+  p { margin: 6px 0; }
+  .muted { color: var(--slate-2); font-size: 14px; }
+  code { background: #14161d; padding: 2px 6px; border-radius: 6px; font-size: 13px; }
+  pre { background: #14161d; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 13px; margin: 8px 0; }
+  details { margin-top: 8px; } summary { cursor: pointer; color: var(--slate-2); }
+  button, .btn {
+    appearance: none; border: 0; border-radius: 8px; padding: 11px 18px; font: inherit; font-weight: 600;
+    background: var(--paper); color: var(--ink); cursor: pointer; text-decoration: none; display: inline-block; margin-top: 10px;
+  }
+  button.secondary, .btn.secondary { background: transparent; color: var(--paper); border: 1px solid var(--slate); }
+  button:disabled { opacity: .4; cursor: not-allowed; }
+  input[type=file] { margin-top: 10px; color: var(--slate-2); max-width: 100%; }
+  .status { margin-top: 10px; font-size: 15px; }
+  .ok { color: var(--ok); } .warn { color: var(--warn); } .bad { color: var(--bad); }
+  progress { width: 100%; height: 8px; margin-top: 12px; accent-color: var(--paper); }
+  footer { margin-top: 40px; color: var(--slate-2); font-size: 13px; }
+  footer a, .step a { color: var(--paper); }
+  .hidden { display: none; }
+</style>
 </head>
 <body>
-    <div class="wrapper">
-        <header class="advert-header">
-            <div class="warning-stripe">
-                <span>悪い状況を最大限に活かそう。</span>
-                <span>「GOODLUCK」があなたを解放するでしょう。</span>
-                <span>詐欺の被害に遭われたこと、心よりお見舞い申し上げます</span>
-            </div>
+<main>
+  <header>
+    <svg viewBox="0 0 182.73 90.47" aria-hidden="true"><g fill="#5d6477">
+      <polygon points="130.5 30.25 104.3 15.13 130.34 .09 156.53 15.22 130.5 30.25"/>
+      <polygon points="156.7 45.38 130.5 30.25 156.53 15.22 182.73 30.35 156.7 45.38"/>
+      <polygon points="78.27 30.16 52.07 15.03 78.1 0 104.3 15.13 78.27 30.16"/>
+      <polygon points="52.23 45.19 26.03 30.06 52.07 15.03 78.27 30.16 52.23 45.19"/>
+      <polygon points="26.2 60.22 0 45.09 26.03 30.06 52.23 45.19 26.2 60.22"/>
+      <polygon points="52.4 75.34 26.2 60.22 52.23 45.19 78.43 60.31 52.4 75.34"/>
+      <polygon points="78.59 90.47 52.4 75.34 78.43 60.31 104.63 75.44 78.59 90.47"/>
+      <polygon points="117.65 67.92 91.45 52.8 117.48 37.77 143.68 52.89 117.65 67.92"/>
+      <polygon points="91.45 52.8 65.25 37.67 91.28 22.64 117.48 37.77 91.45 52.8"/></g></svg>
+    <h1>FakeR36S-OS Installer</h1>
+  </header>
+  <p class="tag">For fake R36S handhelds with a GA36-MB board and an Allwinner A23 chip.
+    Your SD card image is built right here in your browser. Nothing is uploaded.</p>
 
-            <div class="hero-grid">
-                <div class="title-block">
-                    <h2 class="japanese-text">グッドラックＯＳ</h2>
-                    <h1 class="logo-text">goodluck<span class="red-text">OS</span></h1>
-                    <div class="version-badge">VER 0.0.2 ALPHA</div>
-                </div>
+  <section class="step" id="s1">
+    <h2><span class="num">1</span> Back up your stock SD card</h2>
+    <p>The card that came with the console holds its bootloader. Without it, the console can't boot anything.
+       Make a backup file, then keep the original card safe and untouched.</p>
+    <details open><summary>macOS</summary>
+<pre>diskutil list external physical        # find your card, e.g. /dev/disk4
+sudo dd if=/dev/rdisk4 of=stock_backup.img bs=4m status=progress</pre></details>
+    <details><summary>Linux</summary>
+<pre>lsblk                                   # find your card, e.g. /dev/sdb
+sudo dd if=/dev/sdb of=stock_backup.img bs=4M status=progress</pre></details>
+    <details><summary>Windows</summary>
+      <p>Use Win32 Disk Imager: choose the card, name the file <code>stock_backup.img</code>, click <b>Read</b>.
+         If Windows asks to format the card, click <b>Cancel</b>.</p></details>
+    <p class="muted">Only the first 128 MB is needed, but a full backup also keeps your games and saves.
+       <a href="https://github.com/Eeman1113/FakeR36S-OS#install">Full guide</a></p>
+  </section>
 
-                <div class="mascot-block">
-                    <img id="mascot" src="res/mascot.png">
-                </div>
-            </div>
+  <section class="step" id="s2">
+    <h2><span class="num">2</span> Choose your backup</h2>
+    <p>Pick <code>stock_backup.img</code>. The installer reads 128 KB of it to identify your board.</p>
+    <input type="file" id="stock" accept=".img,.bin,application/octet-stream">
+    <div class="status" id="boardStatus"></div>
+  </section>
 
-            <div class="hero-sub">
-                <p>An Operating System For Victims of Fraud</p>
-            </div>
-
-            <div class="action-box">
-                <a href="https://codezombie.github.io/goodluckOS/download.html" class="btn-download">
-                    GET IT HERE [ ダウンロード ]
-                </a>
-                <a href="https://github.com/CodeZombie/goodluckOS" class="btn-secondary" target="_blank">
-                    [ CONTRIBUTE ON GITHUB ]
-                </a>
-            </div>
-        </header>
-
-        <hr class="thick-divider">
-        <section id="features" class="ad-section">
-        <h1>Introducing: goodluckOS</h1>
-        <p>For the longest time, consoles such as the GA36-MB were shunned from the r36s community. Users were told 'too bad', 'e-waste', and 'get a refund' when they came looking for help. And while a refund is a good idea, for many, that simply wasn't possible.</p>
-        <br/>
-        <p> And so they suffered. Unable to load custom games, unable to customize their firmware, and, throttled by the criminal negligence known as the 'stock firmware', unable to take advantage of the true power of their device.</p>
-        <br/>
-        <strong>until today.</strong>
-        <br/><br/>
-        <p>Our highly-skilled engineers have worked tirelessly to rescue you unfortunate lot from the perils of bad code. Today, we are proud to present:</p>
-        <br/>
-        <p><strong>goodluckOS</strong>: a custom firmware for Allwinner A23/A33-based handheld consoles, meticulously crafted to be as light-weight and high-performance as possible.</p>
-
-        <br/>
-        <span id="slogan">IF YOU CAN'T GET YOUR MONEY BACK, GET YOUR MONEY'S WORTH. WITH GOODLUCK.</span>
-        </section>
-        <hr class="thick-divider">
-
-        <section id="features" class="ad-section">
-            <h2 class="section-title">■ FEATURES ■</h2>
-
-            <div class="feature-grid">
-                <div class="feature-box">
-                    <h3>PUPPY</h3>
-                    <p>Puppy is an application launcher. It's easy to use, simple to add applications to, and starts and stops lightning-fast. It completely closes when not in use, using exactly zero bytes of ram when you're not looking at it.</p>
-                </div>
-
-                <div class="feature-box">
-                    <h3>AUTOSTART</h3>
-                    <p>Don't want to use Puppy? Fine. Mark any application as Autostart to launch it immediately when the console boots. Never see Puppy again. We won't judge you.</p>
-                </div>
-
-                <div class="feature-box">
-                    <h3>KILL EM' ALL</h3>
-                    <p>Kill any application from anywhere by pressing the three center buttons. This will instantly bring you right back to the launcher.</p>
-                </div>
-
-                <div class="feature-box yellow-bg">
-                    <h3>NO SWAP - NO DEAD SD</h3>
-                    <p>The stock OS mounts swap on the sd card. <strong>Bad idea!</strong> goodluckOS uses zram swap instead so there's no chance of killing your expensive sd card.</p>
-                </div>
-                <div class="feature-box">
-                    <h3>PLAY IN THE DARK</h3>
-                    <p>When the screen is on, the LEDs stay OFF. No more blinding blue led giving you a migraine while you're playing bubble bobble at 4am on a work night.</p>
-                </div>
-                <div class="feature-box">
-                    <h3>COMPILER OPTIMIZED</h3>
-                    <p>Every package in the goodluckOS is compiled from scratch specifically for the Allwinner A23/A33 SoC architecture, meaning every instruction runs as fast as it possibly can.</p>
-                </div>
-                <div class="feature-box">
-                    <h3>BUILT FOR SIZE</h3>
-                    <p>goodluckOS is built with only the absolutely necessary packages to get you playing games. This makes the entire build tiny. The whole OS will happily fit on a 512mb micro SD card with room to spare.</p>
-                </div>
-                <div class="feature-box">
-                    <h3>EASY TO BUILD</h3>
-                    <p>Built with a novel, easy-to-use containerised build system. You can customize and rebuild the entire OS image in 5 or 6 commands. All you need is Docker and a text editor.</p>
-                </div>
-                <div class="feature-box">
-                    <h3>USB ROOT SHELL</h3>
-                    <p>USB tty enabled by default. Plug the OTG port into your PC and `screen` into it at 115200 baud for instant root access.</p>
-                </div>
-                <div class="feature-box">
-                    <h3>FAST STARTUP</h3>
-                    <p>Boots up in 10 seconds. The stock OS takes over 50. That's 40 seconds added to your life. No need to thank me.</p>
-                </div>
-            </div>
-        </section>
-
-        <hr class="thick-divider">
-
-        <!-- OS Info Section -->
-        <section id="info" class="ad-section inverted-section">
-            <h2 class="section-title">SYSTEM SPECIFICATIONS</h2>
-            <div class="spec-container">
-                <ul class="spec-list">
-                    <li><strong>KERNEL:</strong> Mainline Linux 7.2 (A23/A33-Optimized)</li>
-                    <li><strong>SIZE:</strong> Fits on a 1gb MicroSD card</li>
-                    <li><strong>DOWNLOAD SIZE:</strong> 137mb</li>
-                    <li><strong>GLIBC:</strong> 2.44</li>
-                    <li><strong>LICENSE:</strong> GPL 2.0</li>
-                    <li><strong>DISPLAY DRIVER:</strong> Reverse-engineered <small>(shout out to the NSA for ghidra, u guys rule)</small></li>
-                    <li><strong>GAMEPAD DRIVER:</strong> Reverse-engineered</li>
-                    <li><strong>DEVICE TREE:</strong> Reverse-engineered, built from scratch</li>
-                    <li><strong>SWAP:</strong> ZSwap</li>
-                    <li><strong>BUILD:</strong> Easy-to-use, containerised build system</li>
-                </ul>
-                <div class="kanji-watermark">高品質</div>
-            </div>
-        </section>
-
-        <hr class="thick-divider">
-
-        <section id="features" class="ad-section">
-        <h1>What's wrong with the stock OS?</h1>
-        TL;DR: It's <strong>TRASH [ ごみ ]</strong>.
-        <br/><br/>
-        <ul style="margin-left:1rem;">
-            <li>It mounts swap to the SD card, which will kill it.</li>
-            <li>It ships with broken, incompatible versions of system libraries</li>
-            <li>It can't be flashed to an sd card smaller than 16gb</li>
-            <li>It's full of random, unused, arbitrary files</li>
-            <li>The file system is a mess</li>
-            <li>There's weird, unmountable, unecessary hidden partitions everywhere</li>
-            <li>You can't mount the roms partition without f***ING around in a device block hex editor</li>
-            <li>The retrolib cores it ships with are old and compiled with non-optimal flags</li>
-            <li>The stock build of emulation-station is ancient and slow</li>
-            <li>They somehow they made retroarch take >5 seconds to start up</li>
-            <li>The kernel is ancient and proprietary so you can't use modern kernel features like zram</li>
-            <li>You can't adjust the screen brightness from within applications</li>
-            <li>As a matter of fact, the FN button doesn't do anything at all</li>
-            <li>No chance of getting portmaster to work</li>
-        </ul>
-        <br/>
-        <span id="slogan">goodluckOS fixes all of this, and more.</span>
-        </section>
-
-        <hr class="thick-divider">
-
-        <section id="install" class="ad-section">
-            <h2 class="section-title">Installation</h2>
-            <section>
-            <strong>IMPORTANT NOTICE [ 重要なお知らせ ]</strong></br>
-            GOODLUCKOS AND ALL AFFILIATED DEVELOPERS WILL ACCEPT NO RESPONSIBILITY FOR DAMAGED HARDWARE, DATA LOSS, OR LOSS OF USE OF ANY DEVICE.
-            GOODLUCKOS IS EXPERIMENTAL SOFTWARE. BY ATTEMPTING TO INSTALL THE OPERATING SYSTEM YOU ACCEPT THIS RISK.
-            </section>
-            </br>
-            <div class="step-container">
-
-                <div class="step-box">
-                    <div class="step-num">STEP 01</div>
-                    <div class="step-text">
-                        <h3>GET A NEW MICROSD CARD</h3>
-                        <p>Throw away that unbranded generic microSD card that came with your unit. Get yourself a high-quality MicroSD media of at least 1gb capacity.</p>
-                    </div>
-                </div>
-
-                <div class="step-box">
-                    <div class="step-num">STEP 02</div>
-                    <div class="step-text">
-                        <h3>BUILD YOUR GOODLUCKOS FIRMWARE</h3>
-                        <p>Follow the instructions on our fully-offline <a href="https://codezombie.github.io/goodluckOS/download.html">Firmware Builder.</a></p>
-                    </div>
-                </div>
-
-                <div class="step-box">
-                    <div class="step-num">STEP 03</div>
-                    <div class="step-text">
-                        <h3>FLASH IT</h3>
-                        <p>Use software such as DD, BalenaEtcher, or Rufus to write your freshly-built goodluckOS img file directly to the new sd card. This will wipe all data on the card.</p>
-                    </div>
-                </div>
-
-                <div class="step-box">
-                    <div class="step-num">STEP 04</div>
-                    <div class="step-text">
-                        <h3>EXPAND HOME (Optional)</h3>
-                        <p>Turn it on. Once you're in, find the 'resize-home' application, launch it, and follow the steps. This will resize your home partition to fill up all the available space on your microSD card</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <hr class="thick-divider">
-
-        <section id="features" class="ad-section">
-            <h1>Problems?</h1>
-            <p>This a pre-release alpha version, so you're probably going to run into some issues.</p>
-            <p>If you do, let us know!</p>
-            <br/>
-            <p>Open a <a href="https://github.com/CodeZombie/goodluckOS/issues">new issue</a> on github, describe the problem, and we'll dispatch one of our trained associates to dedicate the remainder of their life to making <strong>you</strong> happy.</p>
-        </section>
-
-        <hr class="thick-divider">
-
-        <section id="install" class="ad-section">
-            <h2 class="section-title">Adding Games?</h2>
-            <p>goodluckOS comes stock with Chocolate Doom. Not good enough for you? Add your own!</p>
-            <br/>
-            <ol style="margin-left:2rem;">
-                <li>Plug the microSD card into your computer</li>
-                <li>Mount the HOME partition</li>
-                <li>Open the <span class="code">roms</span> folder</li>
-                <li>Open the subfolder for the console you want to add games for.</li>
-                <li>Drop your rom file in there.</li>
-                <li>If you're feeling extra fancy, throw a little png/jpg in the <span class="code">icons</span> folder too (with the same name as your rom file)</li>
-            </ol>
-        </section>
-
-        <hr class="thick-divider">
-
-        <section id="install" class="ad-section">
-            <h2 class="section-title">Adding Cores?</h2>
-            <p>Yes, yes, you can add cores. Calm down.</p>
-            <br/>
-            <ol style="margin-left:2rem;">
-                <li>Plug the microSD card into your computer</li>
-                <li>Mount the <span class="code">HOME</span> partition</li>
-                <li>Create a folder called <span class="code">cores</span> in the root of the <span class="code">HOME</span> partition.</li>
-                <li>Paste your new core (.so file) in there.</li>
-                <li>Now open the <span class="code">apps.puppy</span> file at the root of the <span class="code">HOME</span> partition.</li>
-                <li>Copy the <span class="code">[ARCHIVE]</span> entry lines, removing the <span class="code">#</span> comment characters.</li>
-                <li>Paste it into the file and customize it to match your new core, ensure that the <span class="code">COMMAND</span> line points to <span class="code">/home/player/cores/{your_new_core}.so</span></li>
-            </ol>
-            <br/>
-            You can find compatible cores here: <a href="https://buildbot.libretro.com/nightly/linux/armhf/latest/">https://buildbot.libretro.com/nightly/linux/armhf/latest/</a>
-            <br/><br/>
-            Most of these cores work, but they're not compiled with all the right optimization flags, so performance won't be the best it can possibly be. Open a github issue if there's a core you want us to add to the stock OS.
-        </section>
-
-        <!-- Footer -->
-        <footer class="advert-footer">
-            <div class="footer-grid">
-                <div class="footer-logo">goodluck<span class="red-text">OS</span></div>
-                <div class="footer-text">
-                    DEVELOPED WITH LOVE [ 愛 ] BY <a href="https://github.com/CodeZombie">JEREMY CLARK</a>, <a href="https://github.com/mortelil">MORTELIL</a> & <a href="https://github.com/CodeZombie/goodluckOS">MAYBE YOU?</a><br>
-                    NOT AFFILIATED WITH ANY SCUMBAG HARDWARE MANUFACTURERS.<br>
-                    EVERYTHING IS GPL V2, THE WAY RMS INTENDED.
-                </div>
-            </div>
-        </footer>
+  <section class="step" id="s3">
+    <h2><span class="num">3</span> Build your image</h2>
+    <p>Downloads FakeR36S-OS (about 150 MB), adds your card's boot region and the boot logo.</p>
+    <button id="build" disabled>Build my image</button>
+    <progress id="prog" class="hidden" max="1" value="0"></progress>
+    <div class="status" id="buildStatus"></div>
+    <div id="manual" class="hidden">
+      <p class="muted">Automatic download didn't work in this browser. Download
+        <a href="https://github.com/Eeman1113/FakeR36S-OS/releases/latest">goodluck_base_a23_panel2.img.gz</a>
+        yourself, then pick it here:</p>
+      <input type="file" id="baseFile" accept=".gz,.img">
     </div>
+  </section>
 
+  <section class="step" id="s4">
+    <h2><span class="num">4</span> Flash a new microSD card</h2>
+    <p>Save <code>fakers36s.img</code>, then write it to a <b>new</b> card with
+      <a href="https://etcher.balena.io">balenaEtcher</a> or
+      <a href="https://www.raspberrypi.com/software/">Raspberry Pi Imager</a> (Choose OS, then Use custom).</p>
+    <a id="save" class="btn hidden" download="fakers36s.img">Save fakers36s.img</a>
+    <p class="muted">Put the card in slot TF1 and power on. The first boot takes a little longer while it grows the
+      games partition. Then copy your games to the HOME partition, in <code>roms/&lt;system&gt;/</code>.</p>
+  </section>
+
+  <footer>
+    <p>No BIOS files or games are included. Use your own legally obtained copies.</p>
+    <p>FakeR36S-OS by Eeman1113 (EemanSleepDeeprived), built on
+      <a href="https://github.com/CodeZombie/goodluckOS">goodluckOS</a> by CodeZombie and contributors, with recipes from
+      <a href="https://github.com/Bepok/Debianator">Debianator</a> by Bepok.
+      <a href="https://github.com/Eeman1113/FakeR36S-OS">Source on GitHub</a> (GPL-2.0).</p>
+  </footer>
+</main>
+
+<script type="module">
+import { identifyBoard, fetchBase, baseFromFile, buildImage } from "./installer.js";
+
+const $ = (id) => document.getElementById(id);
+let stock = null;
+const say = (el, cls, html) => { el.className = "status " + cls; el.innerHTML = html; };
+const mb = (n) => (n / 1e6).toFixed(0) + " MB";
+
+$("stock").addEventListener("change", async (e) => {
+  stock = null; $("build").disabled = true; $("s2").classList.remove("done");
+  const f = e.target.files[0];
+  if (!f) return;
+  say($("boardStatus"), "", "Checking your board...");
+  try {
+    const { hash, board } = await identifyBoard(f);
+    if (!board) {
+      say($("boardStatus"), "bad", `Unknown board (script.bin ${hash.slice(0, 12)}...). FakeR36S-OS can't safely run on it.
+        Please open an issue on GitHub with this fingerprint.`);
+      return;
+    }
+    if (board.soc === "A33") {
+      say($("boardStatus"), "warn", `${board.name}: this is a 4-core A33 board. Use
+        <a href="https://github.com/CodeZombie/goodluckOS">goodluckOS</a> for now.`);
+      return;
+    }
+    stock = f;
+    $("build").disabled = false; $("s2").classList.add("done"); $("s1").classList.add("done");
+    say($("boardStatus"), board.status === "tested" ? "ok" : "warn",
+      board.status === "tested" ? `${board.name}: supported and tested.`
+                                : `${board.name}: supported A23 board, not tested yet. Your screen may need panel 1 instead of panel 2.`);
+  } catch (err) {
+    say($("boardStatus"), "bad", err.message);
+  }
+});
+
+async function finish(base) {
+  say($("buildStatus"), "", "Assembling your image...");
+  let logo = null;
+  try { logo = new Uint8Array(await (await fetch("eeman_bootlogo.bmp")).arrayBuffer()); } catch {}
+  const { image, logoOk } = await buildImage(base, stock, logo);
+  const url = URL.createObjectURL(image);
+  $("save").href = url; $("save").classList.remove("hidden");
+  $("s3").classList.add("done");
+  say($("buildStatus"), "ok", `Done: ${mb(image.size)} image ready${logoOk ? ", boot logo added" : ""}. Save it in step 4.`);
+  $("prog").classList.add("hidden");
+}
+
+$("build").addEventListener("click", async () => {
+  $("build").disabled = true; $("prog").classList.remove("hidden"); $("prog").removeAttribute("value");
+  say($("buildStatus"), "", "Downloading FakeR36S-OS...");
+  try {
+    const base = await fetchBase(undefined, (got, total) => {
+      if (total) { $("prog").max = total; $("prog").value = got; }
+      say($("buildStatus"), "", `Downloading FakeR36S-OS... ${mb(got)}${total ? " of " + mb(total) : ""}`);
+    });
+    await finish(base);
+  } catch (err) {
+    $("prog").classList.add("hidden");
+    say($("buildStatus"), "warn", "Automatic download failed (" + err.message + ").");
+    $("manual").classList.remove("hidden");
+  }
+});
+
+$("baseFile").addEventListener("change", async (e) => {
+  const f = e.target.files[0];
+  if (!f || !stock) return;
+  try { await finish(await baseFromFile(f)); } catch (err) { say($("buildStatus"), "bad", err.message); }
+});
+</script>
 </body>
 </html>
