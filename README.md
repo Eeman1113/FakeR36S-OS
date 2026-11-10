@@ -16,7 +16,7 @@ A fast, clean, ArkOS-style OS: EmulationStation, RetroArch, N64, auto-scaling, l
 - **Automatic scaling per system**: integer scaling for Game Boy / Game Gear / Lynx / NGP, crisp
   "sharp" scaling (2x nearest + bilinear fit, FP16-safe on the Mali-400) for 2D consoles and arcade,
   smooth scaling for 3D systems
-- **ArkOS hotkeys**: Select+Start exit, Select+X menu, Select+R1/L1 save/load state, Select+R2 fast forward
+- **ArkOS hotkeys**: Select+Start exit, Select+X menu, Select+B FPS counter, Select+R1/L1 save/load state, Select+R2 fast forward
 - **CPU frequency scaling** from the board's own stock DVFS table (648-1008 MHz), plus an opt-in
   **1.2 GHz performance mode** (the vendor's own max_freq)
 - **System Dashboard**: live CPU per core, frequency, battery voltage/current/charge, memory, zram,
