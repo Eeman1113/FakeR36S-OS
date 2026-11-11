@@ -1,0 +1,62 @@
+#!/bin/sh
+# fr-ports-sync: list installed ports in EmulationStation's Ports system.
+# Ports for goodluckOS (for example https://github.com/rincewindcz/ga36-ports) unzip into
+# HOME as ports/<id>/ plus a Puppy entry (.local/share/applications/<id>.puppy) and an
+# icon. For each one this writes roms/ports/<Name>.sh (a one-line launcher) and a
+# gamelist.xml entry with its name, description and icon. Run by launcher.sh before ES.
+# Launchers you add to roms/ports yourself (PortMaster style .sh files) are left alone.
+HOME=${HOME:-/home/player}
+APPS=$HOME/.local/share/applications
+OUT=$HOME/roms/ports
+TAG="# fr-ports-sync"
+mkdir -p "$OUT" || exit 0
+
+xml() { printf '%s' "$1" | sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g' -e 's/"/\&quot;/g'; }
+val() { sed -n "s/^$1=//p" "$2" | head -n 1 | tr -d '\r'; }
+safe() { printf '%s' "$1" | tr -d '/\\:*?"<>|' | sed 's/^ *//; s/ *$//'; }
+
+# drop launchers this script made earlier; they are rebuilt below
+for f in "$OUT"/*.sh; do
+    [ -f "$f" ] && sed -n 2p "$f" | grep -qx "$TAG" && rm -f "$f"
+done
+
+entries=
+add_entry() {   # name command description icon
+    file=$(safe "$1").sh
+    [ -n "$file" ] && [ "$file" != .sh ] || return
+    printf '#!/bin/sh\n%s\nexec "%s"\n' "$TAG" "$2" > "$OUT/$file"
+    chmod +x "$OUT/$file" 2>/dev/null
+    entries="$entries
+	<game>
+		<path>./$(xml "$file")</path>
+		<name>$(xml "$1")</name>
+		<desc>$(xml "$3")</desc>
+		<image>$(xml "$4")</image>
+	</game>"
+}
+
+seen=" "
+for p in "$APPS"/*.puppy; do
+    [ -f "$p" ] || continue
+    [ "$(val CATEGORY "$p")" = Ports ] || continue
+    cmd=$(val COMMAND "$p")
+    case $cmd in ''|*%s*) continue ;; esac       # archive launchers need a file argument
+    [ -x "${cmd%% *}" ] || continue
+    add_entry "$(val NAME "$p")" "$cmd" "$(val DESCRIPTION "$p")" "$(val ICON "$p")"
+    seen="$seen${cmd} "
+done
+
+# ports without a Puppy entry: any ports/<id>/run.sh
+for r in "$HOME"/ports/*/run.sh; do
+    [ -x "$r" ] || continue
+    case $seen in *" $r "*) continue ;; esac
+    id=$(basename "$(dirname "$r")")
+    icon=$HOME/.local/share/icons/$id.png
+    [ -f "$icon" ] || icon=
+    add_entry "$id" "$r" "" "$icon"
+done
+
+{
+    printf '<?xml version="1.0"?>\n<gameList>%s\n</gameList>\n' "$entries"
+} > "$OUT/gamelist.xml.tmp" && mv -f "$OUT/gamelist.xml.tmp" "$OUT/gamelist.xml"
+exit 0

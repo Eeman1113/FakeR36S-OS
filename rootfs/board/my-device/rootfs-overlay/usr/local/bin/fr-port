@@ -1,0 +1,7 @@
+#!/bin/sh
+# fr-port <launcher.sh>: run a port from EmulationStation at full CPU speed (ports are
+# heavier than most emulators), logging to ~/.config/fakers36s/port.log.
+doas /usr/local/bin/cpuprofile normal 2>/dev/null
+sh "$1" >> /home/player/.config/fakers36s/port.log 2>&1
+rc=$?
+exit $rc

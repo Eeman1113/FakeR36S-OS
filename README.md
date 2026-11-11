@@ -119,6 +119,10 @@ Plug the card into your computer: the **HOME** partition mounts normally. Put RO
 (folder names match the stock card: `nes`, `snes`, `gba`, `n64`, `psx`, `megadrive`, ...) and BIOS files in
 `.config/retroarch/system/`. Game saves (`.srm`) go next to the ROMs, as on the stock firmware.
 
+## Ports
+
+Native PC games rebuilt for this handheld show up in EmulationStation under **Ports**. FakeR36S-OS uses the same layout as goodluckOS, so ports from [ga36-ports](https://github.com/rincewindcz/ga36-ports) (published at [ga36.genserek.net](https://ga36.genserek.net)) work as they are: unzip a port into the root of the HOME partition and it appears in Ports with its name, description and icon on the next start of EmulationStation. You can also drop your own `.sh` launchers into `roms/ports`. Ports run at full CPU speed and log to `.config/fakers36s/port.log`.
+
 ## Box art and menu music
 
 The handheld has no WiFi, so box art is fetched from your computer while the card is plugged in. The easiest way is step 5 of the [web installer](https://eeman1113.github.io/FakeR36S-OS/) (Chrome or Edge): pick the card's HOME drive and it does the rest in your browser. Or use the script:
@@ -155,6 +159,7 @@ FakeR36S-OS stands on the shoulders of people who did the hard work first. Huge 
   **[ArkOS](https://github.com/christianhaitian/arkos)** by **christianhaitian**: the frontend, and the OS whose
   look and feel FakeR36S-OS aims for.
 - **[libretro-thumbnails](https://github.com/libretro-thumbnails/libretro-thumbnails)** and its contributors, for the box art library `tools/fetch-art.py` downloads from.
+- **[ga36-ports](https://github.com/rincewindcz/ga36-ports)** by rincewindcz, the native game ports for GA36-MB handhelds that the Ports system is built around.
 - **[RetroArch](https://github.com/libretro/RetroArch)** and the **[libretro](https://www.libretro.com)** team,
   plus the authors of every core: FCEUmm, Nestopia, Snes9x 2005 / 2010, ParaLLEl N64, Gambatte, gpSP, mGBA,
   PicoDrive, Genesis Plus GX, Beetle (Mednafen) PCE / SuperGrafx / NeoPop / WonderSwan / VB, PCSX ReARMed,

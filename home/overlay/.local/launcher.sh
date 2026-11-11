@@ -11,6 +11,7 @@ LOGDIR=$HOME/.config/fakers36s
 FAILS=/dev/shm/fakers36s-es-fails
 mkdir -p "$LOGDIR"
 
+/usr/local/bin/fr-ports-sync 2>/dev/null   # list installed ports in ES
 fails=$(cat "$FAILS" 2>/dev/null || echo 0)
 if [ -x /usr/bin/emulationstation ] && [ "$fails" -lt 2 ]; then
     start=$(cut -d. -f1 /proc/uptime)
