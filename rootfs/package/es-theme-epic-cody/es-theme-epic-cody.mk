@@ -14,8 +14,9 @@ ES_THEME_EPIC_CODY_LICENSE_FILES = README.md
 define ES_THEME_EPIC_CODY_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/etc/emulationstation/themes/epic-cody
 	cp -r $(@D)/. $(TARGET_DIR)/etc/emulationstation/themes/epic-cody/
-	rm -rf $(TARGET_DIR)/etc/emulationstation/themes/epic-cody/.git* \
-		$(TARGET_DIR)/etc/emulationstation/themes/epic-cody/_art
+	rm -rf $(TARGET_DIR)/etc/emulationstation/themes/epic-cody/.git*
+	# _art holds every poster, controller image and system sound: the theme is blank without it
+	test -e $(TARGET_DIR)/etc/emulationstation/themes/epic-cody/_art/posters/n64.jpg
 endef
 
 $(eval $(generic-package))
