@@ -1,0 +1,6 @@
+config BR2_PACKAGE_ES_THEME_EPIC_CODY
+	bool "es-theme-epic-cody"
+	help
+	  EPIC-CODY EmulationStation theme by CodyV59 (EpicNoir fork),
+	  640x480 RG351V edition. CC BY-NC-SA 4.0.
+	  https://github.com/CodyV59/es-theme-epic-cody-RG351V

@@ -8,7 +8,7 @@ A fast, clean, ArkOS-style OS: EmulationStation, RetroArch, N64, auto-scaling, l
 > **cannot** run on it, because they need a real Rockchip RK3326. This OS is built for that board.
 
 ## Features
-- **ArkOS-style frontend**: EmulationStation (fcamod, the ArkOS fork), carbon theme, boots straight into it
+- **ArkOS-style frontend**: EmulationStation (fcamod, the ArkOS fork), EPIC-CODY theme, boots straight into it
 - **43 systems, best core preselected for the A23**: NES, SNES, **N64** (ParaLLEl, dynarec), GB/GBC/GBA,
   Mega Drive/32X/Sega CD, Master System, Game Gear, PC Engine/CD, SuperGrafx, PS1, PSP, CPS1/2/3, Neo Geo,
   MAME 2003-Plus, Neo Geo Pocket, WonderSwan, Atari 2600/7800/Lynx, Virtual Boy, Vectrex, MSX, ZX Spectrum,
@@ -146,7 +146,10 @@ FakeR36S-OS stands on the shoulders of people who did the hard work first. Huge 
   PicoDrive, Genesis Plus GX, Beetle (Mednafen) PCE / SuperGrafx / NeoPop / WonderSwan / VB, PCSX ReARMed,
   PPSSPP, FinalBurn Neo, MAME 2003-Plus, Stella 2014, ProSystem, Handy, PokeMini, VecX, O2EM, Fuse, blueMSX,
   Game & Watch, FreeIntv, Caprice32, DOSBox and QuickNES.
-- **[es-theme-carbon](https://github.com/RetroPie/es-theme-carbon)** by the **RetroPie** project (CC BY-NC-SA).
+- **[EPIC-CODY](https://github.com/CodyV59/es-theme-epic-cody-RG351V)** by **CodyV59**, a fork of **EpicNoir** by
+  **Chicuelo** and **Nick L (c64-dev)**: the default theme, shipped unmodified (CC BY-NC-SA 4.0, non-commercial).
+  All artwork belongs to its original artists.
+- **[es-theme-carbon](https://github.com/RetroPie/es-theme-carbon)** by the **RetroPie** project (CC BY-NC-SA), the fallback theme.
 - **[Buildroot](https://buildroot.org)**, the **[Linux kernel](https://kernel.org)** and the
   **[linux-sunxi](https://linux-sunxi.org)** community for mainline Allwinner support.
 - **[Mesa](https://mesa3d.org)** and its **Lima** driver for the Mali-400 GPU.
