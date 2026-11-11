@@ -13,7 +13,6 @@ megadrive
 mastersystem
 gamegear
 sg-1000
-sega32x
 segacd
 pcengine
 pcenginecd
@@ -32,7 +31,6 @@ wonderswancolor
 atari2600
 atari7800
 atarilynx
-vectrex
 odyssey2
 intellivision
 coleco
@@ -40,4 +38,3 @@ msx
 msx2
 zxspectrum
 amstradcpc
-dos
