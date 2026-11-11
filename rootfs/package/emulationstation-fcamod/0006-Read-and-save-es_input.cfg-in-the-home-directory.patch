@@ -1,0 +1,21 @@
+From: Eeman1113 <eeman.majumder@gmail.com>
+Subject: [PATCH] Read and save es_input.cfg in the home directory
+
+fcamod hard-codes /etc/emulationstation/es_input.cfg, which is on the read-only
+(for the ES user) system partition: presets there are skipped and remaps are
+lost. Use ~/.emulationstation/es_input.cfg like upstream EmulationStation.
+---
+--- a/es-core/src/InputManager.cpp	2026-11-11 20:26:35
++++ b/es-core/src/InputManager.cpp	2026-11-11 20:26:35
+@@ -443,9 +443,8 @@
+ 
+ std::string InputManager::getConfigPath()
+ {
+-	std::string path; // = Utils::FileSystem::getHomePath();
+-	//path += "/.emulationstation/es_input.cfg";
+-	path += "/etc/emulationstation/es_input.cfg";
++	std::string path = Utils::FileSystem::getHomePath();
++	path += "/.emulationstation/es_input.cfg";
+ 	return path;
+ }
+ 
