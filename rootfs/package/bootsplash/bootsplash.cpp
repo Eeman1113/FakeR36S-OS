@@ -93,37 +93,46 @@ static void draw_frame(ImDrawList* dl, const std::vector<Tile>& tiles, float t, 
         dl->AddPolyline(q, 4, ImGui::GetColorU32(col), ImDrawFlags_Closed, 1.0f);   // close AA seams between tiles
     }
 
-    // "made by EemanSleepDeeprived": letters rise and fade in one after another
+    // "made by EemanSleepDeeprived", printed in isometric along the mark's lower-right edge
+    // (from the bottom tile up to the far-right tile, the 30 degree tile slope). Letters are
+    // laid out flat, then their vertices get the isometric right-face transform:
+    // x' = x * cos30, y' = y - x * sin30 (verticals stay vertical, the baseline climbs at 30 deg).
     const char* made = "made by ";
     const char* name = "EemanSleepDeeprived";
-    const float y = 352.0f;
     const ImVec4 muted(0.56f, 0.59f, 0.66f, 1), bright(0.96f, 0.94f, 0.90f, 1);
+    const float c30 = 0.8660254f, s30 = 0.5f;
     float w_made = 0, w_name = 0;
     for (const char* c = made; *c; ++c) w_made += small->CalcTextSizeA(small->LegacySize, FLT_MAX, 0, c, c + 1).x;
     for (const char* c = name; *c; ++c) w_name += big->CalcTextSizeA(big->LegacySize, FLT_MAX, 0, c, c + 1).x;
-    float x = (W - (w_made + w_name)) * 0.5f;
+    const float total = w_made + w_name;
+
+    // edge endpoints in screen space: bottom tile's right corner -> far-right tile's right corner
+    const float s = 300.0f / VB_W, ox = (W - 300.0f) * 0.5f, oy = (H - VB_H * s) * 0.5f - 6.0f;
+    const ImVec2 e0(ox + 104.63f * s, oy + 75.44f * s), e1(ox + 182.73f * s, oy + 30.35f * s);
+    const ImVec2 mid((e0.x + e1.x) * 0.5f, (e0.y + e1.y) * 0.5f);
+    const float gap = 14.0f;                                   // clearance below the edge
+    // flat-space origin (text top-left) so the transformed text is centred under the edge midpoint
+    const ImVec2 org(mid.x - total * 0.5f * c30, mid.y + gap + total * 0.5f * s30);
+    auto iso = [&](ImVec2 p) {                                 // flat offset from org -> screen
+        return ImVec2(org.x + p.x * c30, org.y + p.y - p.x * s30);
+    };
+
+    float x = 0;
     int n = 0;
     auto letter = [&](ImFont* f, const char* c, ImVec4 col, float baseline_off) {
         float start = 1.7f + n * 0.035f;
         float a = ease_out(smooth(start, start + 0.28f, t));
         float rise = (1.0f - a) * 7.0f;
         col.w = a * tfade;
-        dl->AddText(f, f->LegacySize, ImVec2(x, y + baseline_off + rise), ImGui::GetColorU32(col), c, c + 1);
+        const int v0 = dl->VtxBuffer.Size;
+        dl->AddText(f, f->LegacySize, ImVec2(x, baseline_off + rise), ImGui::GetColorU32(col), c, c + 1);
+        for (int i = v0; i < dl->VtxBuffer.Size; ++i) dl->VtxBuffer[i].pos = iso(dl->VtxBuffer[i].pos);
         x += f->CalcTextSizeA(f->LegacySize, FLT_MAX, 0, c, c + 1).x;
         ++n;
     };
     float off_small = big->LegacySize - small->LegacySize - 1.0f;   // align baselines roughly
     for (const char* c = made; *c; ++c) letter(small, c, muted, off_small);
     for (const char* c = name; *c; ++c) letter(big, c, bright, 0);
-
-    // thin line drawing outwards under the credit
-    float ln = ease_out(smooth(2.45f, 3.05f, t));
-    if (ln > 0) {
-        float half = (w_made + w_name) * 0.5f * ln;
-        ImVec4 lc = slate; lc.w = 0.9f * tfade;
-        dl->AddLine(ImVec2(W * 0.5f - half, y + big->LegacySize + 10), ImVec2(W * 0.5f + half, y + big->LegacySize + 10),
-                    ImGui::GetColorU32(lc), 1.5f);
-    }
 }
 
 int main(int, char**) {
@@ -145,8 +154,8 @@ int main(int, char**) {
     ImFont* small = nullptr; ImFont* big = nullptr;
     if (FILE* f = fopen(font, "r")) {
         fclose(f);
-        small = io.Fonts->AddFontFromFileTTF(font, 16.0f);
-        big = io.Fonts->AddFontFromFileTTF(font, 22.0f);
+        small = io.Fonts->AddFontFromFileTTF(font, 14.0f);
+        big = io.Fonts->AddFontFromFileTTF(font, 19.0f);
     }
     if (!small) small = big = io.Fonts->AddFontDefault();
     ImGui_ImplSDL2_InitForSDLRenderer(win, r);
@@ -165,7 +174,13 @@ int main(int, char**) {
     for (int i = 0; i < SDL_NumJoysticks(); ++i)
         if (SDL_IsGameController(i) && (pad = SDL_GameControllerOpen(i))) break;
 
-    const float test_times[] = {0.0f, 0.6f, 0.95f, 1.5f, 1.85f, 2.3f, 3.1f, 3.7f};
+    // test frames: a few fixed times, or every frame at SPLASH_FPS (for preview videos)
+    std::vector<float> test_times = {0.0f, 0.6f, 0.95f, 1.5f, 1.85f, 2.3f, 3.1f, 3.7f};
+    if (const char* fps = getenv("SPLASH_FPS")) {
+        test_times.clear();
+        const float step = 1.0f / atof(fps);
+        for (float tt = 0; tt <= TOTAL; tt += step) test_times.push_back(tt);
+    }
     int test_i = 0;
     const Uint32 t0 = SDL_GetTicks();
     bool running = true;
@@ -191,9 +206,9 @@ int main(int, char**) {
         if (test) {
             SDL_Surface* s = SDL_CreateRGBSurfaceWithFormat(0, (int)W, (int)H, 32, SDL_PIXELFORMAT_ARGB8888);
             SDL_RenderReadPixels(r, nullptr, SDL_PIXELFORMAT_ARGB8888, s->pixels, s->pitch);
-            char path[512]; snprintf(path, sizeof path, "%s/splash_%04d.bmp", frames_dir, (int)(t * 1000));
+            char path[512]; snprintf(path, sizeof path, "%s/splash_%05d.bmp", frames_dir, test_i);
             SDL_SaveBMP(s, path); SDL_FreeSurface(s);
-            if (++test_i == (int)(sizeof test_times / sizeof *test_times)) running = false;
+            if (++test_i == (int)test_times.size()) running = false;
         }
         SDL_RenderPresent(r);
     }
