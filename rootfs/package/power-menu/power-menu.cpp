@@ -98,9 +98,9 @@ int main() {
         float y = H * 0.38f;
         ImGui::SetCursorPos(ImVec2((W - bw) * 0.5f, y));
         if (ImGui::IsWindowAppearing()) ImGui::SetKeyboardFocusHere();
-        if (ImGui::Button("Shut down", ImVec2(bw, bh))) { action = "doas /sbin/poweroff"; running = false; }
+        if (ImGui::Button("Shut down", ImVec2(bw, bh))) { action = "doas /usr/local/bin/fr-poweroff"; running = false; }
         ImGui::SetCursorPos(ImVec2((W - bw) * 0.5f, y += bh + gap));
-        if (ImGui::Button("Restart", ImVec2(bw, bh))) { action = "doas /sbin/reboot"; running = false; }
+        if (ImGui::Button("Restart", ImVec2(bw, bh))) { action = "doas /usr/local/bin/fr-poweroff reboot"; running = false; }
         ImGui::SetCursorPos(ImVec2((W - bw) * 0.5f, y += bh + gap));
         if (ImGui::Button("Cancel", ImVec2(bw, bh))) running = false;
         ImGui::End();

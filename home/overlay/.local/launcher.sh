@@ -14,10 +14,26 @@ mkdir -p "$LOGDIR"
 /usr/local/bin/fr-ports-sync 2>/dev/null   # list installed ports in ES
 fails=$(cat "$FAILS" 2>/dev/null || echo 0)
 if [ -x /usr/bin/emulationstation ] && [ "$fails" -lt 2 ]; then
+    rm -f /tmp/es-shutdown /tmp/es-sysrestart
     start=$(cut -d. -f1 /proc/uptime)
     echo "=== $(date) ES start (fails so far: $fails)" >> "$LOGDIR/es.log"
     /usr/bin/emulationstation >> "$LOGDIR/es.log" 2>&1
     rc=$?
+    # ES's Quit menu leaves a marker and then calls "sudo shutdown", which doesn't exist here:
+    # do the real power off / restart, and stay alive so appd doesn't start ES again meanwhile
+    for m in shutdown sysrestart; do
+        [ -e /tmp/es-$m ] || continue
+        echo "=== ES asked for $m" >> "$LOGDIR/es.log"
+        arg=; [ $m = sysrestart ] && arg=reboot
+        if [ -x /usr/local/bin/fr-poweroff ]; then
+            doas /usr/local/bin/fr-poweroff $arg
+        elif [ -n "$arg" ]; then
+            doas /sbin/reboot
+        else
+            doas /sbin/poweroff
+        fi
+        exec sleep 120
+    done
     end=$(cut -d. -f1 /proc/uptime)
     echo "=== ES exited rc=$rc after $((end - start)) s" >> "$LOGDIR/es.log"
     if [ $((end - start)) -lt 15 ]; then echo $((fails + 1)) > "$FAILS"; else echo 0 > "$FAILS"; fi

@@ -1,0 +1,42 @@
+#!/bin/sh
+# fr-poweroff [reboot]: the one way FakeR36S-OS shuts down or restarts (EmulationStation's
+# Quit menu, the hold-power menu, Puppy's tools). Run as root (doas).
+#   1. stop appd first, so EmulationStation / the game close cleanly (saves written) and
+#      nothing gets relaunched behind the shutdown
+#   2. sync, then the normal poweroff/reboot (init runs the stop scripts, the kernel clears
+#      the BSP boot flag and cuts the power through the AXP223)
+#   3. a watchdog outside appd's cgroups: if the stop scripts hang, it forces the power off
+#      (or reboot) after 25 s, once the data is synced
+# Each step is logged to HOME/.config/fakers36s/shutdown.log.
+mode=poweroff
+[ "$1" = reboot ] && mode=reboot
+LOG=/home/player/.config/fakers36s/shutdown.log
+log() { echo "$(cut -d' ' -f1 /proc/uptime) $*" >> "$LOG" 2>/dev/null; }
+
+: > "$LOG" 2>/dev/null
+log "$mode requested"
+
+# leave appd's cgroups, so stopping appd doesn't take this script with it
+echo $$ > /sys/fs/cgroup/cgroup.procs 2>/dev/null
+
+/usr/local/bin/appctl stop >/dev/null 2>&1
+log "appd stopped"
+killall fr-loading 2>/dev/null
+[ -x /usr/bin/fr-loading ] && setsid /usr/bin/fr-loading 60 </dev/null >/dev/null 2>&1 &
+sync
+log "synced"
+
+(
+    i=0
+    while [ $i -lt 25 ]; do
+        sleep 1; i=$((i + 1))
+        log "waiting: $(ps -o args= 2>/dev/null | grep -E '/etc/init.d/S|rcK|swapoff|umount|alsactl' | grep -v grep | tr '\n' ';')"
+        sync
+    done
+    log "stop scripts still running after 25 s: forcing $mode"
+    sync
+    /sbin/$mode -f
+) </dev/null >/dev/null 2>&1 &
+
+log "running /sbin/$mode"
+/sbin/$mode

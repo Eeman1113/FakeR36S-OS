@@ -1,4 +1,6 @@
 #!/bin/sh
 # Launched through appd (goodluckOS supervisor): EmulationStation is closed while the
 # app runs and restarted fresh afterwards, so it never loses the gamepad.
-exec /usr/local/bin/appctl launch-application "are-you-sure \"Power off the device?\" \"doas /sbin/poweroff\""
+# fr-poweroff stops appd first and forces the power off if a stop script hangs.
+if [ -x /usr/local/bin/fr-poweroff ]; then cmd="doas /usr/local/bin/fr-poweroff"; else cmd="doas /sbin/poweroff"; fi
+exec /usr/local/bin/appctl launch-application "are-you-sure \"Power off the device?\" \"$cmd\""
