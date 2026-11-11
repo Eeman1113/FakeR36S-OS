@@ -1,5 +1,5 @@
-config BR2_PACKAGE_LIBFREEIMAGE
-	bool "libfreeimage"
+config BR2_PACKAGE_FR_FREEIMAGE
+	bool "fr-freeimage"
 	depends on BR2_INSTALL_LIBSTDCPP
 	depends on !BR2_STATIC_LIBS
 	depends on BR2_USE_WCHAR
@@ -13,6 +13,6 @@ config BR2_PACKAGE_LIBFREEIMAGE
 
 	  http://freeimage.sourceforge.net
 
-comment "libfreeimage needs a toolchain w/ C++, dynamic library, wchar"
+comment "fr-freeimage needs a toolchain w/ C++, dynamic library, wchar"
 	depends on !BR2_arc
 	depends on BR2_STATIC_LIBS || !BR2_INSTALL_LIBSTDCPP || !BR2_USE_WCHAR
