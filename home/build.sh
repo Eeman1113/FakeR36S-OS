@@ -21,6 +21,7 @@ mkdir -p overlay/roms/gg/icons
 mkdir -p overlay/roms/segacd/icons
 # FakeR36S-OS: one folder per EmulationStation system (same names as the stock GA36 card)
 while read -r d; do [ -n "$d" ] && mkdir -p "overlay/roms/$d"; done < overlay/.romdirs
+mkdir -p overlay/roms/bgmusic   # drop .mp3/.ogg here for menu music (ArkOS layout)
 mkdir -p overlay/tools
 mkdir -p overlay/.config/retroarch/cores
 mkdir -p overlay/.config/retroarch/states overlay/.config/retroarch/saves
