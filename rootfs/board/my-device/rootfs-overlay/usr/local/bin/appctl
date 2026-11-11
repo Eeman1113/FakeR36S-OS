@@ -164,42 +164,19 @@ start_launcher() {
     LAUNCH_T=$(uptime_s)
     [ -x "$LAUNCHER_CMD" ] || log "launcher $LAUNCHER_CMD missing or not executable"
     log "starting launcher"
+    show_loading
     spawn launcher "$LAUNCHER_CMD" "$LAUNCHER_LOG"
 }
 
 show_loading() {
-    {
-        printf '\033[2J\033[H\033[?25l'
-        cat <<'EOF'
-
-
-
-
-                    @@@@@@                     +@@@@@
-                   :@-:  @@@.                @@@% --@@
-                   @@----- @@@             @@@  -----@
-                   @@------ :@@@@@@@@@@@@@@@@ -------@:
-                   @*---:  @@@@@@@@@@@@@@@@@@@   ----@:
-                   @@-: =@@@@@@@@@@@@@@@@@@@@@@@@  --@
-                   @@ #@@@@@@@@@@@@@@@@@@@@@@@@@@@@  @
-                     @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-      @@*
-                    @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@* =@@@@@@@@@
-                   @@@@@@  @@:  @@@@@@@@@@  :@@  @@@@ =@@@@@@@@@@@
-                   @@@@@@@@@@@@# @@@@@@@@ @@@@@@@@@@@ @@ #@@ @@ @@
-                   @@@+  @@@@@@@@@@@@@@@@@@@@@@@+  @@* % +@@ @@ @
-                   @@@@@@@@@@@@@@@@----@@@@@@@@@@@@@@@@ @:     %
-                   @@@@@@@@@@@ @@@@@  @@@@@ @@@@@@@@@@# @@@@@@@@
-                    @@+ @@@@@@@    @@@@   @@@@@@@  @@@ @@@@@@@@@
-                           -@@      @       ..             .
-             +@@    .@@@@@@   .@@@@   @@@@@@@ *@@ @@@  #@@  @@@@@@
-             @@@   :@@   @@@  @@ @@  .@@   @@ @@@.@@@@ @@@ @@
-             @@.   @@@ . @@@ @@- @@. @@@  +@@ @@ @@@=@@@@.@@@ +@@@
-             @@    +@@@@@@@ @@@@@@@@ @@@@@@@  @@ @@@ @@@@ .@@@@@@@
-            @@@@@@   +@@:  @@@   @@@ @@@@%   @@@ @@   @@@   -@@-
-EOF
-    } >"$CONSOLE" 2>/dev/null
+    # FakeR36S-OS: logo + minimal spinner on the framebuffer (never holds the display;
+    # whatever starts next simply draws over it). Replaces goodluckOS's ASCII cat.
+    printf '\033[2J\033[H\033[?25l' >"$CONSOLE" 2>/dev/null
+    killall fr-loading 2>/dev/null
+    if [ -x /usr/bin/fr-loading ]; then
+        setsid /usr/bin/fr-loading 20 </dev/null >/dev/null 2>&1 &
+    fi
 }
-
 do_launch() {
     _rest=$1                           # "<terminal_mode 0|1> <command...>"
     _term=${_rest%% *}

@@ -1,0 +1,7 @@
+#!/bin/sh
+# FakeR36S-OS: show the logo + spinner as early as possible (shrinks the black gap
+# between the bootloader logo and the animated splash). S98bootsplash takes over.
+[ "$1" = start ] || exit 0
+printf '\033[2J\033[H\033[?25l' >/dev/tty1 2>/dev/null
+[ -x /usr/bin/fr-loading ] && /usr/bin/fr-loading 15 </dev/null >/dev/null 2>&1 &
+exit 0

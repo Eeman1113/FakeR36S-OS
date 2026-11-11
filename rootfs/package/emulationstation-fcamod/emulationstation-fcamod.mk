@@ -28,6 +28,9 @@ define EMULATIONSTATION_FCAMOD_INSTALL_TARGET_CMDS
 	cp -r $(@D)/resources $(TARGET_DIR)$(EMULATIONSTATION_FCAMOD_INSTALL_DIR)/
 	$(INSTALL) -m 0644 $(EMULATIONSTATION_FCAMOD_PKGDIR)/splash.svg $(TARGET_DIR)$(EMULATIONSTATION_FCAMOD_INSTALL_DIR)/resources/splash.svg
 	ln -sf $(EMULATIONSTATION_FCAMOD_INSTALL_DIR)/emulationstation $(TARGET_DIR)/usr/bin/emulationstation
+	# ES links against its bundled pugixml (external/pugixml) as a shared library
+	find $(@D) -name 'libpugixml.so*' -exec cp -a {} $(TARGET_DIR)/usr/lib/ \;
+	test -e $(TARGET_DIR)/usr/lib/libpugixml.so.1
 endef
 
 $(eval $(cmake-package))

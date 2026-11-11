@@ -67,7 +67,8 @@ static std::vector<Tile> build_tiles() {
 static void draw_frame(ImDrawList* dl, const std::vector<Tile>& tiles, float t, ImFont* small, ImFont* big) {
     const ImVec4 slate(0x5d / 255.f, 0x64 / 255.f, 0x77 / 255.f, 1);
     const ImVec4 glow(0.80f, 0.84f, 0.93f, 1);
-    const float fade = 1.0f - smooth(3.4f, 3.9f, t);           // global fade to black
+    const float fade = 1.0f;                                   // the logo stays: fr-loading takes over
+    const float tfade = 1.0f - smooth(3.4f, 3.9f, t);          // only the credit fades out
 
     for (const Tile& tl : tiles) {
         // lift-and-glow wave
@@ -106,7 +107,7 @@ static void draw_frame(ImDrawList* dl, const std::vector<Tile>& tiles, float t, 
         float start = 1.7f + n * 0.035f;
         float a = ease_out(smooth(start, start + 0.28f, t));
         float rise = (1.0f - a) * 7.0f;
-        col.w = a * fade;
+        col.w = a * tfade;
         dl->AddText(f, f->LegacySize, ImVec2(x, y + baseline_off + rise), ImGui::GetColorU32(col), c, c + 1);
         x += f->CalcTextSizeA(f->LegacySize, FLT_MAX, 0, c, c + 1).x;
         ++n;
@@ -119,7 +120,7 @@ static void draw_frame(ImDrawList* dl, const std::vector<Tile>& tiles, float t, 
     float ln = ease_out(smooth(2.45f, 3.05f, t));
     if (ln > 0) {
         float half = (w_made + w_name) * 0.5f * ln;
-        ImVec4 lc = slate; lc.w = 0.9f * fade;
+        ImVec4 lc = slate; lc.w = 0.9f * tfade;
         dl->AddLine(ImVec2(W * 0.5f - half, y + big->LegacySize + 10), ImVec2(W * 0.5f + half, y + big->LegacySize + 10),
                     ImGui::GetColorU32(lc), 1.5f);
     }
