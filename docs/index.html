@@ -63,6 +63,29 @@
   <p class="tag">For fake R36S handhelds with a GA36-MB board and an Allwinner A23 chip.
     Your SD card image is built right here in your browser. Nothing is uploaded.</p>
 
+  <section class="step" id="upd">
+    <h2><span class="num">&#8635;</span> Already running FakeR36S-OS? Update instead</h2>
+    <p>Updating keeps everything of yours: games, saves and save states, RetroArch and per-core settings, button remaps,
+      themes, box art, BIOS and ports. No reflash, no copying games again.</p>
+    <ol class="muted">
+      <li>Download <a id="updLink" href="https://github.com/Eeman1113/FakeR36S-OS/releases/latest">the update package</a>
+        (<code>fakers36s-update-a23_panel2.tar</code>), or let this page try to fetch it.</li>
+      <li>Plug the console's card into this computer, then put the package on its <b>HOME</b> drive with the button below.</li>
+      <li>Eject the card, put it back in the console and power on. Your logo and spinner stay up for a few minutes while it
+        installs, then it restarts into the new version. The log is in <code>HOME/.config/fakers36s/update.log</code>.</li>
+    </ol>
+    <button id="updFetch">Fetch the update</button>
+    <input type="file" id="updFile" accept=".tar" class="hidden">
+    <button id="updWrite" disabled>Put it on the HOME drive</button>
+    <progress id="updProg" class="hidden" max="1" value="0"></progress>
+    <div class="status" id="updStatus"></div>
+    <details><summary>Without Chrome or Edge</summary>
+      <p class="muted">Make a folder named <code>update</code> in the root of the card's HOME drive and copy the downloaded
+        <code>.tar</code> into it, unchanged. Then eject the card and power on the console. On macOS or Linux you can also
+        run <code>tools/update-os.sh</code> from the repo to write the new system straight to the card.</p>
+    </details>
+  </section>
+
   <section class="step" id="s1">
     <h2><span class="num">1</span> Back up your stock SD card</h2>
     <p>The card that came with the console holds its bootloader. Without it, the console can't boot anything.
@@ -135,6 +158,7 @@ sudo dd if=/dev/sdb of=stock_backup.img bs=4M status=progress</pre></details>
 <script type="module">
 import { identifyBoard, fetchBase, baseFromFile, buildImage } from "./installer.js";
 import { fetchArt, supported as artSupported } from "./art.js";
+import * as upd from "./update.js";
 
 const $ = (id) => document.getElementById(id);
 let stock = null;
@@ -225,6 +249,50 @@ $("baseFile").addEventListener("change", async (e) => {
   const f = e.target.files[0];
   if (!f || !stock) return;
   try { await finish(await baseFromFile(f)); } catch (err) { say($("buildStatus"), "bad", err.message); }
+});
+
+// ---- update an existing install
+let updPkg = null;
+async function updUse(file) {
+  try {
+    const m = await upd.readManifest(file);
+    if (m.variant !== "a23_panel2") throw new Error(`This package is for ${m.variant}, not the GA36-MB A23 panel 2.`);
+    updPkg = file;
+    say($("updStatus"), "ok", `Update ${m.version} ready (${mb(file.size)}). Now put it on the HOME drive.`);
+    $("updWrite").disabled = !upd.supported();
+    if (!upd.supported()) say($("updStatus"), "warn", `Update ${m.version} checked. This browser can't write to drives: copy it to <code>HOME/update/</code> by hand (see below).`);
+  } catch (err) { say($("updStatus"), "bad", err.message); }
+}
+$("updFetch").addEventListener("click", async () => {
+  $("updFetch").disabled = true; $("updProg").classList.remove("hidden"); $("updProg").removeAttribute("value");
+  say($("updStatus"), "", "Downloading the update...");
+  try {
+    await updUse(await upd.fetchPackage((got, total) => {
+      if (total) { $("updProg").max = total; $("updProg").value = got; }
+      say($("updStatus"), "", `Downloading the update... ${mb(got)}${total ? " of " + mb(total) : ""}`);
+    }));
+  } catch {
+    say($("updStatus"), "warn", `GitHub didn't let this page download it directly. Download it with the link above, then pick the file:`);
+    $("updFile").classList.remove("hidden");
+  }
+  $("updProg").classList.add("hidden"); $("updFetch").disabled = false;
+});
+$("updFile").addEventListener("change", (e) => { if (e.target.files[0]) updUse(e.target.files[0]); });
+$("updWrite").addEventListener("click", async () => {
+  if (!updPkg) return;
+  let home;
+  try { home = await window.showDirectoryPicker({ id: "fakers36s-home", mode: "readwrite" }); } catch { return; }
+  $("updWrite").disabled = true; $("updProg").classList.remove("hidden");
+  try {
+    await upd.checkHome(home);
+    await upd.writePackage(home, updPkg, (done, total) => {
+      $("updProg").max = total; $("updProg").value = done;
+      say($("updStatus"), "", `Copying to the card... ${mb(done)} of ${mb(total)}`);
+    });
+    $("upd").classList.add("done");
+    say($("updStatus"), "ok", "Done. Eject the card safely, put it in the console and power on: it installs the update and restarts by itself.");
+  } catch (err) { say($("updStatus"), "bad", err.message); }
+  $("updProg").classList.add("hidden"); $("updWrite").disabled = false;
 });
 </script>
 </body>

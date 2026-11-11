@@ -3,6 +3,9 @@
 // It never takes DRM master, so EmulationStation, RetroArch or any app can take the
 // display at any moment. Exits after <seconds> (default 20) or on SIGTERM/SIGINT.
 // Usage: fr-loading [seconds] [logo.bmp]
+//        fr-loading --progress <file> [seconds] [logo.bmp]
+//   progress mode (used by the updater): instead of the spinner, a title, a progress bar and a
+//   status line under the logo. <file> holds "<percent> <status text>", rewritten as work goes on.
 
 #include <fcntl.h>
 #include <linux/fb.h>
@@ -88,6 +91,66 @@ static void disc(fb_t *fb, float cx, float cy, float rad, int r, int g, int b) {
         }
 }
 
+
+// 5x7 font for the progress screen: rows top to bottom, bit 4 = leftmost pixel
+static const char kGlyphChars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789%.-:/ ";
+static const uint8_t kGlyphs[][7] = {
+    {14,17,17,31,17,17,17},{30,17,17,30,17,17,30},{14,17,16,16,16,17,14},{30,17,17,17,17,17,30},
+    {31,16,16,30,16,16,31},{31,16,16,30,16,16,16},{14,17,16,23,17,17,15},{17,17,17,31,17,17,17},
+    {14,4,4,4,4,4,14},{7,2,2,2,2,18,12},{17,18,20,24,20,18,17},{16,16,16,16,16,16,31},
+    {17,27,21,21,17,17,17},{17,17,25,21,19,17,17},{14,17,17,17,17,17,14},{30,17,17,30,16,16,16},
+    {14,17,17,17,21,18,13},{30,17,17,30,20,18,17},{15,16,16,14,1,1,30},{31,4,4,4,4,4,4},
+    {17,17,17,17,17,17,14},{17,17,17,17,17,10,4},{17,17,17,21,21,21,10},{17,17,10,4,10,17,17},
+    {17,17,10,4,4,4,4},{31,1,2,4,8,16,31},
+    {14,17,19,21,25,17,14},{4,12,4,4,4,4,14},{14,17,1,2,4,8,31},{31,2,4,2,1,17,14},
+    {2,6,10,18,31,2,2},{31,16,30,1,1,17,14},{6,8,16,30,17,17,14},{31,1,2,4,8,8,8},
+    {14,17,17,14,17,17,14},{14,17,17,15,1,2,12},
+    {24,25,2,4,8,19,3},{0,0,0,0,0,12,12},{0,0,0,31,0,0,0},{0,12,12,0,12,12,0},{0,1,2,4,8,16,0},
+    {0,0,0,0,0,0,0},
+};
+
+static void fill(fb_t *fb, int x0, int y0, int w, int h, int r, int g, int b) {
+    for (int y = y0; y < y0 + h; y++)
+        for (int x = x0; x < x0 + w; x++) put(fb, x, y, r, g, b);
+}
+
+// centred text at scale `sc`; unknown characters draw as spaces
+static void text(fb_t *fb, const char *s, int cy, int sc, int r, int g, int b) {
+    int n = (int)strlen(s), w = n * 6 * sc - sc;
+    int x = (fb->w - w) / 2;
+    for (int i = 0; i < n; i++, x += 6 * sc) {
+        char c = s[i];
+        if (c >= 'a' && c <= 'z') c -= 32;
+        const char *p = strchr(kGlyphChars, c);
+        if (!p || !c) continue;
+        const uint8_t *gl = kGlyphs[p - kGlyphChars];
+        for (int row = 0; row < 7; row++)
+            for (int col = 0; col < 5; col++)
+                if (gl[row] & (16 >> col)) fill(fb, x + col * sc, cy + row * sc, sc, sc, r, g, b);
+    }
+}
+
+// the progress screen under the logo: title, bar, status line
+static void progress(fb_t *fb, const char *file) {
+    int pct = 0;
+    char status[96] = "";
+    FILE *f = fopen(file, "r");
+    if (f) {
+        if (fscanf(f, "%d %95[^\n]", &pct, status) < 1) pct = 0;
+        fclose(f);
+    }
+    if (pct < 0) pct = 0;
+    if (pct > 100) pct = 100;
+    const int bw = 280, bh = 8, bx = (fb->w - bw) / 2, by = (int)(fb->h * 0.80f);
+    fill(fb, 0, by - 40, fb->w, 80, 0, 0, 0);                         // clear the whole block
+    char title[48];
+    snprintf(title, sizeof title, "UPDATING FAKER36S-OS  %d%%", pct);
+    text(fb, title, by - 30, 2, 0xe6, 0xe2, 0xdc);
+    fill(fb, bx, by, bw, bh, 0x2c, 0x2f, 0x3a);                       // track
+    fill(fb, bx, by, bw * pct / 100, bh, 0xe6, 0xe2, 0xdc);            // filled part
+    text(fb, status, by + 20, 1, 0x8a, 0x91, 0xa3);
+}
+
 static double now_s(void) {
     struct timespec t;
     clock_gettime(CLOCK_MONOTONIC, &t);
@@ -95,6 +158,11 @@ static double now_s(void) {
 }
 
 int main(int argc, char **argv) {
+    const char *progress_file = NULL;
+    if (argc > 2 && strcmp(argv[1], "--progress") == 0) {
+        progress_file = argv[2];
+        argv += 2; argc -= 2;
+    }
     double limit = argc > 1 ? atof(argv[1]) : 20.0;
     const char *logo_path = argc > 2 ? argv[2] : "/usr/share/fakers36s/logo.bmp";
     signal(SIGTERM, on_signal);
@@ -128,6 +196,11 @@ int main(int argc, char **argv) {
     const float cx = fb.w / 2.0f, cy = fb.h * 0.79f, ring = 13.0f, dot = 2.4f;
     const double t0 = now_s();
     while (!stop && now_s() - t0 < limit) {
+        if (progress_file) {                                    // updater: bar instead of spinner
+            progress(&fb, progress_file);
+            usleep(250000);
+            continue;
+        }
         double t = now_s() - t0;
         float head = (float)fmod(t * 1.1, 1.0) * N;          // ~1.1 turns per second
         for (int i = 0; i < N; i++) {

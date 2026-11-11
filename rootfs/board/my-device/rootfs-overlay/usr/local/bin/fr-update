@@ -1,0 +1,144 @@
+#!/bin/sh
+# fr-update: install a FakeR36S-OS update package from HOME/update/ at boot (run as root by
+# /etc/init.d/S00update, before anything else starts). Made for updating without reflashing:
+# the web installer (or a file manager) puts fakers36s-update-*.tar in HOME/update/.
+#
+#   package: manifest.txt  (version, variant, sha256 of each part)
+#            boot.img      (kernel, written to the stock boot slot at sector 172032)
+#            rootfs.tar.gz (the system partition, extracted over /)
+#            home.tar.gz   (HOME defaults)
+#
+# What it keeps: everything of the player's. Saves, save states, retroarch.cfg values, per-core
+# configs and overrides, ES settings and input remaps, gamelists, art, BIOS, ports, apps.puppy.
+# HOME files the OS owns (launcher, Tools, es_systems.cfg, .romdirs, the gamepad autoconfig)
+# are replaced, the old copy kept as <file>.bak; any other HOME default is only added if
+# missing, and settings new to retroarch.cfg are appended without touching existing ones.
+# The package is deleted only after a full install, so a power cut means the next boot resumes.
+# Log: HOME/.config/fakers36s/update.log
+H=/home/player
+DIR=$H/update
+LOG=$H/.config/fakers36s/update.log
+DISK=/dev/mmcblk0
+BOOT_SECTOR=172032
+VARIANT_FILE=/etc/fakers36s-variant
+VERSION_FILE=/etc/fakers36s-version
+
+PKG=$(ls "$DIR"/fakers36s-update*.tar 2>/dev/null | head -n 1)
+[ -n "$PKG" ] || exit 0
+
+# the rootfs extraction replaces this very script: run from a copy in RAM
+if [ "$FR_UPDATE_COPY" != 1 ]; then
+    cp "$0" /tmp/fr-update && chmod +x /tmp/fr-update && FR_UPDATE_COPY=1 exec /tmp/fr-update "$@"
+fi
+
+mkdir -p "${LOG%/*}"
+# the update screen: logo, title, progress bar and the current step (fr-loading --progress)
+PROG=/tmp/fr-progress
+step() { echo "$1 $2" > "$PROG.new" && mv -f "$PROG.new" "$PROG"; }
+step 0 "Checking the update"
+killall fr-loading 2>/dev/null
+[ -x /usr/bin/fr-loading ] && setsid /usr/bin/fr-loading --progress "$PROG" 1800 </dev/null >/dev/null 2>&1 &
+log() { echo "$(date '+%F %T') $*" >> "$LOG"; }
+fail() {
+    log "FAILED: $*"; mkdir -p "$DIR/failed"; mv -f "$PKG" "$DIR/failed/" 2>/dev/null; sync
+    step 0 "Update failed: $* (see .config/fakers36s/update.log)"; sleep 10
+    killall fr-loading 2>/dev/null; exit 1
+}
+part() { tar -xOf "$PKG" "$1"; }
+
+log "=== update from ${PKG##*/}"
+
+# battery: don't start a system write on an almost empty battery without a charger
+cap=$(cat /sys/class/power_supply/axp20x-battery/capacity 2>/dev/null)
+usb=$(cat /sys/class/power_supply/axp20x-usb/online 2>/dev/null)
+if [ -n "$cap" ] && [ "$cap" -lt 20 ] && [ "$usb" != 1 ]; then
+    log "battery at $cap% and no charger: skipping this boot (charge it, or plug it in)"
+    exit 0
+fi
+
+part manifest.txt > /tmp/manifest.txt 2>/dev/null || fail "not an update package (no manifest.txt)"
+val() { sed -n "s/^$1=//p" /tmp/manifest.txt | head -n 1; }
+version=$(val version)
+variant=$(val variant)
+mine=$(cat "$VARIANT_FILE" 2>/dev/null || echo a23_panel2)
+[ "$variant" = "$mine" ] || fail "package is for $variant, this device is $mine"
+
+n=0
+for p in boot.img rootfs.tar.gz home.tar.gz; do
+    n=$((n + 1)); step $((n * 3)) "Checking the update ($n of 3)"
+    want=$(val "sha256_$p")
+    got=$(part "$p" | sha256sum | cut -d' ' -f1)
+    [ -n "$want" ] && [ "$got" = "$want" ] || fail "$p checksum mismatch (package damaged? copy it again)"
+done
+log "package $version verified"
+
+# 1. kernel, into the stock boot slot, read back to be sure
+step 12 "Writing the kernel"
+part boot.img > /tmp/boot.img || fail "could not read boot.img"
+size=$(wc -c < /tmp/boot.img)
+dd if=/tmp/boot.img of=$DISK bs=512 seek=$BOOT_SECTOR conv=fsync 2>/dev/null || fail "kernel write failed"
+back=$(dd if=$DISK bs=512 skip=$BOOT_SECTOR count=$(( (size + 511) / 512 )) 2>/dev/null | head -c "$size" | sha256sum | cut -d' ' -f1)
+[ "$back" = "$(sha256sum < /tmp/boot.img | cut -d' ' -f1)" ] || fail "kernel read-back mismatch"
+rm -f /tmp/boot.img
+log "kernel written"
+
+# 2. system partition; keep the device's own state (resize flags, saved brightness)
+mkdir -p /tmp/keep
+cp -a /etc/player-flags /var/lib/display /tmp/keep/ 2>/dev/null
+total=$(val files_rootfs); [ "${total:-0}" -gt 0 ] 2>/dev/null || total=5000
+step 15 "Installing system files"
+set -o pipefail 2>/dev/null
+part rootfs.tar.gz | gunzip -c | tar -xv -C / | {
+    i=0
+    while read -r _; do
+        i=$((i + 1))
+        [ $((i % 50)) = 0 ] && step $((15 + 70 * i / total)) "Installing system files: $i of $total"
+    done
+} || fail "system files could not be written"
+set +o pipefail 2>/dev/null
+rm -rf /etc/player-flags /var/lib/display
+cp -a /tmp/keep/player-flags /etc/ 2>/dev/null
+mkdir -p /var/lib && cp -a /tmp/keep/display /var/lib/ 2>/dev/null
+echo "$version" > "$VERSION_FILE"
+echo "$variant" > "$VARIANT_FILE"
+sync
+log "system files written"
+
+# 3. HOME defaults
+step 88 "Updating defaults (your settings stay)"
+OWNED=" .local/launcher.sh .emulationstation/es_systems.cfg .romdirs .config/retroarch/autoconfig/ga36-mb-gamepad.cfg "
+NEVER=" autolaunch "
+rm -rf /tmp/homedef && mkdir -p /tmp/homedef
+part home.tar.gz | gunzip -c | tar -x -C /tmp/homedef || fail "HOME defaults could not be read"
+cd /tmp/homedef || fail "no HOME defaults"
+find . -type f | sed 's#^\./##' | while IFS= read -r f; do
+    case "$NEVER" in *" $f "*) continue ;; esac
+    case "$f" in roms/*) continue ;; esac
+    dst=$H/$f
+    owned=0
+    case "$OWNED" in *" $f "*) owned=1 ;; esac
+    case "$f" in tools/*) owned=1 ;; esac
+    mkdir -p "$(dirname "$dst")"
+    if [ ! -e "$dst" ]; then
+        cp "$f" "$dst" && log "added $f"
+    elif [ $owned = 1 ] && ! cmp -s "$f" "$dst"; then
+        cp "$dst" "$dst.bak" && cp "$f" "$dst" && log "updated $f (old copy: $f.bak)"
+    elif [ "$f" = .config/retroarch/retroarch.cfg ]; then
+        added=0
+        while IFS= read -r line; do
+            key=$(printf '%s' "$line" | sed -n 's/^\([A-Za-z0-9_]*\) *=.*/\1/p')
+            [ -n "$key" ] || continue
+            grep -q "^$key *=" "$dst" || { echo "$line" >> "$dst"; added=$((added + 1)); }
+        done < "$f"
+        [ $added = 0 ] || log "retroarch.cfg: $added new settings added, yours unchanged"
+    fi
+done
+while IFS= read -r d; do [ -n "$d" ] && mkdir -p "$H/roms/$d"; done < "$H/.romdirs"
+cd / && rm -rf /tmp/homedef
+
+rm -f "$PKG"
+sync
+step 100 "Done. Restarting"
+log "=== FakeR36S-OS $version installed; rebooting"
+sleep 2
+reboot

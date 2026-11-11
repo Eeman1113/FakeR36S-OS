@@ -1016,3 +1016,17 @@ I wanted one place that tells the whole story, so here it is: every commit since
 
 - **Where things stand:** the build with the shutdown fixes (`7399902`) is running. When it's done, my card gets the system update and I can finally try the power menu and native Zelda.
 - **Not tested on the device yet:** the power menu, the Ports system, the shutdown watchdog, and the theme art built into the system.
+
+#### update · Updating without reflashing
+
+*Eeman1113* · fr-update, S00update, fr-loading progress mode, CI update package, web installer, tools/update-os.sh, README
+
+Reflashing every time and copying 11 GB of games back is not how I want to live, and it's definitely not how anyone else using this should have to. So now there's an update path that keeps everything.
+
+- **How it works:** the web installer (or you, by hand) drops `fakers36s-update-a23_panel2.tar` into `HOME/update/`. On the next boot, before anything else starts, `fr-update` checks it's for this board, verifies every checksum, writes the kernel (and reads it back to be sure), installs the system files and refreshes only the HOME files the OS owns. Then it restarts.
+- **What it never touches:** saves, save states, my RetroArch and per-core settings, button remaps, ES settings, gamelists, art, BIOS, ports. New defaults only get added where nothing exists, and new RetroArch settings are appended, never overwritten. It also knows not to bring back `autolaunch`, so the first-time setup doesn't run again.
+- **If something goes wrong:** it refuses to start under 20% battery without a charger, and the package is only deleted after a complete install, so a power cut just means it carries on next boot. Everything goes to `update.log`.
+- **The screen:** I didn't want a frozen logo for minutes, so the loading screen got a progress mode: my logo, "UPDATING FAKER36S-OS" with the percentage, a bar, and what it's doing right now ("Installing system files: 1830 of 4400"). It draws straight to the framebuffer with a tiny built-in font, so it works before anything else is running. I rendered a frame on my Mac to check it looks right.
+- **Also:** `tools/update-os.sh` for Mac and Linux people who'd rather write the system straight to the card, with the same keep-HOME guarantee.
+- **Not tested on the device yet:** the whole on-device update. The first real test is the next release, once this build is out.
+

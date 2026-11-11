@@ -123,6 +123,21 @@ Plug the card into your computer: the **HOME** partition mounts normally. Put RO
 
 Native PC games rebuilt for this handheld show up in EmulationStation under **Ports**. FakeR36S-OS uses the same layout as goodluckOS, so ports from [ga36-ports](https://github.com/rincewindcz/ga36-ports) (published at [ga36.genserek.net](https://ga36.genserek.net)) work as they are: unzip a port into the root of the HOME partition and it appears in Ports with its name, description and icon on the next start of EmulationStation. You can also drop your own `.sh` launchers into `roms/ports`. Ports run at full CPU speed and log to `.config/fakers36s/port.log`.
 
+## Updating (keeps your games and saves)
+
+Already running FakeR36S-OS? Don't reflash. Update instead, and everything of yours stays: games, saves and save states, RetroArch and per-core settings, button remaps, themes, box art, BIOS and ports.
+
+1. Open the [web installer](https://eeman1113.github.io/FakeR36S-OS/) and use **Already running FakeR36S-OS? Update instead** (Chrome or Edge). It puts the update package (`fakers36s-update-a23_panel2.tar`, from [Releases](https://github.com/Eeman1113/FakeR36S-OS/releases/latest)) on the card's HOME drive. Any browser works too: make a folder named `update` in the root of HOME and copy the package into it.
+2. Put the card back in the console and power on. Your logo stays up with an **Updating** progress bar while it installs (a few minutes), then it restarts into the new version.
+
+How it stays safe:
+- It checks the package was made for this board and verifies every part's checksum before writing anything.
+- It replaces only the system and the kernel, plus the few HOME files the OS owns (the launcher, Tools, `es_systems.cfg`), keeping the old copy as `.bak`. New defaults are only added where you have nothing, and new RetroArch settings are appended without changing yours.
+- It won't start below 20% battery without a charger, and the package is deleted only after a full install: if the power goes mid-update, the next boot picks it up again.
+- Every step is logged to `HOME/.config/fakers36s/update.log`.
+
+On macOS or Linux you can also write a new flashable image's system straight to the card with `sudo tools/update-os.sh fakers36s.img <disk>`; it refuses any disk without FakeR36S-OS's partition layout and never touches HOME.
+
 ## Box art and menu music
 
 The handheld has no WiFi, so box art is fetched from your computer while the card is plugged in. The easiest way is step 5 of the [web installer](https://eeman1113.github.io/FakeR36S-OS/) (Chrome or Edge): pick the card's HOME drive and it does the rest in your browser. Or use the script:

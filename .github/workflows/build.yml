@@ -114,6 +114,35 @@ jobs:
           gzip -9 -k goodluck_base_${{ env.VARIANT }}.img      # gzip: browsers decompress it natively (web installer)
           xz -T0 -6 goodluck_base_${{ env.VARIANT }}.img
           sha256sum goodluck_base_${{ env.VARIANT }}.img.* > SHA256SUMS.txt
+      - name: Update package (for devices already running FakeR36S-OS; installed at boot by fr-update)
+        run: |
+          mkdir -p upd && cd upd
+          cp ../dl/kernel/android_boot_${{ env.VARIANT }}.img boot.img
+          # the system files only: no device nodes, virtual filesystems, HOME or the device's own flags
+          python3 - ../dl/rootfs/rootfs.tar rootfs.tar.gz <<'PY'
+          import sys, tarfile
+          skip = ("dev/", "proc/", "sys/", "run/", "tmp/", "home/", "etc/player-flags/", "var/lib/display/")
+          count = 0
+          with tarfile.open(sys.argv[1]) as src, tarfile.open(sys.argv[2], "w:gz", compresslevel=6) as dst:
+              for m in src:
+                  n = m.name.lstrip("./") + ("/" if m.isdir() else "")
+                  if any(n.startswith(p) for p in skip) or n.rstrip("/") in ("dev", "proc", "sys", "run", "tmp", "home"):
+                      continue
+                  dst.addfile(m, src.extractfile(m) if m.isfile() else None)
+                  count += 1
+          open("files_rootfs.txt", "w").write(str(count))
+          PY
+          gzip -9 -c ../dl/home/home.tar > home.tar.gz
+          v=$(date -u +%Y.%m.%d)-$(git rev-parse --short HEAD)
+          {
+            echo "version=$v"
+            echo "variant=${{ env.VARIANT }}"
+            echo "files_rootfs=$(cat files_rootfs.txt)"
+            for f in boot.img rootfs.tar.gz home.tar.gz; do echo "sha256_$f=$(sha256sum $f | cut -d' ' -f1)"; done
+          } > manifest.txt
+          cat manifest.txt
+          tar -cf ../image/out/fakers36s-update-${{ env.VARIANT }}.tar manifest.txt boot.img rootfs.tar.gz home.tar.gz
+          ls -la ../image/out/
       - uses: actions/upload-artifact@v4
         with:
           name: FakeR36S-OS_base_${{ env.VARIANT }}
@@ -128,4 +157,6 @@ jobs:
           gh release view latest >/dev/null 2>&1 || \
             gh release create latest --title "FakeR36S-OS (latest build)" --latest \
               --notes "Base image for GA36-MB A23 (panel 2). Turn it into your flashable image with the web installer or tools/make-flashable.sh. No BIOS or games are included."
-          gh release upload latest goodluck_base_${{ env.VARIANT }}.img.gz goodluck_base_${{ env.VARIANT }}.img.xz SHA256SUMS.txt --clobber
+          sha256sum fakers36s-update-${{ env.VARIANT }}.tar >> SHA256SUMS.txt
+          gh release upload latest goodluck_base_${{ env.VARIANT }}.img.gz goodluck_base_${{ env.VARIANT }}.img.xz \
+            fakers36s-update-${{ env.VARIANT }}.tar SHA256SUMS.txt --clobber
