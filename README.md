@@ -121,7 +121,7 @@ Plug the card into your computer: the **HOME** partition mounts normally. Put RO
 
 ## Box art and menu music
 
-The handheld has no WiFi, so box art is fetched from your computer while the card is plugged in:
+The handheld has no WiFi, so box art is fetched from your computer while the card is plugged in. The easiest way is step 5 of the [web installer](https://eeman1113.github.io/FakeR36S-OS/) (Chrome or Edge): pick the card's HOME drive and it does the rest in your browser. Or use the script:
 
 ```sh
 python3 tools/fetch-art.py /Volumes/HOME        # macOS

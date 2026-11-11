@@ -1,0 +1,105 @@
+{
+ "nes": [
+  "Nintendo_-_Nintendo_Entertainment_System"
+ ],
+ "famicom": [
+  "Nintendo_-_Nintendo_Entertainment_System",
+  "Nintendo_-_Family_Computer_Disk_System"
+ ],
+ "snes": [
+  "Nintendo_-_Super_Nintendo_Entertainment_System"
+ ],
+ "sfc": [
+  "Nintendo_-_Super_Nintendo_Entertainment_System"
+ ],
+ "n64": [
+  "Nintendo_-_Nintendo_64"
+ ],
+ "gb": [
+  "Nintendo_-_Game_Boy"
+ ],
+ "gbc": [
+  "Nintendo_-_Game_Boy_Color"
+ ],
+ "gba": [
+  "Nintendo_-_Game_Boy_Advance"
+ ],
+ "virtualboy": [
+  "Nintendo_-_Virtual_Boy"
+ ],
+ "pokemini": [
+  "Nintendo_-_Pokemon_Mini"
+ ],
+ "megadrive": [
+  "Sega_-_Mega_Drive_-_Genesis"
+ ],
+ "mastersystem": [
+  "Sega_-_Master_System_-_Mark_III"
+ ],
+ "gamegear": [
+  "Sega_-_Game_Gear"
+ ],
+ "sg-1000": [
+  "Sega_-_SG-1000"
+ ],
+ "segacd": [
+  "Sega_-_Mega-CD_-_Sega_CD"
+ ],
+ "pcengine": [
+  "NEC_-_PC_Engine_-_TurboGrafx_16"
+ ],
+ "pcenginecd": [
+  "NEC_-_PC_Engine_CD_-_TurboGrafx-CD"
+ ],
+ "supergrafx": [
+  "NEC_-_PC_Engine_SuperGrafx"
+ ],
+ "psx": [
+  "Sony_-_PlayStation"
+ ],
+ "psp": [
+  "Sony_-_PlayStation_Portable"
+ ],
+ "ngp": [
+  "SNK_-_Neo_Geo_Pocket"
+ ],
+ "ngpc": [
+  "SNK_-_Neo_Geo_Pocket_Color"
+ ],
+ "wonderswan": [
+  "Bandai_-_WonderSwan"
+ ],
+ "wonderswancolor": [
+  "Bandai_-_WonderSwan_Color"
+ ],
+ "atari2600": [
+  "Atari_-_2600"
+ ],
+ "atari7800": [
+  "Atari_-_7800"
+ ],
+ "atarilynx": [
+  "Atari_-_Lynx"
+ ],
+ "odyssey2": [
+  "Magnavox_-_Odyssey2"
+ ],
+ "intellivision": [
+  "Mattel_-_Intellivision"
+ ],
+ "coleco": [
+  "Coleco_-_ColecoVision"
+ ],
+ "msx": [
+  "Microsoft_-_MSX"
+ ],
+ "msx2": [
+  "Microsoft_-_MSX2"
+ ],
+ "zxspectrum": [
+  "Sinclair_-_ZX_Spectrum"
+ ],
+ "amstradcpc": [
+  "Amstrad_-_CPC"
+ ]
+}

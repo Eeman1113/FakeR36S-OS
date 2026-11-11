@@ -111,6 +111,18 @@ sudo dd if=/dev/sdb of=stock_backup.img bs=4M status=progress</pre></details>
       games partition. Then copy your games to the HOME partition, in <code>roms/&lt;system&gt;/</code>.</p>
   </section>
 
+  <section class="step" id="s5">
+    <h2><span class="num">5</span> Add box art automatically</h2>
+    <p>Plug the card back into this computer and pick its <b>HOME</b> drive. Every game without art gets box art
+      from the <a href="https://github.com/libretro-thumbnails/libretro-thumbnails">libretro thumbnail library</a>,
+      added straight to EmulationStation. Art you already have is left alone.</p>
+    <button id="artBtn">Choose the HOME drive</button>
+    <progress id="artProg" class="hidden" max="1" value="0"></progress>
+    <div class="status" id="artStatus"></div>
+    <p class="muted" id="artFallback">For menu music, drop <code>.mp3</code> or <code>.ogg</code> files into
+      <code>roms/bgmusic</code>.</p>
+  </section>
+
   <footer>
     <p>No BIOS files or games are included. Use your own legally obtained copies.</p>
     <p>FakeR36S-OS by Eeman1113 (EemanSleepDeeprived), built on
@@ -122,6 +134,7 @@ sudo dd if=/dev/sdb of=stock_backup.img bs=4M status=progress</pre></details>
 
 <script type="module">
 import { identifyBoard, fetchBase, baseFromFile, buildImage } from "./installer.js";
+import { fetchArt, supported as artSupported } from "./art.js";
 
 const $ = (id) => document.getElementById(id);
 let stock = null;
@@ -181,6 +194,31 @@ $("build").addEventListener("click", async () => {
     say($("buildStatus"), "warn", "Automatic download failed (" + err.message + ").");
     $("manual").classList.remove("hidden");
   }
+});
+
+if (!artSupported()) {
+  $("artBtn").disabled = true;
+  say($("artStatus"), "warn", `This browser can't write to drives. Use Chrome or Edge, or run
+    <code>python3 tools/fetch-art.py /Volumes/HOME</code> from the
+    <a href="https://github.com/Eeman1113/FakeR36S-OS">repo</a>.`);
+}
+$("artBtn").addEventListener("click", async () => {
+  let home;
+  try { home = await window.showDirectoryPicker({ id: "fakers36s-home", mode: "readwrite" }); }
+  catch { return; }
+  $("artBtn").disabled = true; $("artProg").classList.remove("hidden");
+  try {
+    const r = await fetchArt(home, (text, done, total) => {
+      say($("artStatus"), "", text);
+      if (total) { $("artProg").max = total; $("artProg").value = done; }
+    });
+    $("s5").classList.add("done");
+    say($("artStatus"), "ok", `Done: ${r.added} box arts added${r.missing ? `, ${r.missing} games had no match` : ""}.
+      Eject the card safely, then put it back in the handheld.`);
+  } catch (err) {
+    say($("artStatus"), "bad", err.message);
+  }
+  $("artProg").classList.add("hidden"); $("artBtn").disabled = false;
 });
 
 $("baseFile").addEventListener("change", async (e) => {
