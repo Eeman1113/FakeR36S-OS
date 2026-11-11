@@ -14,9 +14,10 @@ PARALLEL_N64_LICENSE = GPL-2.0
 PARALLEL_N64_LICENSE_FILES = COPYING
 PARALLEL_N64_DEPENDENCIES = mesa3d zlib
 
+# GCC 15 defaults C to gnu23 (bool keyword etc.); this core is older C
 define PARALLEL_N64_BUILD_CMDS
 	$(TARGET_MAKE_ENV) $(MAKE) -C $(@D) platform=classic_armv7_a7 \
-		CC="$(TARGET_CC)" CXX="$(TARGET_CXX)" AR="$(TARGET_AR)"
+		CC="$(TARGET_CC) -std=gnu17" CXX="$(TARGET_CXX)" AR="$(TARGET_AR)"
 endef
 
 define PARALLEL_N64_INSTALL_TARGET_CMDS

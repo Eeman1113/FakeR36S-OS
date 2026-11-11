@@ -14,7 +14,11 @@ EMULATIONSTATION_FCAMOD_LICENSE = MIT
 EMULATIONSTATION_FCAMOD_LICENSE_FILES = LICENSE.md
 EMULATIONSTATION_FCAMOD_DEPENDENCIES = sdl2 sdl2_mixer freetype fr-freeimage libcurl vlc rapidjson alsa-lib mesa3d libdrm
 
-EMULATIONSTATION_FCAMOD_CONF_OPTS = -DGLES=ON -DCMAKE_BUILD_TYPE=Release
+# CMake 4 rejects cmake_minimum_required(VERSION 2.8): accept it.
+# GCC 15 no longer pulls <cstdint> in transitively: include it for this older C++11 code.
+EMULATIONSTATION_FCAMOD_CONF_OPTS = -DGLES=ON -DCMAKE_BUILD_TYPE=Release \
+	-DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+	-DCMAKE_CXX_FLAGS="$(TARGET_CXXFLAGS) -include cstdint -fpermissive"
 
 # ES writes its binary into the source tree and loads resources/ from beside it.
 EMULATIONSTATION_FCAMOD_INSTALL_DIR = /usr/lib/emulationstation

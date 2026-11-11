@@ -53,9 +53,10 @@ define LIBRETRO_CORES_RUN_FETCH
 endef
 LIBRETRO_CORES_POST_EXTRACT_HOOKS += LIBRETRO_CORES_RUN_FETCH
 
+# CC gets -std=gnu17: GCC 15 defaults C to gnu23, which breaks many older cores
 define LIBRETRO_CORES_BUILD_CMDS
 	cd $(@D) && \
-		CC="$(TARGET_CC)" \
+		CC="$(TARGET_CC) -std=gnu17" \
 		CXX="$(TARGET_CXX)" \
 		AR="$(TARGET_AR)" \
 		CFLAGS="$(TARGET_CFLAGS)" \
@@ -69,6 +70,7 @@ define LIBRETRO_CORES_BUILD_CMDS
 	cd $(@D)/libretro-mgba/build && \
 		$(HOST_DIR)/bin/cmake .. \
 			-DCMAKE_TOOLCHAIN_FILE=$(HOST_DIR)/share/buildroot/toolchainfile.cmake \
+			-DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
 			-DCMAKE_BUILD_TYPE=Release \
 			-DBUILD_LIBRETRO=ON \
 			-DBUILD_SDL=OFF \
