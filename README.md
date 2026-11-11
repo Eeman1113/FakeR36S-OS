@@ -152,6 +152,8 @@ FakeR36S-OS stands on the shoulders of people who did the hard work first. Huge 
 - **[Mesa](https://mesa3d.org)** and its **Lima** driver for the Mali-400 GPU.
 - **[SDL](https://libsdl.org)** and **[Dear ImGui](https://github.com/ocornut/imgui)** (Omar Cornut), which the
   dashboard and the boot splash are built with.
+- **[Batocera](https://github.com/batocera-linux/batocera.linux)**: the Buildroot recipe and patches for the
+  FreeImage library that EmulationStation needs.
 - **[Inter](https://rsms.me/inter/)** by Rasmus Andersson (OFL), the UI font.
 
 ### The detectives

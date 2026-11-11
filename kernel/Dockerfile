@@ -11,7 +11,9 @@ ENV ARCH=arm
 ENV CROSS_COMPILE=arm-linux-gnueabihf-
 
 WORKDIR /src
-RUN git clone --depth=1 -b v7.2.9 https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
+# cdn.kernel.org tarball with retries: git.kernel.org clones can drop mid-transfer on CI runners
+RUN wget -q --tries=5 --waitretry=10 --retry-connrefused https://cdn.kernel.org/pub/linux/kernel/v7.x/linux-7.2.9.tar.xz && \
+    tar -xf linux-7.2.9.tar.xz && mv linux-7.2.9 linux && rm linux-7.2.9.tar.xz
 
 WORKDIR /src/linux
 

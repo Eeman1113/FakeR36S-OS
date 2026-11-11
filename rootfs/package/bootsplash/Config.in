@@ -1,6 +1,7 @@
 config BR2_PACKAGE_BOOTSPLASH
 	bool "bootsplash"
-	depends on BR2_PACKAGE_SDL2
+	depends on BR2_INSTALL_LIBSTDCPP
+	select BR2_PACKAGE_SDL2
 	select BR2_PACKAGE_IMGUI
 	help
 	  FakeR36S-OS animated boot splash with chime.
