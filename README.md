@@ -119,6 +119,19 @@ Plug the card into your computer: the **HOME** partition mounts normally. Put RO
 (folder names match the stock card: `nes`, `snes`, `gba`, `n64`, `psx`, `megadrive`, ...) and BIOS files in
 `.config/retroarch/system/`. Game saves (`.srm`) go next to the ROMs, as on the stock firmware.
 
+## Box art and menu music
+
+The handheld has no WiFi, so box art is fetched from your computer while the card is plugged in:
+
+```sh
+python3 tools/fetch-art.py /Volumes/HOME        # macOS
+python3 tools/fetch-art.py /media/$USER/HOME    # Linux
+```
+
+It matches every ROM on the card against the free [libretro thumbnail library](https://thumbnails.libretro.com), saves 320px box art next to your games and adds it to EmulationStation's gamelists. Games that already have art (for example gamelists and images copied from your old card) are left alone. Use `--system gba` for one console or `--dry-run` to preview.
+
+For menu music, drop `.mp3` or `.ogg` files into `roms/bgmusic` on the card. The EPIC-CODY theme's per-system sounds are built in.
+
 ## Building
 GitHub Actions builds everything (kernel, Buildroot rootfs, home, base image) on every push to `main`.
 See [BUILD.md](BUILD.md) to build locally with Docker.
@@ -141,6 +154,7 @@ FakeR36S-OS stands on the shoulders of people who did the hard work first. Huge 
 - **[EmulationStation fcamod](https://github.com/christianhaitian/EmulationStation-fcamod)** and
   **[ArkOS](https://github.com/christianhaitian/arkos)** by **christianhaitian**: the frontend, and the OS whose
   look and feel FakeR36S-OS aims for.
+- **[libretro-thumbnails](https://github.com/libretro-thumbnails/libretro-thumbnails)** and its contributors, for the box art library `tools/fetch-art.py` downloads from.
 - **[RetroArch](https://github.com/libretro/RetroArch)** and the **[libretro](https://www.libretro.com)** team,
   plus the authors of every core: FCEUmm, Nestopia, Snes9x 2005 / 2010, ParaLLEl N64, Gambatte, gpSP, mGBA,
   PicoDrive, Genesis Plus GX, Beetle (Mednafen) PCE / SuperGrafx / NeoPop / WonderSwan / VB, PCSX ReARMed,
