@@ -79,6 +79,10 @@ jobs:
             fr36s-builder bash -c "/src/scripts/configure.sh && /src/scripts/build.sh -j$(nproc)"
           ls -la out/images
           df -h /
+      - name: Make caches readable for actions/cache
+        if: always()
+        working-directory: rootfs
+        run: sudo chown -R "$(id -u):$(id -g)" ccache dl 2>/dev/null || true
       - uses: actions/upload-artifact@v4
         with:
           name: rootfs

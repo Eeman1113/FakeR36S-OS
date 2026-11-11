@@ -48,6 +48,10 @@ LIBRETRO_MAJOR_CORES_LIST = \
 CMAKE_LIBRETRO_CORES_LIST = \
 	mgba
 
+# core:makefile, rebuilt for the Cortex-A7 after the generic pass
+ARM_A7_LIBRETRO_CORES = gpsp:Makefile picodrive:Makefile.libretro vecx:Makefile.libretro
+
+
 
 define LIBRETRO_CORES_RUN_FETCH
 	cd $(@D) && ./libretro-fetch.sh $(LIBRETRO_MAJOR_CORES_LIST)
@@ -86,6 +90,16 @@ define LIBRETRO_CORES_BUILD_CMDS
 
 	mkdir -p $(@D)/dist/unix
 	cp $(@D)/libretro-mgba/build/mgba_libretro.so $(@D)/dist/unix/mgba_libretro.so
+
+	# platform=unix makes these Makefiles detect the BUILD host (x86) and emit x86 code.
+	# classic_armv7_a7 = Cortex-A7 NEON hard-float (SNES Classic), same CPU as the A23.
+	# Best effort: a failure here must not break the OS build.
+	$(foreach c,$(ARM_A7_LIBRETRO_CORES),\
+		( $(TARGET_MAKE_ENV) $(MAKE) -C $(@D)/libretro-$(word 1,$(subst :, ,$(c))) \
+			-f $(word 2,$(subst :, ,$(c))) platform=classic_armv7_a7 \
+			CC="$(TARGET_CC) -std=gnu17" CXX="$(TARGET_CXX)" AR="$(TARGET_AR)" \
+		&& cp $(@D)/libretro-$(word 1,$(subst :, ,$(c)))/$(word 1,$(subst :, ,$(c)))_libretro.so $(@D)/dist/unix/ ) \
+		|| echo "FakeR36S-OS: core $(c) did not build";$(sep))
 endef
 
 define LIBRETRO_CORES_INSTALL_TARGET_CMDS
