@@ -15,11 +15,13 @@ WORKDIR /workspace
 
 ARG VARIANT
 
-RUN truncate -s 1G "goodluck_${VARIANT}.img" && \
+# FakeR36S-OS: the system partition holds EmulationStation, VLC, RetroArch and ~30 cores,
+# far more than goodluckOS's 384 MiB. 1.4 GiB system, HOME grows to fill the card on first boot.
+RUN truncate -s 2G "goodluck_${VARIANT}.img" && \
     parted -a optimal -s "goodluck_${VARIANT}.img" \
     mklabel msdos \
-    mkpart primary ext4 128MiB 512MiB \
-    mkpart primary fat32 512MiB 100%
+    mkpart primary ext4 128MiB 1536MiB \
+    mkpart primary fat32 1536MiB 100%
 
 RUN dd if=/dev/zero of="goodluck_${VARIANT}.img" bs=512 skip=1 seek=1 count=262143 conv=notrunc
 
