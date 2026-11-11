@@ -4,7 +4,9 @@
 #
 ################################################################################
 
-LIBRETRO_CORES_VERSION = master
+# Buildroot 2026 can't resolve a branch name as a git version: pin libretro-super's current commit.
+# (The cores themselves are still fetched at their latest master by libretro-fetch.sh.)
+LIBRETRO_CORES_VERSION = f7786ec5db34c5dcba15b96712e7211021ed4b7b
 LIBRETRO_CORES_SITE = https://github.com/libretro/libretro-super.git
 LIBRETRO_CORES_SITE_METHOD = git
 LIBRETRO_CORES_LICENSE = Various (GPL-2.0+, MIT, Non-Commercial)
