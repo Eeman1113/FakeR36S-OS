@@ -174,7 +174,7 @@ show_loading() {
     printf '\033[2J\033[H\033[?25l' >"$CONSOLE" 2>/dev/null
     killall fr-loading 2>/dev/null
     if [ -x /usr/bin/fr-loading ]; then
-        setsid /usr/bin/fr-loading 20 </dev/null >/dev/null 2>&1 &
+        ( exec 3<&-; setsid /usr/bin/fr-loading 20 </dev/null >/dev/null 2>&1 & )
     fi
 }
 do_launch() {

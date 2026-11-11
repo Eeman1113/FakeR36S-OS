@@ -157,7 +157,9 @@ if [ "$MKFS_RC" -ne 0 ]; then
     exit 1
 fi
 
-if ! mount "$PART" "$MOUNT_POINT" 2>>"$LOG"; then
+# same options as /etc/fstab: without uid/gid the player user cannot write HOME
+# for the rest of this boot (ES log, saves, save states, glos-setup all fail)
+if ! mount -t vfat -o rw,uid=1000,gid=1000,umask=022 "$PART" "$MOUNT_POINT" 2>>"$LOG"; then
     log "ERROR: mount failed after reformat"
     exit 1
 fi

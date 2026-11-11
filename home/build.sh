@@ -23,6 +23,7 @@ mkdir -p overlay/roms/segacd/icons
 while read -r d; do [ -n "$d" ] && mkdir -p "overlay/roms/$d"; done < overlay/.romdirs
 mkdir -p overlay/tools
 mkdir -p overlay/.config/retroarch/cores
+mkdir -p overlay/.config/retroarch/states overlay/.config/retroarch/saves
 
 rm -rf staging
 rm -rf out/*

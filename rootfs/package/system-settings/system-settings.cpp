@@ -205,22 +205,8 @@ int main(int argc, char* argv[]) {
             set_alsa_mute(current_mute);
         }
 
-        if (ImGui::Button("System Settings")) {
-            // CPU Governer [select box]
-            // CPU info [label]
-            // Ram info [label]
-            // Show free space on SD card
-            // Maybe move this to a dedicated System Info app?
-        }
-        if (ImGui::Button("Input Settings")) {
-            // Swap A/B [toggle]
-            // Input Tester (maybe this should be it's own app?)
-        }
-        if (ImGui::Button("Date/Time")) {
-            // Set date
-            // Set Time
-        }
-
+        // FakeR36S-OS: removed the unimplemented "System Settings", "Input Settings" and
+        // "Date/Time" placeholder buttons (they had no code behind them upstream yet).
         ImGui::Spacing();
         if (ImGui::Button("Exit Application")) {
             running = false;
