@@ -1030,3 +1030,9 @@ Reflashing every time and copying 11 GB of games back is not how I want to live,
 - **Also:** `tools/update-os.sh` for Mac and Linux people who'd rather write the system straight to the card, with the same keep-HOME guarantee.
 - **Not tested on the device yet:** the whole on-device update. The first real test is the next release, once this build is out.
 
+#### tools-theme · Two "Ports" in the menu
+
+*Eeman1113* · home/overlay/.emulationstation/es_systems.cfg
+
+Booted the update and laughed: two Ports in the system list. The Tools system (Dashboard, Settings, Power Off...) was borrowing EPIC-CODY's Ports artwork, which was fine until real Ports showed up next to it. Tools now uses the theme's "Options / System Configuration" look, the same idea as ArkOS's options menu.
+
