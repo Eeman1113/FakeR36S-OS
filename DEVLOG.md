@@ -1063,3 +1063,11 @@ Did a bit from the office today.
 
 Meanwhile on the handheld: native Zelda runs flawlessly, which honestly made my day. Still to fix there: quitting with Select+Start and the FPS toggle (both in the port's next build), save states surviving a power off, and the dashboard not opening.
 
+#### app-log · Seeing why the Options apps bounce
+
+*Eeman1113* · home/overlay/.local/launcher.sh
+
+Every Options entry (Dashboard, Settings, Power Off, Puppy) flashes the loading screen and drops me back. They all start through appctl, which only keeps their output in RAM, so after a reboot there was nothing to look at. Now the launcher copies that output to `.config/fakers36s/last-app.log` every time EmulationStation comes back, so the next bounce leaves a trace I can read on my Mac.
+
+Meanwhile, the good news: native Zelda keeps running great, and its new build can finally quit with Select+Start and show FPS with Select+B.
+
