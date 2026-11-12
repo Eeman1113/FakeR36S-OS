@@ -1071,3 +1071,11 @@ Every Options entry (Dashboard, Settings, Power Off, Puppy) flashes the loading 
 
 Meanwhile, the good news: native Zelda keeps running great, and its new build can finally quit with Select+Start and show FPS with Select+B.
 
+#### options-fix · The Options apps were never allowed to start
+
+*Eeman1113* · home/overlay/tools/*.sh
+
+Found it, and it was one word. ES's log had `appd: daemon is not running` every time I opened an Options entry, even though appd was obviously running (it's what started ES). Before sending a launch request, `appctl` checks the daemon with `kill -0`, and the daemon runs as root while the Options scripts run as me. A normal user isn't allowed to signal a root process, even just to ask if it exists, so appctl decided the daemon was dead and gave up. goodluckOS's own launcher runs `doas appctl`; my Tools scripts didn't. Now Dashboard, Settings, Puppy, Reboot and Power Off all go through `doas`, which `doas.conf` already allowed.
+
+Also on the card today: the Zelda build with save states that live on the card and survive a power off. First time it's on real hardware.
+
