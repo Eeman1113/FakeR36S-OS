@@ -7,6 +7,22 @@ A fast, clean, ArkOS-style OS: EmulationStation, RetroArch, N64, auto-scaling, l
 > chip is an **Allwinner A23/A33** (often laser-marked "RK3326"), ArkOS, dArkOS, ArkOS4Clone and ROCKNIX
 > **cannot** run on it, because they need a real Rockchip RK3326. This OS is built for that board.
 
+## See it running
+
+<p align="center">
+  <a href="https://youtube.com/shorts/fhvOIFSZ6Z4">
+    <img src="docs/demo-thumb.jpg" width="300"
+         alt="FakeR36S-OS running on a GA36-MB handheld">
+  </a>
+</p>
+
+<p align="center">
+EmulationStation, the system dashboard, and <b>Ocarina of Time running natively at around 40 FPS</b><br>
+through <a href="https://github.com/Eeman1113/FakeR36S-Ocarina">FakeR36S-Ocarina</a>
+(Ship of Harkinian, a native port, not an emulator).<br>
+<a href="https://youtube.com/shorts/fhvOIFSZ6Z4">Watch the video</a>
+</p>
+
 ## Features
 - **ArkOS-style frontend**: EmulationStation (fcamod, the ArkOS fork), EPIC-CODY theme, boots straight into it
 - **43 systems, best core preselected for the A23**: NES, SNES, **N64** (ParaLLEl, dynarec), GB/GBC/GBA,
