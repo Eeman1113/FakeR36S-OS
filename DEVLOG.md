@@ -1079,3 +1079,13 @@ Found it, and it was one word. ES's log had `appd: daemon is not running` every 
 
 Also on the card today: the Zelda build with save states that live on the card and survive a power off. First time it's on real hardware.
 
+#### zelda-states · Save states that survive turning it off
+
+*Eeman1113* · [FakeR36S-Ocarina](https://github.com/Eeman1113/FakeR36S-Ocarina)
+
+I saved a state in native Zelda, quit, shut the console down, turned it back on, pressed Select+L1, and I was standing exactly where I left. On a two core A23. I'm genuinely so happy about this one.
+
+Ship of Harkinian's save states are a raw copy of game memory, which is full of pointers that change every launch, so they normally die with the process. To make them portable, the game's heaps now sit at fixed addresses, the binary is built non-PIE, and every block of memory an asset is built in gets recorded, so a pointer into Link's skeleton or a room's collision can be written as "asset, block, offset" and rebuilt after a restart. States go to the card in the background, the autosave every 30 seconds and when I quit with Select+Start, and the first Select+X after a restart resumes the last session.
+
+It took three tries on the real thing: the first build hung on quit (a condition variable destroyed while a thread still slept on it), and the second refused every state because a failed "alt asset" lookup had been tagged as part of a real asset. My own logs found both. Also new today: the Options apps finally open (they needed `doas`), and seven new GBA RPGs on the card, including Pokemon Heart & Soul.
+
