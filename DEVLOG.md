@@ -1045,3 +1045,9 @@ First real morning with the update on the card. The system update itself went sm
 - **Some system jingles were silent.** ES's log was full of "Unrecognized audio format" for the theme's MP3s. Buildroot builds SDL2_mixer with MP3 switched off, and EPIC-CODY lists `.ogg` then `.mp3` while this ES takes the last match, so even systems with an OGG fell on the MP3. SDL2_mixer's own built-in MP3 decoder is now switched back on (no extra library), which also makes MP3 menu music in `roms/bgmusic` work like the README promises. On my card I converted the 26 MP3 jingles to OGG in the meantime.
 - **Zelda sat on the loading screen.** Before extracting, the port searched my whole 11 GB games partition for an N64 ROM, which takes forever on this SD card. FakeR36S-Ocarina now looks in HOME and `roms/n64` first.
 
+#### dashboard-launch · The dashboard that wouldn't stay open
+
+*Eeman1113* · rootfs/package/dashboard, tools/System Dashboard.sh
+
+Opened the System Dashboard from Options and it flashed the loading screen and dropped me straight back. It runs fine on my Mac, so it's something about the handheld. Best guess: the dashboard closes on B, Start or Select, and on this pad the physical A button can come through as SDL's "B", so the press that launched it could close it right away. Now it ignores buttons for the first 0.7 s and only quits on a press it saw start, and anything it prints goes to `.config/fakers36s/dashboard.log` so I can actually see what happened if it's something else.
+

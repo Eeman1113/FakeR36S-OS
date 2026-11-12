@@ -150,13 +150,19 @@ static void meter(const char* label, float frac, const char* text) {
 }
 
 int main(int, char**) {
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) != 0) return -1;
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) != 0) {
+        fprintf(stderr, "dashboard: SDL_Init failed: %s\n", SDL_GetError());
+        return -1;
+    }
     const bool snapshot_mode = getenv("DASHBOARD_SNAPSHOT") != nullptr;
     SDL_Window* window = SDL_CreateWindow("Dashboard", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                                           640, 480, snapshot_mode ? SDL_WINDOW_HIDDEN : (SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI));
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
     if (!renderer) renderer = SDL_CreateRenderer(window, -1, 0);   // fall back to any renderer (software)
-    if (!renderer) return -1;
+    if (!renderer) {
+        fprintf(stderr, "dashboard: no renderer: %s\n", SDL_GetError());
+        return -1;
+    }
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -208,13 +214,21 @@ int main(int, char**) {
 
     Uint32 next_sample = 0;
     bool running = true;
+    // The press that launched us (A, which this pad may report as SDL "B") can still arrive after
+    // start-up: ignore buttons for a moment, and only quit on a button that was seen going down here.
+    const Uint32 started = SDL_GetTicks();
+    bool armed[SDL_CONTROLLER_BUTTON_MAX] = {};
     while (running) {
         SDL_Event e;
         if (SDL_WaitEventTimeout(&e, 250)) {
             do {
                 ImGui_ImplSDL2_ProcessEvent(&e);
                 if (e.type == SDL_QUIT) running = false;
-                if (e.type == SDL_CONTROLLERBUTTONDOWN &&
+                if (e.type == SDL_CONTROLLERBUTTONDOWN && SDL_GetTicks() - started > 700 &&
+                    e.cbutton.button < SDL_CONTROLLER_BUTTON_MAX)
+                    armed[e.cbutton.button] = true;
+                if (e.type == SDL_CONTROLLERBUTTONUP && e.cbutton.button < SDL_CONTROLLER_BUTTON_MAX &&
+                    armed[e.cbutton.button] &&
                     (e.cbutton.button == SDL_CONTROLLER_BUTTON_B ||
                      e.cbutton.button == SDL_CONTROLLER_BUTTON_START ||
                      e.cbutton.button == SDL_CONTROLLER_BUTTON_BACK)) running = false;
