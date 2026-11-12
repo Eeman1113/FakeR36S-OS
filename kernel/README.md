@@ -1,45 +1,94 @@
-# goodluckOS Kernel
-This is the goodluckOS Linux kernel.
+# The FakeR36S-OS kernel
 
-## Drivers
-Two drivers have been written via reverse-engineering to support the entirely undocumented Display and Gamepad peripherals.
+Mainline **Linux 7.2.9** for the GA36-MB board, plus the two drivers the hardware cannot run without,
+three small patches, and the device trees. Built in a container, so nothing needs to be installed
+locally beyond Docker or Podman.
 
-### The Display
-The display was a complete nightmare to figure out. 
+```sh
+./build.sh          # kernel/out/
+```
 
-I've spent around 100 hours on just this driver, but I think it's finally in a state where I can say it's ship-worthy.
+## What comes out
 
-The script.bin file (a primitive device-tree alternative) contained reference to a jd9366_8inch as lcd0. I found a simple jd9366 driver online. It's basically boilerplate MIPI-DSI. I set it all up, compiled, booted, and the display wouldn't initialize. Turn out I needed the specific initialization sequence to get the panel to do anything. There's basically zero specific markings anywhere on the display to indicate what it actually is (I doubt it's an actual jd9366_8inch. The actual display is 3.5 inches).
+| File | What it is |
+|---|---|
+| `android_boot_a23_panel2.img` | the variant this project is built and tested for |
+| `android_boot_a23_panel1.img` | other A23 panel, untested |
+| `android_boot_a33_panel{1,2}.img` | A33 boards, better served by goodluckOS upstream |
+| `dtb/*.dtb` | the device trees on their own |
+| `kernel_config.txt` | the kernel config the build used |
 
-The `init sequence` was eventually discovered by pulling the original linux 3.4 compiled kernel module (lcd.ko) from the original firmware and analyzing it with Ghidra.
-Thankfully the dorks who compiled the original firmware left debug symbols on, so REing was not nearly as difficult as it should have been. Within a few hours I had my init sequence.
+Each boot image is a zImage with its DTB appended, wrapped as an Android boot image, which is what
+the vendor U-Boot expects to find at sector 172032.
 
-Some slight modifications were made to get the jd9366 driver to work on linux 6.12 (and eventually 7.2), I inserted the init sequence and boom: we had pixels.
+Only `a23_panel2` is built in CI. Pick your variant from the board, or from **System Information →
+CPU NUMBER** in the stock firmware: 2 means A23, 4 means A33.
 
-This got the display up, but only about 90% of the time. The remaining 10% of the time the display would fail to initialize. 
+## What this kernel adds on top of mainline
 
-I added debug statements everywhere, and the kernel logs would either tell me the device was offline, or the MIPI d-phy was unavailable.
+### Device trees (`dts/`)
 
-This was almost certainly the result of the bootloader initializing the display, pushing pixels, and then not doing any kind of cleanup before handing it off the to the linux kernel.
-90% of the time the display was in a functional-enough state to allow the kernel to run the probe/prepare in the driver, but other times it wasn't. 
+`ga36mb.dtsi` carries the parts shared by every variant, with `ga36mb-a23.dtsi` and
+`ga36mb-a33.dtsi` on top and a thin `.dts` per panel.
 
-I then spent about four straight days debugging, adding `dev_info` calls to every concevable file in the linux source that touches mipi/dsi/dcs/drm, but nothing gave any kind of indication of why the failure was happening, only that the display was not responding.
+The A23 file is where most of the FakeR36S-OS work lives:
 
-So as it turns out: my driver was assuming the device would be powered off by the time it was initialized, it wasn't doing any kind of hardware reset beyond the standard reset-pin toggle, which wasn't enough with the display in it's weird state left over by the bootloader.
+- **A CPU frequency table.** Mainline `sun8i-a23.dtsi` has no OPP table at all, so without this the
+  CPU sits at whatever the bootloader left it at, 1008 MHz, forever. The points are transcribed from
+  this board's own `script.bin` `[dvfs_table]`: 648 MHz at 1.04 V, 816 MHz at 1.10 V, 1008 MHz at
+  1.20 V, and 1200 MHz at 1.32 V marked `turbo-mode` so it is only used when boost is switched on.
+  The vendor's 1344 and 1536 MHz "extremity" points are deliberately left out. Nothing runs at a
+  voltage the manufacturer was not already using.
+- **Codec routing for the A23**, including `"Headphone", "HPCOM"`, because the jack is direct driven
+  and its return is on HPCOM.
+- **`x-powers,drive-vbus-en` on the AXP PMIC.** Without it the USB PHY defers forever and musb never
+  probes, so USB simply does not appear.
+- **MIPI DSI and D-PHY nodes**, which mainline does not describe for this SoC.
 
-I added a fun little power-off-power-on cycle at the top of the `prepare` sequence before finally:it would reliably start initialize every single time.
+### Patches (`patches/`)
 
-### The Gamepad
-This one was very strange. The manufacturer decided to put the gamepad buttons (except vol+/vol-) straight on GPIOs, super easy. I technically don't even need to write a driver to get those working, I could get linux to recognize them as buttons or keys straight from the `.dts`. However, the analog sticks are wired up in a surprising way. It turns out the Allwinner A33 doesn't really have general purpose ADC pins, so if you want to read analog values from something, say, an analog stick's axis, you have to either hack it into the audio subsystem's mic-in, hack it into the 6-bit LRADC (probably not ideal for reading an anog stick), or (and this is what they did) add a second, low power MCU to read the analog values and transmit them back to the A33 over a bus like SPI or I2C. Bizarrely, they decided to not use SPI or I2C and instead opted for uart. Strange choice.
+- `0001` musb gadget: read a pending RX packet on restart
+- `0003` ASoC sun4i-codec: speaker pin switch on the A23
+- `0005` mfd axp20x: clear the BSP boot flag on power off
 
-The annoying part about this is that the secondary MCU requires an initialization sequence from the host (the a33). So once again I found the driver module in the original firmware, cracked open Ghidra and found the bytes.
+### Drivers (`drivers/`)
 
-At this point I had analog sticks working and GPIOs working in the dts. To consolidate everything so it would enumerate as a single device in Linux, I took the GPIOs out of the dts and polled them inside my driver. Retroarch (and probably every other game) don't like using two gamepad controllers at once, so this seemed like the simplest low level solution to that problem.
+- `jd9366-ga36mbv1-2.c`, the display panel
+- `ga36mb-gamepad.c`, buttons and analog sticks as a single input device
 
-## How Do I Flash this Directly?
-If you want to test changes to the kernel without rebuilding/reflashing the entire goodluckOS image, follow these steps:
-1. Run `./build.sh` to build the kernel image.
-2. Plug your goodluckOS microSD card into your linux computer
-3. Run `lsblk` to identify the sd card device (not a partition)
-4. Flash `out/android_boot.img` with `sudo dd if=out/android_boot_a33.img bs=512 seek=172032 conv=notrunc status=progress of=/dev/sdX` where `sdX` is your microSD card device, and `a33` is `a23` if that's the SoC your unit has.
-5. Run `sync` to make sure the bits are fully written to the microSD card.
+**Both of these come from [goodluckOS](https://github.com/CodeZombie/goodluckOS), written by
+CodeZombie**, and they are the reason Linux runs on this board at all. The short version of what
+they had to work out, because it explains why the code looks the way it does:
+
+The panel has no markings and no documentation. Its initialisation sequence was recovered by pulling
+`lcd.ko` out of the stock Linux 3.4 firmware and reading it in Ghidra. Even with the right sequence
+it only came up about nine times in ten, because the bootloader leaves the display running and hands
+it over without cleanup, so the driver now power cycles the panel at the top of `prepare` instead of
+just toggling the reset pin.
+
+The gamepad is stranger. The buttons sit directly on GPIOs, but the Allwinner SoC has no general
+purpose ADC, so the manufacturer added a second microcontroller to read the analog sticks and talk to
+the main SoC over **UART**. That MCU needs an initialisation sequence from the host, which came out of
+the stock driver the same way. The GPIO buttons were then pulled out of the device tree and polled
+inside the driver, so the whole thing enumerates as one controller: RetroArch and most games behave
+badly when a device shows up as two.
+
+CodeZombie's own account of that work is worth reading in the
+[upstream repository](https://github.com/CodeZombie/goodluckOS).
+
+## Flashing just the kernel
+
+No need to rebuild the OS to test a kernel change. The boot image lives at a fixed offset, outside
+both partitions:
+
+```sh
+./build.sh
+sudo dd if=out/android_boot_a23_panel2.img bs=512 seek=172032 conv=notrunc status=progress of=/dev/sdX
+sync
+```
+
+`/dev/sdX` is the card itself, not a partition. On macOS use `/dev/rdiskN` and `bs=512`, and find the
+disk with `diskutil list external physical` first.
+
+This overwrites part of the stock boot region, so make sure you still have your `stock_backup.img`
+before doing it.
