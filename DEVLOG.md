@@ -1036,3 +1036,12 @@ Reflashing every time and copying 11 GB of games back is not how I want to live,
 
 Booted the update and laughed: two Ports in the system list. The Tools system (Dashboard, Settings, Power Off...) was borrowing EPIC-CODY's Ports artwork, which was fine until real Ports showed up next to it. Tools now uses the theme's "Options / System Configuration" look, the same idea as ArkOS's options menu.
 
+#### morning-fixes · Silent jingles and a slow first Zelda launch
+
+*Eeman1113* · SDL2_mixer MP3, es_systems.cfg
+
+First real morning with the update on the card. The system update itself went smoothly (90 seconds, games all still there) and shutdown now finishes cleanly: the new `shutdown.log` shows it going from "requested" to the last stop script in about 2 seconds. Two things were off though.
+
+- **Some system jingles were silent.** ES's log was full of "Unrecognized audio format" for the theme's MP3s. Buildroot builds SDL2_mixer with MP3 switched off, and EPIC-CODY lists `.ogg` then `.mp3` while this ES takes the last match, so even systems with an OGG fell on the MP3. SDL2_mixer's own built-in MP3 decoder is now switched back on (no extra library), which also makes MP3 menu music in `roms/bgmusic` work like the README promises. On my card I converted the 26 MP3 jingles to OGG in the meantime.
+- **Zelda sat on the loading screen.** Before extracting, the port searched my whole 11 GB games partition for an N64 ROM, which takes forever on this SD card. FakeR36S-Ocarina now looks in HOME and `roms/n64` first.
+
