@@ -1051,3 +1051,15 @@ First real morning with the update on the card. The system update itself went sm
 
 Opened the System Dashboard from Options and it flashed the loading screen and dropped me straight back. It runs fine on my Mac, so it's something about the handheld. Best guess: the dashboard closes on B, Start or Select, and on this pad the physical A button can come through as SDL's "B", so the press that launched it could close it right away. Now it ignores buttons for the first 0.7 s and only quits on a press it saw start, and anything it prints goes to `.config/fakers36s/dashboard.log` so I can actually see what happened if it's something else.
 
+#### office · A demo, real docs, and a release that names the right commit
+
+*Eeman1113* · `765d75a`, `313b765`, `0b98d5e`
+
+Did a bit from the office today.
+
+- **The demo is in the README** (`765d75a`): a portrait poster frame of the handheld that links to the video, so people can see it boot before they flash anything.
+- **BUILD.md and kernel/README.md are finally mine** (`313b765`). They still described goodluckOS's build; now they explain how FakeR36S-OS actually gets built.
+- **The release names the right commit** (`0b98d5e`). The `latest` tag was created once and never moved, so the release page kept saying it came from the very first commit even though the files were fresh. CI now moves the tag to the commit that built the release and rewrites the notes, including a pointer to the update package for people who already run FakeR36S-OS.
+
+Meanwhile on the handheld: native Zelda runs flawlessly, which honestly made my day. Still to fix there: quitting with Select+Start and the FPS toggle (both in the port's next build), save states surviving a power off, and the dashboard not opening.
+
