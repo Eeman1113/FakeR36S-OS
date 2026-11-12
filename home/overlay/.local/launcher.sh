@@ -10,6 +10,10 @@ export LD_LIBRARY_PATH="$HOME/.local/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 LOGDIR=$HOME/.config/fakers36s
 FAILS=/dev/shm/fakers36s-es-fails
 mkdir -p "$LOGDIR"
+# what the last app launched through appctl (Options entries, ports from Puppy) printed: appd keeps it in RAM only
+for f in /dev/shm/application/application.log /dev/shm/application/application.log.old; do
+    [ -s "$f" ] && { echo "=== $(date) $f"; cat "$f"; } >> "$LOGDIR/last-app.log"
+done
 
 /usr/local/bin/fr-ports-sync 2>/dev/null   # list installed ports in ES
 fails=$(cat "$FAILS" 2>/dev/null || echo 0)
