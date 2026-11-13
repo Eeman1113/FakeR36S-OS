@@ -1,0 +1,7 @@
+config BR2_PACKAGE_KOREADER
+	bool "koreader"
+	depends on BR2_PACKAGE_SDL3
+	help
+	  KOReader, the ebook reader (EPUB, PDF, MOBI, CBZ, DjVu...), from its official
+	  32-bit ARM Linux release, drawing through the system SDL3 (KMS/DRM).
+	  https://github.com/koreader/koreader

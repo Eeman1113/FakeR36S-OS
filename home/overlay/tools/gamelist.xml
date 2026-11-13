@@ -1,9 +1,10 @@
 <?xml version="1.0"?>
 <gameList>
-	<game><path>./System Dashboard.sh</path><name>System Dashboard</name><desc>Live CPU, battery, memory, storage and temperature graphs. Performance mode (1.2 GHz) switch.</desc></game>
-	<game><path>./System Settings.sh</path><name>System Settings</name><desc>Brightness and volume.</desc></game>
-	<game><path>./Switch Audio Output.sh</path><name>Switch Audio Output</name><desc>Toggle speaker / headphones. Each output remembers its own volume. Also: FN + D-pad down.</desc></game>
-	<game><path>./Classic Launcher (Puppy).sh</path><name>Classic Launcher (Puppy)</name><desc>goodluckOS's original launcher and its apps and ports.</desc></game>
-	<game><path>./Reboot.sh</path><name>Reboot</name></game>
-	<game><path>./Power Off.sh</path><name>Power Off</name></game>
+	<game><path>./System Dashboard.sh</path><name>System Dashboard</name><sortname>1</sortname><desc>Live CPU, battery, memory, storage and temperature graphs. Performance mode (1.2 GHz) switch.</desc></game>
+	<game><path>./Reader.sh</path><name>Reader</name><sortname>2</sortname><desc>KOReader: your books from the "read" folder on the card (EPUB, PDF, MOBI, CBZ...), on a cover dashboard. Night mode in the top menu. Select+Start closes it.</desc></game>
+	<game><path>./System Settings.sh</path><name>System Settings</name><sortname>3</sortname><desc>Brightness and volume.</desc></game>
+	<game><path>./Switch Audio Output.sh</path><name>Switch Audio Output</name><sortname>4</sortname><desc>Toggle speaker / headphones. Each output remembers its own volume. Also: FN + D-pad down.</desc></game>
+	<game><path>./Classic Launcher (Puppy).sh</path><name>Classic Launcher (Puppy)</name><sortname>5</sortname><desc>goodluckOS's original launcher and its apps and ports.</desc></game>
+	<game><path>./Reboot.sh</path><name>Reboot</name><sortname>6</sortname></game>
+	<game><path>./Power Off.sh</path><name>Power Off</name><sortname>7</sortname></game>
 </gameList>

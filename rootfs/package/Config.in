@@ -18,4 +18,5 @@ source "../package/es-theme-carbon/Config.in"
 source "../package/es-theme-epic-cody/Config.in"
 source "../package/bootsplash/Config.in"
 source "../package/power-menu/Config.in"
+source "../package/koreader/Config.in"
 endmenu

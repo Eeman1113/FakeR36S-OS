@@ -1089,3 +1089,17 @@ Ship of Harkinian's save states are a raw copy of game memory, which is full of 
 
 It took three tries on the real thing: the first build hung on quit (a condition variable destroyed while a thread still slept on it), and the second refused every state because a failed "alt asset" lookup had been tagged as part of a real asset. My own logs found both. Also new today: the Options apps finally open (they needed `doas`), and seven new GBA RPGs on the card, including Pokemon Heart & Soul.
 
+#### reader · A bookshelf in my pocket
+
+*Eeman1113* · rootfs/package/koreader, fr-reader, fr-padwatch, tools/Reader.sh
+
+I wanted my handheld to be a proper ebook reader too, so Options now has **Reader**, right under the Dashboard. It opens KOReader straight onto a grid of book covers from the `read` folder on the card, with my reading font (Bookerly) as the default, margins and spacing tuned for the 640x480 screen, and night mode one menu away.
+
+The fun parts:
+- KOReader ships an official 32-bit ARM Linux build, but its SDL3 only knows desktops (X11 and Wayland), so on my console it would draw nothing. The system SDL3 already talks to the screen directly (KMS/DRM), so the package swaps KOReader's copy for a link to it.
+- KOReader already understands gamepads: D-pad, A to open, B back, L1/R1 to turn pages, Start for the menu. It just has no way to quit with buttons, so I wrote `fr-padwatch`, a tiny program that runs an app and closes it when Select+Start are held together (politely first, so the reading position is saved).
+- The release tarball has no top folder, which would have quietly broken Buildroot's unpacking. Caught it before the build.
+- Reading runs at the battery-saving CPU speed, and all settings and positions live on the card so updates never lose my place.
+
+Not tested on the console yet: this build is the first one with it.
+

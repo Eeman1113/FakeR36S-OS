@@ -15,11 +15,13 @@ define BOOTSPLASH_BUILD_CMDS
 		-o $(@D)/bootsplash $(@D)/bootsplash.cpp \
 		$(TARGET_LDFLAGS) -lSDL2 -limgui
 	$(TARGET_CC) $(TARGET_CFLAGS) -std=gnu17 -O2 -o $(@D)/fr-loading $(@D)/fr-loading.c $(TARGET_LDFLAGS) -lm
+	$(TARGET_CC) $(TARGET_CFLAGS) -std=gnu17 -O2 -o $(@D)/fr-padwatch $(@D)/fr-padwatch.c $(TARGET_LDFLAGS)
 endef
 
 define BOOTSPLASH_INSTALL_TARGET_CMDS
 	$(INSTALL) -D -m 0755 $(@D)/bootsplash $(TARGET_DIR)/usr/bin/bootsplash
 	$(INSTALL) -D -m 0755 $(@D)/fr-loading $(TARGET_DIR)/usr/bin/fr-loading
+	$(INSTALL) -D -m 0755 $(@D)/fr-padwatch $(TARGET_DIR)/usr/bin/fr-padwatch
 endef
 
 $(eval $(generic-package))

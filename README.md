@@ -154,6 +154,15 @@ How it stays safe:
 
 On macOS or Linux you can also write a new flashable image's system straight to the card with `sudo tools/update-os.sh fakers36s.img <disk>`; it refuses any disk without FakeR36S-OS's partition layout and never touches HOME.
 
+## Reading books (KOReader)
+
+**Options > Reader** opens [KOReader](https://github.com/koreader/koreader) on a cover dashboard of everything in the `read` folder on the card: EPUB, PDF, MOBI, AZW3, FB2, CBZ, DjVu, TXT and more. Copy books into `read/` (folders are fine).
+
+- **Buttons:** D-pad to move, A to open, B to go back, L1 / R1 to turn pages, Start for the menu, Y for the context menu. **Select+Start** closes the reader and keeps your place.
+- **Dark mode:** KOReader's top menu has **Night mode**.
+- **Fonts:** any font you copy to `.local/share/fonts` on the card shows up in KOReader's font menu (FakeR36S-OS sets a reading font called Bookerly as the default, if it's there). No fonts are included beyond KOReader's own.
+- Settings, highlights and reading positions live on the card in `.config/koreader`, so OS updates keep them. The reader runs at the battery-saving CPU speed.
+
 ## Box art and menu music
 
 The handheld has no WiFi, so box art is fetched from your computer while the card is plugged in. The easiest way is step 5 of the [web installer](https://eeman1113.github.io/FakeR36S-OS/) (Chrome or Edge): pick the card's HOME drive and it does the rest in your browser. Or use the script:
@@ -191,6 +200,7 @@ FakeR36S-OS stands on the shoulders of people who did the hard work first. Huge 
   look and feel FakeR36S-OS aims for.
 - **[libretro-thumbnails](https://github.com/libretro-thumbnails/libretro-thumbnails)** and its contributors, for the box art library `tools/fetch-art.py` downloads from.
 - **[ga36-ports](https://github.com/rincewindcz/ga36-ports)** by rincewindcz, the native game ports for GA36-MB handhelds that the Ports system is built around.
+- **[KOReader](https://github.com/koreader/koreader)** and its contributors, the reader behind Options > Reader (AGPL-3.0, shipped unmodified from its official armhf release apart from using the system SDL3 and the cover grid as first view).
 - **[RetroArch](https://github.com/libretro/RetroArch)** and the **[libretro](https://www.libretro.com)** team,
   plus the authors of every core: FCEUmm, Nestopia, Snes9x 2005 / 2010, ParaLLEl N64, Gambatte, gpSP, mGBA,
   PicoDrive, Genesis Plus GX, Beetle (Mednafen) PCE / SuperGrafx / NeoPop / WonderSwan / VB, PCSX ReARMed,
