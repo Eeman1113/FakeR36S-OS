@@ -583,9 +583,11 @@ if (!DESKTOP) pocket.classList.add("off");
 
 /* --- what Pocket can say. context -> lines, picked at random without repeating --- */
 const LINES = {
+  hello: ["Ohh, hi! New person! Welcome welcome. Try this thing out, I reckon you'll fall in love. Hehe."],
   step0: ["Hi, I'm Pocket. Point at anything and I'll tell you what it does.",
           "Three ways in. Pick the one that sounds like your afternoon.",
-          "I live down here. I'll follow you around and try to be useful."],
+          "I follow your cursor around. It's my whole job. I love my job.",
+          "Go on, hover over something. I've been waiting all day."],
   step1: ["Four things. Only the first one can't be replaced.",
           "Go and find that original card before you start. Trust me.",
           "If you're missing the blank card, now's the moment to notice."],
@@ -612,6 +614,8 @@ const LINES = {
            "This is the easy one."],
 
   idle: ["Still here.", "Take your time.", "Point at something and I'll explain it.",
+         "Psst. I know what every button does. Ask me.",
+         "You're doing great, by the way.",
          "I've got opinions about all of these buttons.",
          "That handheld lied about its own processor, you know.",
          "Two cores. A Mali-400. And it runs Ocarina of Time.",
@@ -742,7 +746,11 @@ function talk(text, hold = 4200) {
   hideT = setTimeout(() => bubble.classList.remove("show"), hold);
 }
 let current = "0";
-function pocketSay(step) { talk(pick("step" + step), 5200); }
+let greeted = false;
+function pocketSay(step) {
+  if (!greeted) { greeted = true; talk(pick("hello"), 7000); return; }
+  talk(pick("step" + step), 5200);
+}
 
 /* --- hover context --- */
 let lastKey = null, hoverT = null, idleAt = Date.now();
@@ -771,7 +779,7 @@ if (DESKTOP) {
 if (DESKTOP) {
   let cx = innerWidth - 120, cy = innerHeight - 120;   // cursor
   let px = cx, py = cy;                                 // pocket
-  const SIZE = 62, GAP = 26;
+  const SIZE = 62, GAP = 30;
   addEventListener("mousemove", (e) => { cx = e.clientX; cy = e.clientY; idleAt = Date.now(); });
   addEventListener("mouseleave", () => pocket.classList.add("hush"));
   addEventListener("mouseenter", () => pocket.classList.remove("hush"));
@@ -779,11 +787,10 @@ if (DESKTOP) {
   const ease = matchMedia("(prefers-reduced-motion: reduce)").matches ? 1 : 0.085;
   (function frame() {
     // sit down-right of the cursor, flipping near the right edge, clamped on screen
-    const flip = cx > innerWidth - 330;
-    let tx = flip ? cx - SIZE - GAP : cx + GAP;
-    let ty = cy + GAP;
+    let tx = cx - SIZE - GAP;          // up and to the left, clear of the pointer
+    let ty = cy - SIZE - GAP;
     tx = Math.max(8, Math.min(tx, innerWidth - SIZE - 8));
-    ty = Math.max(70, Math.min(ty, innerHeight - SIZE - 12));
+    ty = Math.max(120, Math.min(ty, innerHeight - SIZE - 12));   // room for the bubble overhead
     px += (tx - px) * ease;
     py += (ty - py) * ease;
     pocket.style.transform = `translate3d(${px.toFixed(1)}px, ${py.toFixed(1)}px, 0)`;
