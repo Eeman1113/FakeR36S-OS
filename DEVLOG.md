@@ -1126,3 +1126,15 @@ The layout now:
 - Select does nothing on its own anymore. It was mapped to page back AND page forward at the same time, which is a special kind of useless, and it's half of the Select+Start exit
 
 Startup was the other pain: almost a minute and a half the first time, with a spinner that stopped after 20 seconds so it looked frozen. Now Reader starts at full CPU speed behind a spinner that keeps going until the library is actually up (KOReader opens the gamepad last, so I watch the log for that), then drops to the battery saver for reading. The online-only plugins (OPDS, news, Wallabag, sync...) are switched off once, through a small Lua merge that never touches anything I change inside KOReader.
+
+#### reader-light · Putting KOReader on a diet
+
+*Eeman1113* · koreader.mk, fr-reader, settings.reader.lua, fr-settings.lua
+
+Reader worked, but every button press took about ten seconds and opening it took minutes. With 512 MB of RAM and two slow cores, that's not something you can live with, so I sent an agent to dig through KOReader's code and my logs, and it came back with actual answers instead of guesses.
+
+The startup: on a fresh config KOReader runs about sixty one-time migrations, and two of them delete the font cache right after it was built. So the 30 second font scan ran twice and was never saved. A fresh config has nothing to migrate, so now it starts already marked as up to date. The build also checks the migration date, so a future KOReader update can't quietly break this.
+
+The lag: the first time a book opens, crengine registers every font it has, and 16 MB of that was one Chinese font, plus Arabic, Indic and two FreeFonts. That's gone now: fonts went from 24.7 MB to 4.6 MB, keeping Noto Sans/Serif, the icon font and my Bookerly. Twenty-eight plugins are removed from the build entirely (network ones, touch and e-ink ones, and the statistics and vocabulary databases that wrote to the card on every page). It also runs at normal CPU speed now (the battery saver cost about 20% on every page layout), and crengine's RAM cache is capped at 5x instead of 40x, which on this console could have meant up to 500 MB.
+
+Not all of it is explained yet: there are still about 22 seconds before KOReader even opens the screen. So the launcher now writes a small trace every 2 seconds while starting (process state, CPU time, clock speed, free memory) and the time until the library appears. The next log will tell me what those seconds are.

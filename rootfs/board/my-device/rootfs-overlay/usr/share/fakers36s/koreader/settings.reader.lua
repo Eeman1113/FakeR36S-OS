@@ -13,4 +13,11 @@ return {
     ["night_mode"] = false,
     ["quickstart_shown_version"] = 999999999,
     ["left_right_keys_turn_pages"] = true,
+    -- a fresh config has nothing to migrate: skip KOReader's ~60 one-time migrations (two of them
+    -- delete the font cache right after it is built). Matches CURRENT_MIGRATION_DATE, see koreader.mk
+    ["last_migration_date"] = 20260623,
+    -- crengine keeps up to 40x its base cache in RAM by default (~500 MB): 5x fits in 512 MB
+    ["cre_storage_size_factor"] = 5,
+    -- no background re-layout fork (a second copy of the book in RAM) after font changes
+    ["cre_partial_rerendering"] = false,
 }

@@ -32,6 +32,30 @@ define KOREADER_INSTALL_TARGET_CMDS
 		$(TARGET_DIR)/opt/koreader/frontend/device/sdl/gamepad.lua
 	grep -q '\[9\] = "LPgBack"' $(TARGET_DIR)/opt/koreader/frontend/device/sdl/gamepad.lua
 	! grep -q '\[4\] = "RPgBack"' $(TARGET_DIR)/opt/koreader/frontend/device/sdl/gamepad.lua
+	# --- light build for a 512 MB, 2-core handheld ------------------------------------------
+	# fonts: every one is scanned at first start and registered with crengine at every first book
+	# open (and in every cover-extraction child). CJK/Arabic/Indic/FreeFont = 20 MB of 24.7 MB.
+	cd $(TARGET_DIR)/opt/koreader/fonts && rm -rf freefont freefont-build-tweaks.patch \
+		noto/NotoSansCJKsc-Regular.otf noto/NotoNaskhArabic-*.ttf noto/NotoSansArabicUI-*.ttf \
+		noto/NotoSansBengaliUI-*.ttf noto/NotoSansDevanagariUI-*.ttf
+	sed -i -e '/^    fallbacks = {/,/^    },/{ /NotoSansCJKsc\|NotoSansArabicUI\|NotoSansDevanagariUI\|NotoSansBengaliUI\|freefont/d; s/^        \[6\] = "nerdfonts\/symbols.ttf",$$/        [2] = "nerdfonts\/symbols.ttf",/; }' \
+		$(TARGET_DIR)/opt/koreader/frontend/ui/font.lua
+	grep -q '\[2\] = "nerdfonts/symbols.ttf"' $(TARGET_DIR)/opt/koreader/frontend/ui/font.lua
+	! grep -q 'NotoSansCJKsc-Regular.otf",' $(TARGET_DIR)/opt/koreader/frontend/ui/font.lua
+	# plugins: network-only, touch/e-ink-only, or sqlite-on-every-page ones
+	cd $(TARGET_DIR)/opt/koreader/plugins && rm -rf exporter.koplugin newsdownloader.koplugin \
+		opds.koplugin wallabag.koplugin calibre.koplugin cloudstorage.koplugin kosync.koplugin \
+		httpinspector.koplugin qrclipboard.koplugin terminal.koplugin hello.koplugin \
+		externalkeyboard.koplugin autowarmth.koplugin japanese.koplugin vocabbuilder.koplugin \
+		statistics.koplugin systemstat.koplugin perceptionexpander.koplugin movetoarchive.koplugin \
+		coverimage.koplugin autodim.koplugin autoturn.koplugin autosuspend.koplugin \
+		autostandby.koplugin keepalive.koplugin batterystat.koplugin texteditor.koplugin \
+		archiveviewer.koplugin
+	test -d $(TARGET_DIR)/opt/koreader/plugins/coverbrowser.koplugin
+	# settings.reader.lua pre-sets last_migration_date to this KOReader's value, so a fresh config
+	# skips ~60 one-time migrations (two of which delete the font cache right after it is built).
+	# Bump both together when updating KOReader.
+	grep -q 'CURRENT_MIGRATION_DATE = 20260623' $(TARGET_DIR)/opt/koreader/frontend/ui/data/onetime_migration.lua
 endef
 
 $(eval $(generic-package))

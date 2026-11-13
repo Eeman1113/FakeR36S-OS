@@ -17,9 +17,9 @@ export SDL_VIDEODRIVER=kmsdrm
 export DISABLE_TOUCH=1
 . /etc/profile.d/sdl_controller.sh 2>/dev/null
 LOG=$H/.config/fakers36s/reader.log
-# Starting takes a while (KOReader builds its font list the first time), so it starts at full CPU
-# speed behind a spinner. Once the library is up (KOReader opens the gamepad last) the spinner
-# stops and the CPU drops to the battery saving profile: reading needs little.
+# KOReader runs at the normal CPU profile: the light one cost ~20% on every page layout and made
+# the first start crawl. (The governor still idles the cores between page turns.) A spinner covers
+# the start until the library is up (KOReader opens the gamepad last).
 killall fr-loading 2>/dev/null
 [ -x /usr/bin/fr-loading ] && setsid /usr/bin/fr-loading 240 </dev/null >/dev/null 2>&1 &
 doas /usr/local/bin/cpuprofile normal 2>/dev/null
@@ -30,10 +30,17 @@ start=$(wc -c < "$LOG")
     i=0
     while [ $i -lt 240 ]; do
         tail -c +$((start + 1)) "$LOG" | grep -q 'opened gamecontroller' && break
+        # startup trace every 2 s: is KOReader computing (state R, cpu ticks rising) or waiting?
+        if [ $((i % 2)) = 0 ] && P=$(pidof luajit) && [ -n "$P" ]; then
+            P=${P%% *}
+            echo "T+${i}s $(awk '{print "state=" $3 " cpu=" $14+$15}' /proc/$P/stat 2>/dev/null)" \
+                "mhz=$(( $(cat /sys/devices/system/cpu/cpufreq/policy0/scaling_cur_freq 2>/dev/null || echo 0) / 1000 ))" \
+                "$(awk '/MemAvailable|SwapFree/ {printf "%s%dM ", $1, $2 / 1024}' /proc/meminfo)" >> "$LOG"
+        fi
         sleep 1; i=$((i + 1))
     done
     killall fr-loading 2>/dev/null
-    doas /usr/local/bin/cpuprofile light 2>/dev/null
+    echo "=== library up after ${i}s" >> "$LOG"
 ) &
 WATCH=$!
 /usr/bin/fr-padwatch /opt/koreader/koreader.sh "$H/read" >> "$LOG" 2>&1

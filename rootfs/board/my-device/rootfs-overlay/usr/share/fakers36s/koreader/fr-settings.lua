@@ -10,6 +10,9 @@ local function default(k, v) if t[k] == nil then t[k] = v; changed = true end en
 
 -- page turns on D-pad left/right as well as L1/R1 (button mode, see fr-reader)
 default("left_right_keys_turn_pages", true)
+-- light on a 512 MB handheld: crengine caches 5x instead of 40x, no background re-layout fork
+default("cre_storage_size_factor", 5)
+default("cre_partial_rerendering", false)
 
 -- plugins that need internet (or hardware this handheld lacks) only slow the start down
 if not t.fakers36s_plugins_v1 then
