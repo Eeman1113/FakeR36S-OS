@@ -3,157 +3,564 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>FakeR36S-OS Installer</title>
-<meta name="description" content="Install FakeR36S-OS on a fake R36S (GA36-MB, Allwinner A23). Builds your SD card image in the browser. Nothing is uploaded.">
+<title>Install FakeR36S-OS</title>
+<meta name="description" content="Step by step installer for FakeR36S-OS on a fake R36S (GA36-MB, Allwinner A23). Your SD card image is built in your browser. Nothing is uploaded.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 183 91'><g fill='%235d6477'><polygon points='130.5 30.25 104.3 15.13 130.34 .09 156.53 15.22'/><polygon points='156.7 45.38 130.5 30.25 156.53 15.22 182.73 30.35'/><polygon points='78.27 30.16 52.07 15.03 78.1 0 104.3 15.13'/><polygon points='52.23 45.19 26.03 30.06 52.07 15.03 78.27 30.16'/><polygon points='26.2 60.22 0 45.09 26.03 30.06 52.23 45.19'/><polygon points='52.4 75.34 26.2 60.22 52.23 45.19 78.43 60.31'/><polygon points='78.59 90.47 52.4 75.34 78.43 60.31 104.63 75.44'/><polygon points='117.65 67.92 91.45 52.8 117.48 37.77 143.68 52.89'/><polygon points='91.45 52.8 65.25 37.67 91.28 22.64 117.48 37.77'/></g></svg>">
 <style>
-  :root {
-    --ink: #1f222c; --ink-2: #272b37; --slate: #5d6477; --slate-2: #8a91a3;
-    --paper: #f4efe6; --ok: #8fd3a6; --warn: #f2c66d; --bad: #ef8a80;
+  :root{
+    --ink:#171a21; --card:#1f232d; --card-2:#262b37; --line:#333948;
+    --paper:#f4efe6; --slate:#5d6477; --slate-2:#8c93a5; --glow:#ccd6ed;
+    --ok:#8fd3a6; --warn:#f2c66d; --bad:#ef8a80;
+    --r:14px;
   }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0; background: var(--ink); color: var(--paper);
-    font: 16px/1.55 Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--ink); color:var(--paper);
+    font:16px/1.6 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+    -webkit-font-smoothing:antialiased;
   }
-  main { max-width: 720px; margin: 0 auto; padding: 48px 16px 64px; }
-  header { display: flex; align-items: center; gap: 16px; margin-bottom: 8px; }
-  header svg { width: 64px; height: auto; flex: none; }
-  h1 { margin: 0; font-size: 28px; letter-spacing: -0.01em; }
-  .tag { color: var(--slate-2); margin: 0 0 32px; }
-  .step { background: var(--ink-2); border: 1px solid #343949; border-radius: 12px; padding: 20px 20px 18px; margin: 16px 0; }
-  .step h2 { margin: 0 0 8px; font-size: 18px; display: flex; gap: 10px; align-items: center; }
-  .num { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%;
-         background: var(--slate); font-size: 14px; flex: none; }
-  .step.done .num { background: var(--ok); color: var(--ink); }
-  p { margin: 6px 0; }
-  .muted { color: var(--slate-2); font-size: 14px; }
-  code { background: #14161d; padding: 2px 6px; border-radius: 6px; font-size: 13px; }
-  pre { background: #14161d; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 13px; margin: 8px 0; }
-  details { margin-top: 8px; } summary { cursor: pointer; color: var(--slate-2); }
-  button, .btn {
-    appearance: none; border: 0; border-radius: 8px; padding: 11px 18px; font: inherit; font-weight: 600;
-    background: var(--paper); color: var(--ink); cursor: pointer; text-decoration: none; display: inline-block; margin-top: 10px;
+  main{max-width:780px;margin:0 auto;padding:40px 18px 80px}
+  a{color:var(--glow)}
+  code{background:#11131a;padding:2px 6px;border-radius:5px;font-size:.87em;
+       font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  h2{font-size:22px;margin:0 0 6px;letter-spacing:-.01em}
+  h3{font-size:15px;margin:22px 0 6px;color:var(--glow);letter-spacing:.02em;text-transform:uppercase}
+  p{margin:8px 0}
+  .muted{color:var(--slate-2);font-size:14.5px}
+
+  /* ---------- hero ---------- */
+  .hero{text-align:center;padding:14px 0 30px}
+  .mark{width:132px;height:auto;display:block;margin:0 auto 20px;filter:drop-shadow(0 6px 22px rgba(0,0,0,.5))}
+  .hero h1{margin:0;font-size:31px;letter-spacing:-.02em}
+  .hero p{color:var(--slate-2);max-width:480px;margin:10px auto 0}
+  .pill{display:inline-block;margin-top:16px;padding:5px 13px;border:1px solid var(--line);
+        border-radius:999px;font-size:13px;color:var(--slate-2)}
+
+  /* ---------- rail ---------- */
+  .rail{display:flex;gap:6px;margin:0 0 26px;list-style:none;padding:0}
+  .rail li{flex:1;height:4px;border-radius:2px;background:var(--line);transition:background .25s}
+  .rail li.on{background:var(--glow)}
+  .rail li.past{background:var(--slate)}
+
+  /* ---------- cards ---------- */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:26px 24px}
+  .screen{display:none}
+  .screen.on{display:block;animation:in .22s ease-out}
+  @keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .eyebrow{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--slate-2);margin:0 0 4px}
+
+  /* ---------- choice ---------- */
+  .choices{display:grid;gap:12px;margin-top:18px}
+  .choice{display:block;width:100%;text-align:left;background:var(--card-2);border:1px solid var(--line);
+          border-radius:11px;padding:17px 18px;cursor:pointer;color:inherit;font:inherit;transition:.15s}
+  .choice:hover{border-color:var(--slate-2);transform:translateY(-1px)}
+  .choice b{display:block;font-size:16.5px;margin-bottom:3px}
+  .choice span{color:var(--slate-2);font-size:14px}
+
+  /* ---------- needs list ---------- */
+  .needs{list-style:none;padding:0;margin:14px 0 0}
+  .needs li{display:flex;gap:12px;padding:11px 0;border-top:1px solid var(--line)}
+  .needs li:first-child{border-top:0}
+  .needs .ic{flex:none;width:26px;height:26px;border-radius:7px;background:var(--card-2);
+             display:grid;place-items:center;font-size:14px}
+  .needs b{display:block;font-size:15px}
+  .needs span{color:var(--slate-2);font-size:14px}
+
+  /* ---------- tabs ---------- */
+  .tabs{display:flex;gap:6px;margin:16px 0 0}
+  .tab{background:var(--card-2);border:1px solid var(--line);color:var(--slate-2);border-radius:8px;
+       padding:7px 15px;font:inherit;font-size:14px;cursor:pointer}
+  .tab[aria-selected=true]{background:var(--paper);color:var(--ink);border-color:var(--paper);font-weight:600}
+  .pane{display:none;margin-top:12px}
+  .pane.on{display:block}
+
+  /* ---------- code block ---------- */
+  .cmd{position:relative;background:#11131a;border:1px solid var(--line);border-radius:10px;margin:10px 0}
+  .cmd pre{margin:0;padding:14px 56px 14px 15px;overflow-x:auto;font-size:13.5px;line-height:1.65;
+           font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .cmd .cp{position:absolute;top:8px;right:8px;background:var(--card-2);border:1px solid var(--line);
+           color:var(--slate-2);border-radius:7px;padding:5px 10px;font-size:12px;cursor:pointer}
+  .cmd .cp:hover{color:var(--paper)}
+  .cmt{color:var(--slate)}
+
+  /* ---------- callouts ---------- */
+  .note{border-left:3px solid var(--slate);background:var(--card-2);border-radius:0 10px 10px 0;
+        padding:13px 16px;margin:16px 0;font-size:14.5px}
+  .note.warn{border-color:var(--warn)}
+  .note.bad{border-color:var(--bad)}
+  .note b{color:var(--paper)}
+
+  /* ---------- buttons ---------- */
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:22px}
+  button,.btn{appearance:none;border:0;border-radius:9px;padding:12px 20px;font:inherit;font-weight:600;
+              background:var(--paper);color:var(--ink);cursor:pointer;text-decoration:none;display:inline-block}
+  button:hover:not(:disabled),.btn:hover{filter:brightness(1.08)}
+  .ghost{background:transparent;color:var(--slate-2);border:1px solid var(--line)}
+  .ghost:hover{color:var(--paper)}
+  button:disabled{opacity:.35;cursor:not-allowed}
+  .link{background:none;border:0;color:var(--slate-2);padding:0;font:inherit;font-size:14px;
+        text-decoration:underline;cursor:pointer}
+
+  input[type=file]{margin-top:12px;color:var(--slate-2);max-width:100%;font-size:14px}
+  progress{width:100%;height:7px;margin-top:14px;accent-color:var(--glow);border-radius:4px}
+  .status{margin-top:13px;font-size:15px;min-height:1px}
+  .ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--bad)}
+  .hidden{display:none !important}
+
+  details{border-top:1px solid var(--line);padding:13px 0 0;margin-top:13px}
+  summary{cursor:pointer;color:var(--slate-2);font-size:14.5px;list-style:none}
+  summary::-webkit-details-marker{display:none}
+  summary:before{content:"+ ";color:var(--slate)}
+  details[open] summary:before{content:"– "}
+  details > *:not(summary){font-size:14.5px}
+
+  footer{margin-top:42px;color:var(--slate-2);font-size:13px;text-align:center;line-height:1.7}
+  footer a{color:var(--slate-2)}
+
+  /* ---------- mobile notice ---------- */
+  .mobile-note{display:none;background:var(--card-2);border:1px solid var(--line);
+    border-left:3px solid var(--warn);border-radius:0 10px 10px 0;padding:14px 16px;margin:0 0 22px;font-size:14.5px}
+  .mobile-note b{display:block;margin-bottom:3px}
+
+  /* ---------- Pocket, the guide ---------- */
+  #pocket{position:fixed;right:22px;bottom:22px;z-index:40;display:flex;align-items:flex-end;gap:10px;
+    max-width:min(340px,calc(100vw - 44px));pointer-events:none}
+  #pocket.gone{display:none}
+  #bubble{pointer-events:auto;position:relative;background:var(--card-2);border:1px solid var(--line);
+    border-radius:12px;padding:12px 32px 12px 14px;font-size:13.5px;line-height:1.5;color:var(--paper);
+    box-shadow:0 10px 30px rgba(0,0,0,.45);animation:pop .3s cubic-bezier(.2,1.4,.4,1)}
+  #bubble:after{content:"";position:absolute;right:-6px;bottom:16px;width:10px;height:10px;
+    background:var(--card-2);border-right:1px solid var(--line);border-bottom:1px solid var(--line);transform:rotate(-45deg)}
+  #bubble .x{position:absolute;top:6px;right:8px;background:none;border:0;color:var(--slate);
+    font-size:15px;line-height:1;padding:2px;cursor:pointer}
+  #bubble .x:hover{color:var(--paper)}
+  @keyframes pop{from{opacity:0;transform:translateY(8px) scale(.96)}to{opacity:1;transform:none}}
+  #sprite{pointer-events:auto;width:76px;height:auto;flex:none;cursor:pointer;
+    image-rendering:pixelated;animation:bob 3.4s ease-in-out infinite;
+    filter:drop-shadow(0 6px 14px rgba(0,0,0,.5))}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+  #sprite .eye{transform-box:fill-box;transform-origin:center;animation:blink 5s steps(1,end) infinite}
+  @keyframes blink{0%,92%{transform:scaleY(1)}94%,97%{transform:scaleY(.15)}99%,100%{transform:scaleY(1)}}
+  #sprite.talking{animation:bob 1s ease-in-out infinite}
+  @media(prefers-reduced-motion:reduce){ #sprite,#sprite .eye{animation:none} }
+
+  @media(max-width:760px){
+    .mobile-note{display:block}
+    #pocket{right:12px;bottom:12px;max-width:calc(100vw - 24px)}
+    #sprite{width:54px}
+    #bubble{font-size:13px;padding:10px 28px 10px 12px}
   }
-  button.secondary, .btn.secondary { background: transparent; color: var(--paper); border: 1px solid var(--slate); }
-  button:disabled { opacity: .4; cursor: not-allowed; }
-  input[type=file] { margin-top: 10px; color: var(--slate-2); max-width: 100%; }
-  .status { margin-top: 10px; font-size: 15px; }
-  .ok { color: var(--ok); } .warn { color: var(--warn); } .bad { color: var(--bad); }
-  progress { width: 100%; height: 8px; margin-top: 12px; accent-color: var(--paper); }
-  footer { margin-top: 40px; color: var(--slate-2); font-size: 13px; }
-  footer a, .step a { color: var(--paper); }
-  .hidden { display: none; }
+  @media(max-width:560px){
+    main{padding:22px 13px 150px}
+    .card{padding:19px 15px}
+    .hero h1{font-size:24px}
+    .mark{width:98px}
+    .hero p{font-size:15px}
+    h2{font-size:19.5px}
+    .tabs{flex-wrap:wrap}
+    .cmd pre{font-size:12.5px;padding:13px 15px 13px 13px}
+    .cmd .cp{position:static;display:block;margin:0 0 0 auto;border-radius:0 0 9px 0}
+    .row{gap:8px}
+    button,.btn{padding:11px 16px;font-size:15px}
+    .needs li{padding:10px 0}
+  }
 </style>
 </head>
 <body>
 <main>
-  <header>
-    <svg viewBox="0 0 182.73 90.47" aria-hidden="true"><g fill="#5d6477">
-      <polygon points="130.5 30.25 104.3 15.13 130.34 .09 156.53 15.22 130.5 30.25"/>
-      <polygon points="156.7 45.38 130.5 30.25 156.53 15.22 182.73 30.35 156.7 45.38"/>
-      <polygon points="78.27 30.16 52.07 15.03 78.1 0 104.3 15.13 78.27 30.16"/>
-      <polygon points="52.23 45.19 26.03 30.06 52.07 15.03 78.27 30.16 52.23 45.19"/>
-      <polygon points="26.2 60.22 0 45.09 26.03 30.06 52.23 45.19 26.2 60.22"/>
-      <polygon points="52.4 75.34 26.2 60.22 52.23 45.19 78.43 60.31 52.4 75.34"/>
-      <polygon points="78.59 90.47 52.4 75.34 78.43 60.31 104.63 75.44 78.59 90.47"/>
-      <polygon points="117.65 67.92 91.45 52.8 117.48 37.77 143.68 52.89 117.65 67.92"/>
-      <polygon points="91.45 52.8 65.25 37.67 91.28 22.64 117.48 37.77 91.45 52.8"/></g></svg>
-    <h1>FakeR36S-OS Installer</h1>
-  </header>
-  <p class="tag">For fake R36S handhelds with a GA36-MB board and an Allwinner A23 chip.
-    Your SD card image is built right here in your browser. Nothing is uploaded.</p>
 
-  <section class="step" id="upd">
-    <h2><span class="num">&#8635;</span> Already running FakeR36S-OS? Update instead</h2>
-    <p>Updating keeps everything of yours: games, saves and save states, RetroArch and per-core settings, button remaps,
-      themes, box art, BIOS and ports. No reflash, no copying games again.</p>
-    <ol class="muted">
-      <li>Download <a id="updLink" href="https://github.com/Eeman1113/FakeR36S-OS/releases/latest">the update package</a>
-        (<code>fakers36s-update-a23_panel2.tar</code>), or let this page try to fetch it.</li>
-      <li>Plug the console's card into this computer, then put the package on its <b>HOME</b> drive with the button below.</li>
-      <li>Eject the card, put it back in the console and power on. Your logo and spinner stay up for a few minutes while it
-        installs, then it restarts into the new version. The log is in <code>HOME/.config/fakers36s/update.log</code>.</li>
-    </ol>
-    <button id="updFetch">Fetch the update</button>
-    <input type="file" id="updFile" accept=".tar" class="hidden">
-    <button id="updWrite" disabled>Put it on the HOME drive</button>
-    <progress id="updProg" class="hidden" max="1" value="0"></progress>
-    <div class="status" id="updStatus"></div>
-    <details><summary>Without Chrome or Edge</summary>
-      <p class="muted">Make a folder named <code>update</code> in the root of the card's HOME drive and copy the downloaded
-        <code>.tar</code> into it, unchanged. Then eject the card and power on the console. On macOS or Linux you can also
-        run <code>tools/update-os.sh</code> from the repo to write the new system straight to the card.</p>
-    </details>
-  </section>
+  <div class="hero">
+    <svg class="mark" viewBox="0 0 182.73 90.47" role="img" aria-label="FakeR36S-OS">
+      <defs><linearGradient id="g" x1="0" y1="1" x2="1" y2="0">
+        <stop offset="0" stop-color="#5d6477"/><stop offset="1" stop-color="#ccd6ed"/>
+      </linearGradient></defs>
+      <g fill="url(#g)">
+        <polygon points="130.5 30.25 104.3 15.13 130.34 .09 156.53 15.22"/>
+        <polygon points="156.7 45.38 130.5 30.25 156.53 15.22 182.73 30.35"/>
+        <polygon points="78.27 30.16 52.07 15.03 78.1 0 104.3 15.13"/>
+        <polygon points="52.23 45.19 26.03 30.06 52.07 15.03 78.27 30.16"/>
+        <polygon points="26.2 60.22 0 45.09 26.03 30.06 52.23 45.19"/>
+        <polygon points="52.4 75.34 26.2 60.22 52.23 45.19 78.43 60.31"/>
+        <polygon points="78.59 90.47 52.4 75.34 78.43 60.31 104.63 75.44"/>
+        <polygon points="117.65 67.92 91.45 52.8 117.48 37.77 143.68 52.89"/>
+        <polygon points="91.45 52.8 65.25 37.67 91.28 22.64 117.48 37.77"/>
+      </g>
+    </svg>
+    <h1>Install FakeR36S-OS</h1>
+    <p>Custom firmware for fake R36S handhelds on the GA36-MB board with an Allwinner A23.</p>
+    <span class="pill">Your card image is built in this browser. Nothing is uploaded.</span>
+  </div>
 
-  <section class="step" id="s1">
-    <h2><span class="num">1</span> Back up your stock SD card</h2>
-    <p>The card that came with the console holds its bootloader. Without it, the console can't boot anything.
-       Make a backup file, then keep the original card safe and untouched.</p>
-    <details open><summary>macOS</summary>
-<pre>diskutil list external physical        # find your card, e.g. /dev/disk4
-sudo dd if=/dev/rdisk4 of=stock_backup.img bs=4m status=progress</pre></details>
-    <details><summary>Linux</summary>
-<pre>lsblk                                   # find your card, e.g. /dev/sdb
-sudo dd if=/dev/sdb of=stock_backup.img bs=4M status=progress</pre></details>
-    <details><summary>Windows</summary>
-      <p>Use Win32 Disk Imager: choose the card, name the file <code>stock_backup.img</code>, click <b>Read</b>.
-         If Windows asks to format the card, click <b>Cancel</b>.</p></details>
-    <p class="muted">Only the first 128 MB is needed, but a full backup also keeps your games and saves.
-       <a href="https://github.com/Eeman1113/FakeR36S-OS#install">Full guide</a></p>
-  </section>
 
-  <section class="step" id="s2">
-    <h2><span class="num">2</span> Choose your backup</h2>
-    <p>Pick <code>stock_backup.img</code>. The installer reads 128 KB of it to identify your board.</p>
-    <input type="file" id="stock" accept=".img,.bin,application/octet-stream">
-    <div class="status" id="boardStatus"></div>
-  </section>
+  <div class="mobile-note">
+    <b>Best opened on a computer</b>
+    This builds an SD card image and writes it to a card, so you need a desktop or laptop with a card
+    reader. Read it here by all means, then come back on a PC or Mac when you are ready to install.
+  </div>
 
-  <section class="step" id="s3">
-    <h2><span class="num">3</span> Build your image</h2>
-    <p>Downloads FakeR36S-OS (about 150 MB), adds your card's boot region and the boot logo.</p>
-    <button id="build" disabled>Build my image</button>
-    <progress id="prog" class="hidden" max="1" value="0"></progress>
-    <div class="status" id="buildStatus"></div>
-    <div id="manual" class="hidden">
-      <p class="muted">Automatic download didn't work in this browser. Download
-        <a href="https://github.com/Eeman1113/FakeR36S-OS/releases/latest">goodluck_base_a23_panel2.img.gz</a>
-        yourself, then pick it here:</p>
-      <input type="file" id="baseFile" accept=".gz,.img">
+  <ul class="rail" id="rail" aria-hidden="true"></ul>
+
+  <!-- ============ 0. fork ============ -->
+  <section class="screen on card" data-step="0">
+    <p class="eyebrow">Start here</p>
+    <h2>What are you doing today?</h2>
+    <div class="choices">
+      <button class="choice" data-go="1">
+        <b>Installing for the first time</b>
+        <span>You have the console and the card it came with. Takes about 20 minutes.</span>
+      </button>
+      <button class="choice" data-go="90">
+        <b>Updating, I already run FakeR36S-OS</b>
+        <span>Keeps your games, saves, remaps, art and ports. No reflash.</span>
+      </button>
+      <button class="choice" data-go="80">
+        <b>Something is wrong after installing</b>
+        <span>Black screen, no sound, will not boot.</span>
+      </button>
     </div>
   </section>
 
-  <section class="step" id="s4">
-    <h2><span class="num">4</span> Flash a new microSD card</h2>
-    <p>Save <code>fakers36s.img</code>, then write it to a <b>new</b> card with
-      <a href="https://etcher.balena.io">balenaEtcher</a> or
-      <a href="https://www.raspberrypi.com/software/">Raspberry Pi Imager</a> (Choose OS, then Use custom).</p>
-    <a id="save" class="btn hidden" download="fakers36s.img">Save fakers36s.img</a>
-    <p class="muted">Put the card in slot TF1 and power on. The first boot takes a little longer while it grows the
-      games partition. Then copy your games to the HOME partition, in <code>roms/&lt;system&gt;/</code>.</p>
+  <!-- ============ 1. what you need ============ -->
+  <section class="screen card" data-step="1">
+    <p class="eyebrow">Step 1 of 5</p>
+    <h2>What you need</h2>
+    <p class="muted">Check you have all four before starting. The first one is the only one you cannot buy.</p>
+    <ul class="needs">
+      <li><span class="ic">1</span><div><b>The SD card that came with the console</b>
+        <span>It holds the bootloader, which cannot legally be shared. Without it nothing can boot.</span></div></li>
+      <li><span class="ic">2</span><div><b>A second, blank microSD card</b>
+        <span>8 GB or larger. Your original card stays untouched as a backup.</span></div></li>
+      <li><span class="ic">3</span><div><b>Chrome or Edge</b>
+        <span>This page writes to drives, which other browsers do not allow.</span></div></li>
+      <li><span class="ic">4</span><div><b>An SD card writer</b>
+        <span><a href="https://www.raspberrypi.com/software/">Raspberry Pi Imager</a> or
+        <a href="https://etcher.balena.io">balenaEtcher</a>. Both are free, both work everywhere.</span></div></li>
+    </ul>
+
+    <div class="note" id="browserNote" style="display:none">
+      <b>This browser cannot write to drives.</b> You can still build your image here, but the
+      automatic steps will ask you to copy files by hand. Chrome or Edge makes it one click.
+    </div>
+
+    <div class="note warn">
+      <b>Is your console actually an A23?</b> On the stock firmware open
+      <b>System Information</b> and look at <b>CPU NUMBER</b>. <b>2</b> means A23 and you are in the
+      right place. <b>4</b> means A33, and you want
+      <a href="https://github.com/CodeZombie/goodluckOS">goodluckOS</a> instead.
+      The next step checks this for you anyway.
+    </div>
+
+    <div class="row">
+      <button data-go="2">I have everything</button>
+      <button class="ghost" data-go="0">Back</button>
+    </div>
   </section>
 
-  <section class="step" id="s5">
-    <h2><span class="num">5</span> Add box art automatically</h2>
-    <p>Plug the card back into this computer and pick its <b>HOME</b> drive. Every game without art gets box art
-      from the <a href="https://github.com/libretro-thumbnails/libretro-thumbnails">libretro thumbnail library</a>,
-      added straight to EmulationStation. Art you already have is left alone.</p>
+  <!-- ============ 2. backup ============ -->
+  <section class="screen card" data-step="2">
+    <p class="eyebrow">Step 2 of 5</p>
+    <h2>Back up the stock card</h2>
+    <p>Put the console's card in your computer. You are going to copy it to a file. This only
+      <b>reads</b> the card, it does not change it.</p>
+
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" data-os="mac">macOS</button>
+      <button class="tab" role="tab" data-os="win">Windows</button>
+      <button class="tab" role="tab" data-os="linux">Linux</button>
+    </div>
+
+    <div class="pane" data-os="mac">
+      <p class="muted">Open Terminal. First find the card, then copy it.</p>
+      <div class="cmd"><pre>diskutil list external physical</pre></div>
+      <p class="muted">Look for the one whose size matches your card, for example <code>/dev/disk4</code>.
+        Put that number in the next command, and check it twice.</p>
+      <div class="cmd"><pre>sudo dd if=/dev/rdisk4 of=~/stock_backup.img bs=4m status=progress</pre></div>
+      <p class="muted">About 15 minutes for a 16 GB card. The <code>r</code> in <code>rdisk</code> is not a typo,
+        it is much faster.</p>
+    </div>
+
+    <div class="pane" data-os="win">
+      <p class="muted">Download <a href="https://sourceforge.net/projects/win32diskimager/">Win32 Disk Imager</a>, then:</p>
+      <ol class="muted">
+        <li>Pick the card's drive letter under <b>Device</b></li>
+        <li>Under <b>Image File</b>, type a new file name ending in <code>stock_backup.img</code></li>
+        <li>Click <b>Read</b>, not Write</li>
+      </ol>
+      <div class="note warn">If Windows pops up asking to <b>format the card</b>, click <b>Cancel</b>.
+        The card uses Linux partitions Windows cannot read. Formatting would destroy the bootloader.</div>
+    </div>
+
+    <div class="pane" data-os="linux">
+      <div class="cmd"><pre>lsblk</pre></div>
+      <p class="muted">Find your card, for example <code>/dev/sdb</code>, and check the size matches.</p>
+      <div class="cmd"><pre>sudo dd if=/dev/sdb of=~/stock_backup.img bs=4M status=progress conv=fsync</pre></div>
+    </div>
+
+    <div class="note bad">
+      <b>Get the device name right.</b> Pointing this at the wrong disk reads the wrong thing, and a
+      typo in the later write step can erase your computer's drive. Check the size matches your card
+      before pressing enter.
+    </div>
+
+    <details>
+      <summary>Can I copy less than the whole card?</summary>
+      <p class="muted">Yes. Only the first 128 MB is needed. Add <code>count=128</code> on macOS with
+        <code>bs=1m</code>, or <code>count=32</code> on Linux with <code>bs=4M</code>. A full backup is
+        still better, because it also preserves the games and saves that shipped on the card.</p>
+    </details>
+    <details>
+      <summary>I lost the original card</summary>
+      <p class="muted">Then this console cannot be installed, and unfortunately that is not something a
+        tool can fix. The bootloader belongs to the manufacturer and cannot be redistributed, so it has
+        to come from your own card. If you have any old image or backup of it, that works too.</p>
+    </details>
+
+    <div class="row">
+      <button data-go="3">I have my backup file</button>
+      <button class="ghost" data-go="1">Back</button>
+    </div>
+  </section>
+
+  <!-- ============ 3. identify + build ============ -->
+  <section class="screen card" data-step="3">
+    <p class="eyebrow">Step 3 of 5</p>
+    <h2>Build your image</h2>
+    <p>Choose the <code>stock_backup.img</code> you just made. This page reads 128 KB of it to work out
+      exactly which board you have, then builds an image for it.</p>
+
+    <input type="file" id="stock" accept=".img,.bin,application/octet-stream">
+    <div class="status" id="boardStatus"></div>
+
+    <div id="buildBox" class="hidden">
+      <h3>Build</h3>
+      <p class="muted">Downloads FakeR36S-OS (about 380 MB), then adds the boot region from your own
+        card and your boot logo. The download is the slow part.</p>
+      <button id="build" disabled>Build my image</button>
+      <progress id="prog" class="hidden" max="1" value="0"></progress>
+      <div class="status" id="buildStatus"></div>
+      <div id="manual" class="hidden">
+        <p class="muted">This browser blocked the download. Grab
+          <a href="https://github.com/Eeman1113/FakeR36S-OS/releases/latest">goodluck_base_a23_panel2.img.gz</a>
+          from the release page yourself, then pick it here:</p>
+        <input type="file" id="baseFile" accept=".gz,.img">
+      </div>
+    </div>
+
+    <div class="row">
+      <a id="save" class="btn hidden" download="fakers36s.img">Save fakers36s.img</a>
+      <button class="ghost" data-go="4" id="toFlash">Next</button>
+      <button class="ghost" data-go="2">Back</button>
+    </div>
+  </section>
+
+  <!-- ============ 4. flash ============ -->
+  <section class="screen card" data-step="4">
+    <p class="eyebrow">Step 4 of 5</p>
+    <h2>Write it to the new card</h2>
+    <div class="note bad"><b>Use the blank card, not the stock one.</b> Your original card is the only
+      copy of the bootloader that belongs to your console. Keep it safe.</div>
+
+    <h3>The easy way</h3>
+    <p>Open <a href="https://www.raspberrypi.com/software/">Raspberry Pi Imager</a>:</p>
+    <ol class="muted">
+      <li><b>Choose OS</b>, scroll to the bottom, <b>Use custom</b>, pick <code>fakers36s.img</code></li>
+      <li><b>Choose Storage</b>, pick the blank card</li>
+      <li><b>Write</b>, and say no if it offers to apply customisation settings</li>
+    </ol>
+    <p class="muted">balenaEtcher works the same way: image, drive, flash.</p>
+
+    <details>
+      <summary>Command line instead</summary>
+      <div class="cmd"><pre>sudo dd if=fakers36s.img of=/dev/rdisk4 bs=4m status=progress   <span class="cmt"># macOS</span>
+sudo dd if=fakers36s.img of=/dev/sdb    bs=4M status=progress   <span class="cmt"># Linux</span></pre></div>
+      <p class="muted">This one <b>writes</b>, so a wrong device name destroys whatever is on it. Check twice.</p>
+    </details>
+
+    <div class="row">
+      <button data-go="5">Done, it is written</button>
+      <button class="ghost" data-go="3">Back</button>
+    </div>
+  </section>
+
+  <!-- ============ 5. first boot ============ -->
+  <section class="screen card" data-step="5">
+    <p class="eyebrow">Step 5 of 5</p>
+    <h2>First boot</h2>
+    <p>Put the new card in slot <b>TF1</b>, the one the stock card came out of, and power on.</p>
+    <p class="muted">You will see the logo, a chime, then EmulationStation. The first boot takes longer
+      than usual because it grows the games partition to fill your card.</p>
+
+    <div class="note warn">
+      <b>Black screen but the device seems alive?</b> You may have the other panel.
+      <button class="link" data-go="81">Read the panel guide</button>
+    </div>
+
+    <h3>Add your games</h3>
+    <p>Plug the card into your computer. The <b>HOME</b> drive mounts normally everywhere, including Windows.</p>
+    <ul class="muted">
+      <li><code>roms/&lt;system&gt;/</code> for games, folder names match the stock card</li>
+      <li><code>.config/retroarch/system/</code> for BIOS files</li>
+      <li><code>read/</code> for epubs, which show up under Options as Reader</li>
+      <li><code>roms/bgmusic/</code> for menu music</li>
+    </ul>
+    <p class="muted">No BIOS files or games are included, and none ever will be. Use your own.</p>
+
+    <h3>Box art, automatically</h3>
+    <p>With the card still plugged in, this adds cover art to every game that has none, from the
+      <a href="https://github.com/libretro-thumbnails/libretro-thumbnails">libretro thumbnail library</a>.
+      Art you already have is left alone.</p>
     <button id="artBtn">Choose the HOME drive</button>
     <progress id="artProg" class="hidden" max="1" value="0"></progress>
     <div class="status" id="artStatus"></div>
-    <p class="muted" id="artFallback">For menu music, drop <code>.mp3</code> or <code>.ogg</code> files into
-      <code>roms/bgmusic</code>.</p>
+
+    <div class="row">
+      <button class="ghost" data-go="0">Start over</button>
+    </div>
+  </section>
+
+  <!-- ============ 80. troubleshooting ============ -->
+  <section class="screen card" data-step="80">
+    <p class="eyebrow">Help</p>
+    <h2>Something is wrong</h2>
+
+    <details open>
+      <summary>Black screen, but there is sound or the power light is on</summary>
+      <p>Almost certainly the wrong display panel.
+        <button class="link" data-go="81">Open the panel guide</button></p>
+    </details>
+    <details>
+      <summary>Nothing at all, completely dead</summary>
+      <p class="muted">Check the card is in slot <b>TF1</b>, not TF2. If it still does nothing, put the
+        original card back in. If the stock firmware boots, the console is fine and the image is the
+        problem. Rebuild it and make sure your backup came from this exact console.</p>
+    </details>
+    <details>
+      <summary>It boots to a text console or a plain launcher</summary>
+      <p class="muted">EmulationStation failed to start and fell back. Plug the card into a computer and
+        read <code>.config/fakers36s/</code> on the HOME drive, which holds the logs.</p>
+    </details>
+    <details>
+      <summary>The installer says my board is unknown</summary>
+      <p class="muted">Your card has a hardware config this project has not catalogued. Installing
+        anyway could produce a console that does not boot, so the installer stops. Please
+        <a href="https://github.com/Eeman1113/FakeR36S-OS/issues">open an issue</a> with the fingerprint
+        it showed you, and it can be added.</p>
+    </details>
+    <details>
+      <summary>Games run, but one system is slow</summary>
+      <p class="muted">Open <b>Options, System Dashboard</b> and turn on <b>Performance mode</b> for the
+        1.2 GHz clock. The battery saver caps 8 and 16 bit systems at 816 MHz on purpose, where they
+        still run at full speed.</p>
+    </details>
+    <div class="row"><button class="ghost" data-go="0">Back to start</button></div>
+  </section>
+
+  <!-- ============ 81. panel guide ============ -->
+  <section class="screen card" data-step="81">
+    <p class="eyebrow">Help</p>
+    <h2>Panel 1 and panel 2</h2>
+    <p>These clone boards shipped with two different screens. They are not compatible: a kernel built
+      for one leaves the other dark. Everything else about the console is identical.</p>
+
+    <div class="note">
+      <b>The published image is built for panel 2</b>, the screen on the board this project is tested
+      on. Most A23 boards seen so far use it.
+    </div>
+
+    <h3>How to tell</h3>
+    <p class="muted">There is no label to read, so you find out by booting. If after flashing you get a
+      <b>black or scrambled screen</b> while the console is otherwise alive, the boot chime plays, or
+      it responds to the power button, you have panel 1 and the wrong kernel.</p>
+
+    <h3>The fix</h3>
+    <p>Only the kernel differs. Your card, the system and your games all stay exactly as they are, so
+      you swap one piece rather than starting over. You need Docker and about ten minutes.</p>
+    <div class="cmd"><pre>git clone https://github.com/Eeman1113/FakeR36S-OS
+cd FakeR36S-OS/kernel &amp;&amp; ./build.sh          <span class="cmt"># about 6 minutes</span></pre></div>
+    <p class="muted">Then write the panel 1 kernel over the one on the card. It lives at a fixed offset,
+      outside both partitions:</p>
+    <div class="cmd"><pre>sudo dd if=out/android_boot_a23_panel1.img of=/dev/sdb \
+        bs=512 seek=172032 conv=notrunc status=progress
+sync</pre></div>
+    <p class="muted">That is the whole fix. Put the card back and power on.</p>
+
+    <div class="note warn">
+      <b>Panel 1 has not been tested on real hardware.</b> It is built from the same device trees and
+      should work, but nobody has confirmed it. If you try it, please
+      <a href="https://github.com/Eeman1113/FakeR36S-OS/issues">say so in an issue</a>, with or without
+      success. That is how it stops being untested.
+    </div>
+    <div class="row">
+      <button class="ghost" data-go="80">Back to help</button>
+      <button class="ghost" data-go="0">Start over</button>
+    </div>
+  </section>
+
+  <!-- ============ 90. update ============ -->
+  <section class="screen card" data-step="90">
+    <p class="eyebrow">Update</p>
+    <h2>Update without reflashing</h2>
+    <p>Everything of yours stays: games, saves and save states, RetroArch and per core settings, button
+      remaps, themes, box art, BIOS and ports.</p>
+
+    <h3>1. Get the package</h3>
+    <button id="updFetch">Fetch the update</button>
+    <progress id="updProg" class="hidden" max="1" value="0"></progress>
+    <div class="status" id="updStatus"></div>
+    <input type="file" id="updFile" accept=".tar" class="hidden">
+    <p class="muted">Or download
+      <a id="updLink" href="https://github.com/Eeman1113/FakeR36S-OS/releases/latest">fakers36s-update-a23_panel2.tar</a>
+      from the release page.</p>
+
+    <h3>2. Put it on the card</h3>
+    <p class="muted">Plug the console's card into this computer, then pick its <b>HOME</b> drive.</p>
+    <button id="updWrite" disabled>Put it on the HOME drive</button>
+
+    <h3>3. Boot the console</h3>
+    <p class="muted">Eject the card, put it back in the console and power on. The logo and spinner stay
+      up for a few minutes while it installs, then it restarts into the new version. The log is in
+      <code>HOME/.config/fakers36s/update.log</code>.</p>
+
+    <details>
+      <summary>Without Chrome or Edge</summary>
+      <p class="muted">Make a folder called <code>update</code> in the root of the HOME drive and copy
+        the <code>.tar</code> into it, unchanged. Eject and power on. On macOS or Linux you can also run
+        <code>tools/update-os.sh</code> from the repo to write the new system straight to the card.</p>
+    </details>
+    <div class="row"><button class="ghost" data-go="0">Back to start</button></div>
   </section>
 
   <footer>
-    <p>No BIOS files or games are included. Use your own legally obtained copies.</p>
-    <p>FakeR36S-OS by Eeman1113 (EemanSleepDeeprived), built on
-      <a href="https://github.com/CodeZombie/goodluckOS">goodluckOS</a> by CodeZombie and contributors, with recipes from
-      <a href="https://github.com/Bepok/Debianator">Debianator</a> by Bepok.
-      <a href="https://github.com/Eeman1113/FakeR36S-OS">Source on GitHub</a> (GPL-2.0).</p>
+    <p>FakeR36S-OS by Eeman1113, built on
+      <a href="https://github.com/CodeZombie/goodluckOS">goodluckOS</a> by CodeZombie and contributors,
+      with recipes from <a href="https://github.com/Bepok/Debianator">Debianator</a> by Bepok.</p>
+    <p><a href="https://github.com/Eeman1113/FakeR36S-OS">Source on GitHub</a> &middot; GPL-2.0 &middot;
+      <a href="https://github.com/Eeman1113/FakeR36S-OS/issues">Report a problem</a></p>
   </footer>
 </main>
+
+<div id="pocket">
+  <div id="bubble"><button class="x" id="pocketHide" title="Hide">&times;</button><span id="pocketSay"></span></div>
+  <svg id="sprite" viewBox="0 0 18 16" shape-rendering="crispEdges" role="img" aria-label="Pocket, your guide">
+    <g fill="#5d6477">
+      <rect x="2" y="2" width="14" height="12"/><rect x="1" y="4" width="1" height="8"/>
+      <rect x="16" y="4" width="1" height="8"/><rect x="3" y="1" width="12" height="1"/>
+      <rect x="3" y="14" width="12" height="1"/>
+    </g>
+    <rect x="3" y="1" width="12" height="1" fill="#8c93a5"/>
+    <rect x="4" y="3" width="10" height="6" fill="#11131a"/>
+    <g fill="#ccd6ed">
+      <rect class="eye" x="6" y="5" width="2" height="2"/>
+      <rect class="eye" x="10" y="5" width="2" height="2"/>
+    </g>
+    <g fill="#f4efe6">
+      <rect x="4" y="11" width="3" height="1"/><rect x="5" y="10" width="1" height="3"/>
+      <rect x="11" y="10" width="1" height="1"/><rect x="13" y="10" width="1" height="1"/>
+      <rect x="12" y="12" width="1" height="1"/>
+    </g>
+  </svg>
+</div>
 
 <script type="module">
 import { identifyBoard, fetchBase, baseFromFile, buildImage } from "./installer.js";
@@ -161,49 +568,134 @@ import { fetchArt, supported as artSupported } from "./art.js";
 import * as upd from "./update.js";
 
 const $ = (id) => document.getElementById(id);
-let stock = null;
 const say = (el, cls, html) => { el.className = "status " + cls; el.innerHTML = html; };
 const mb = (n) => (n / 1e6).toFixed(0) + " MB";
 
+
+/* ---------------- Pocket, the guide ---------------- */
+const TIPS = {
+  "0":  "Hi, I'm Pocket. Tell me what you're here for and I'll stay with you the whole way.",
+  "1":  "The card that came in the box is the one thing you can't replace. Everything else is buyable.",
+  "2":  "Check the disk name twice before you press enter. The size should match your card exactly.",
+  "3":  "I only read 128 KB of your backup, just enough to recognise the board. It never leaves this page.",
+  "4":  "The blank card. Not the stock one. I'll be here when it's written.",
+  "5":  "Slot TF1, the one the stock card came out of. The first boot is slow on purpose.",
+  "80": "Nothing here is permanent. Your stock card still boots the original firmware.",
+  "81": "Only the kernel is different between the two panels. Everything else on your card stays.",
+  "90": "An update keeps all of it: saves, remaps, art, ports. Nothing gets copied again.",
+};
+const bubble = $("bubble"), sprite = $("sprite");
+let pocketOff = false;
+function pocketSay(step) {
+  if (pocketOff) return;
+  const t = TIPS[String(step)];
+  if (!t) return;
+  $("pocketSay").textContent = t;
+  bubble.style.display = "";
+  bubble.style.animation = "none"; void bubble.offsetWidth; bubble.style.animation = "";
+  sprite.classList.add("talking");
+  setTimeout(() => sprite.classList.remove("talking"), 900);
+}
+$("pocketHide").addEventListener("click", () => { bubble.style.display = "none"; });
+sprite.addEventListener("click", () => {
+  pocketOff = false;
+  bubble.style.display === "none" ? pocketSay(current) : (bubble.style.display = "none");
+});
+
+/* ---------------- wizard navigation ---------------- */
+let current = "0";
+const screens = [...document.querySelectorAll(".screen")];
+const FLOW = ["0", "1", "2", "3", "4", "5"];
+const rail = $("rail");
+FLOW.slice(1).forEach(() => rail.appendChild(document.createElement("li")));
+
+function goto(step) {
+  screens.forEach((s) => s.classList.toggle("on", s.dataset.step === String(step)));
+  const i = FLOW.indexOf(String(step));
+  [...rail.children].forEach((li, n) => {
+    li.className = i < 1 ? "" : n < i - 1 ? "past" : n === i - 1 ? "on" : "";
+  });
+  rail.style.visibility = i > 0 ? "visible" : "hidden";
+  current = String(step);
+  pocketSay(step);
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-go]");
+  if (b) goto(b.dataset.go);
+});
+goto(0);
+
+/* ---------------- platform tabs ---------------- */
+const osGuess = /Mac/i.test(navigator.platform) ? "mac" : /Win/i.test(navigator.platform) ? "win" : "linux";
+function pickOS(os) {
+  document.querySelectorAll(".tab").forEach((t) => t.setAttribute("aria-selected", t.dataset.os === os));
+  document.querySelectorAll(".pane").forEach((p) => p.classList.toggle("on", p.dataset.os === os));
+}
+document.querySelectorAll(".tab").forEach((t) => t.addEventListener("click", () => pickOS(t.dataset.os)));
+pickOS(osGuess);
+
+/* ---------------- copy buttons ---------------- */
+document.querySelectorAll(".cmd").forEach((box) => {
+  const b = document.createElement("button");
+  b.className = "cp"; b.textContent = "Copy";
+  b.addEventListener("click", async () => {
+    await navigator.clipboard.writeText(box.querySelector("pre").innerText);
+    b.textContent = "Copied"; setTimeout(() => (b.textContent = "Copy"), 1400);
+  });
+  box.appendChild(b);
+});
+
+/* ---------------- browser capability ---------------- */
+if (!("showDirectoryPicker" in window)) $("browserNote").style.display = "";
+
+/* ---------------- identify the board ---------------- */
+let stock = null;
 $("stock").addEventListener("change", async (e) => {
-  stock = null; $("build").disabled = true; $("s2").classList.remove("done");
+  stock = null; $("build").disabled = true; $("buildBox").classList.add("hidden");
   const f = e.target.files[0];
   if (!f) return;
   say($("boardStatus"), "", "Checking your board...");
   try {
     const { hash, board } = await identifyBoard(f);
     if (!board) {
-      say($("boardStatus"), "bad", `Unknown board (script.bin ${hash.slice(0, 12)}...). FakeR36S-OS can't safely run on it.
-        Please open an issue on GitHub with this fingerprint.`);
+      say($("boardStatus"), "bad", `Unknown board (script.bin ${hash.slice(0, 12)}...). Installing could
+        leave you with a console that does not boot, so this stops here. Please
+        <a href="https://github.com/Eeman1113/FakeR36S-OS/issues">open an issue</a> with that fingerprint.`);
       return;
     }
     if (board.soc === "A33") {
-      say($("boardStatus"), "warn", `${board.name}: this is a 4-core A33 board. Use
-        <a href="https://github.com/CodeZombie/goodluckOS">goodluckOS</a> for now.`);
+      say($("boardStatus"), "warn", `${board.name}. This is a 4 core A33 board, and FakeR36S-OS is built
+        for the 2 core A23. Use <a href="https://github.com/CodeZombie/goodluckOS">goodluckOS</a>, which
+        supports yours properly.`);
       return;
     }
     stock = f;
-    $("build").disabled = false; $("s2").classList.add("done"); $("s1").classList.add("done");
+    $("build").disabled = false;
+    $("buildBox").classList.remove("hidden");
     say($("boardStatus"), board.status === "tested" ? "ok" : "warn",
-      board.status === "tested" ? `${board.name}: supported and tested.`
-                                : `${board.name}: supported A23 board, not tested yet. Your screen may need panel 1 instead of panel 2.`);
+      board.status === "tested"
+        ? `${board.name}. Tested on this exact board, you are good to go.`
+        : `${board.name}. Supported A23 board, but nobody has booted this variant yet. It should work.
+           If the screen stays dark afterwards, see the
+           <button class="link" data-go="81">panel guide</button>.`);
   } catch (err) {
     say($("boardStatus"), "bad", err.message);
   }
 });
 
+/* ---------------- build ---------------- */
 async function finish(base) {
   say($("buildStatus"), "", "Assembling your image...");
   let logo = null;
   try { logo = new Uint8Array(await (await fetch("eeman_bootlogo.bmp")).arrayBuffer()); } catch {}
   const { image, logoOk } = await buildImage(base, stock, logo);
-  const url = URL.createObjectURL(image);
-  $("save").href = url; $("save").classList.remove("hidden");
-  $("s3").classList.add("done");
-  say($("buildStatus"), "ok", `Done: ${mb(image.size)} image ready${logoOk ? ", boot logo added" : ""}. Save it in step 4.`);
+  $("save").href = URL.createObjectURL(image);
+  $("save").classList.remove("hidden");
+  say($("buildStatus"), "ok",
+    `Ready: ${mb(image.size)} image${logoOk ? ", with your boot logo" : ""}. Save it, then go to the next step.`);
   $("prog").classList.add("hidden");
 }
-
 $("build").addEventListener("click", async () => {
   $("build").disabled = true; $("prog").classList.remove("hidden"); $("prog").removeAttribute("value");
   say($("buildStatus"), "", "Downloading FakeR36S-OS...");
@@ -215,52 +707,51 @@ $("build").addEventListener("click", async () => {
     await finish(base);
   } catch (err) {
     $("prog").classList.add("hidden");
-    say($("buildStatus"), "warn", "Automatic download failed (" + err.message + ").");
+    say($("buildStatus"), "warn", "The automatic download failed (" + err.message + ").");
     $("manual").classList.remove("hidden");
   }
 });
-
-if (!artSupported()) {
-  $("artBtn").disabled = true;
-  say($("artStatus"), "warn", `This browser can't write to drives. Use Chrome or Edge, or run
-    <code>python3 tools/fetch-art.py /Volumes/HOME</code> from the
-    <a href="https://github.com/Eeman1113/FakeR36S-OS">repo</a>.`);
-}
-$("artBtn").addEventListener("click", async () => {
-  let home;
-  try { home = await window.showDirectoryPicker({ id: "fakers36s-home", mode: "readwrite" }); }
-  catch { return; }
-  $("artBtn").disabled = true; $("artProg").classList.remove("hidden");
-  try {
-    const r = await fetchArt(home, (text, done, total) => {
-      say($("artStatus"), "", text);
-      if (total) { $("artProg").max = total; $("artProg").value = done; }
-    });
-    $("s5").classList.add("done");
-    say($("artStatus"), "ok", `Done: ${r.added} box arts added${r.missing ? `, ${r.missing} games had no match` : ""}.
-      Eject the card safely, then put it back in the handheld.`);
-  } catch (err) {
-    say($("artStatus"), "bad", err.message);
-  }
-  $("artProg").classList.add("hidden"); $("artBtn").disabled = false;
-});
-
 $("baseFile").addEventListener("change", async (e) => {
   const f = e.target.files[0];
   if (!f || !stock) return;
   try { await finish(await baseFromFile(f)); } catch (err) { say($("buildStatus"), "bad", err.message); }
 });
 
-// ---- update an existing install
+/* ---------------- box art ---------------- */
+if (!artSupported()) {
+  $("artBtn").disabled = true;
+  say($("artStatus"), "warn", `This browser cannot write to drives. Use Chrome or Edge, or run
+    <code>python3 tools/fetch-art.py /Volumes/HOME</code> from the repo.`);
+}
+$("artBtn").addEventListener("click", async () => {
+  let home;
+  try { home = await window.showDirectoryPicker({ id: "fakers36s-home", mode: "readwrite" }); } catch { return; }
+  $("artBtn").disabled = true; $("artProg").classList.remove("hidden");
+  try {
+    const r = await fetchArt(home, (text, done, total) => {
+      say($("artStatus"), "", text);
+      if (total) { $("artProg").max = total; $("artProg").value = done; }
+    });
+    say($("artStatus"), "ok", `Done: ${r.added} covers added${r.missing ? `, ${r.missing} with no match` : ""}.
+      Eject the card safely, then put it back in the console.`);
+  } catch (err) { say($("artStatus"), "bad", err.message); }
+  $("artProg").classList.add("hidden"); $("artBtn").disabled = false;
+});
+
+/* ---------------- update ---------------- */
 let updPkg = null;
 async function updUse(file) {
   try {
     const m = await upd.readManifest(file);
     if (m.variant !== "a23_panel2") throw new Error(`This package is for ${m.variant}, not the GA36-MB A23 panel 2.`);
     updPkg = file;
-    say($("updStatus"), "ok", `Update ${m.version} ready (${mb(file.size)}). Now put it on the HOME drive.`);
-    $("updWrite").disabled = !upd.supported();
-    if (!upd.supported()) say($("updStatus"), "warn", `Update ${m.version} checked. This browser can't write to drives: copy it to <code>HOME/update/</code> by hand (see below).`);
+    if (upd.supported()) {
+      say($("updStatus"), "ok", `Update ${m.version} ready (${mb(file.size)}). Now put it on the HOME drive.`);
+      $("updWrite").disabled = false;
+    } else {
+      say($("updStatus"), "warn", `Update ${m.version} checked, but this browser cannot write to drives.
+        Copy it into <code>HOME/update/</code> by hand, see below.`);
+    }
   } catch (err) { say($("updStatus"), "bad", err.message); }
 }
 $("updFetch").addEventListener("click", async () => {
@@ -272,7 +763,7 @@ $("updFetch").addEventListener("click", async () => {
       say($("updStatus"), "", `Downloading the update... ${mb(got)}${total ? " of " + mb(total) : ""}`);
     }));
   } catch {
-    say($("updStatus"), "warn", `GitHub didn't let this page download it directly. Download it with the link above, then pick the file:`);
+    say($("updStatus"), "warn", "GitHub would not let this page download it directly. Use the link below, then pick the file:");
     $("updFile").classList.remove("hidden");
   }
   $("updProg").classList.add("hidden"); $("updFetch").disabled = false;
@@ -289,8 +780,7 @@ $("updWrite").addEventListener("click", async () => {
       $("updProg").max = total; $("updProg").value = done;
       say($("updStatus"), "", `Copying to the card... ${mb(done)} of ${mb(total)}`);
     });
-    $("upd").classList.add("done");
-    say($("updStatus"), "ok", "Done. Eject the card safely, put it in the console and power on: it installs the update and restarts by itself.");
+    say($("updStatus"), "ok", "Done. Eject the card safely, put it in the console and power on. It installs and restarts by itself.");
   } catch (err) { say($("updStatus"), "bad", err.message); }
   $("updProg").classList.add("hidden"); $("updWrite").disabled = false;
 });
