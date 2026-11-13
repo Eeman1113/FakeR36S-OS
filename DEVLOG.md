@@ -1103,3 +1103,13 @@ The fun parts:
 
 Not tested on the console yet: this build is the first one with it.
 
+
+#### updater-fix · It said failed, but it had finished
+
+*Eeman1113* · rootfs-overlay/usr/local/bin/fr-update
+
+First real run of the on-card updater, and it told me "system files could not be written". I panicked a bit, then read my own log: kernel written, then the failure exactly two minutes later, which is about how long the whole system takes to unpack on this chip. So it hadn't stopped halfway. It had written every single file and then lied to me.
+
+The culprit was the little loop that moves the progress bar. It updates the bar every 50 files, and the last line of that loop was a test for "is this a multiple of 50". With 6,355 files the answer at the end was no, the loop returned false, and the updater took that as tar failing. Every update with a file count not divisible by 50 would have done the same. Classic.
+
+Now tar's own exit status is the only thing that decides, and whatever tar complains about goes into `update.log`, so next time I'll see the real error instead of guessing. On my card I finished the skipped last step by hand, and Reader is finally in Options.

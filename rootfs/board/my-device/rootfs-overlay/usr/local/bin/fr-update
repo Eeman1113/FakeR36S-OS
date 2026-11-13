@@ -87,15 +87,23 @@ mkdir -p /tmp/keep
 cp -a /etc/player-flags /var/lib/display /tmp/keep/ 2>/dev/null
 total=$(val files_rootfs); [ "${total:-0}" -gt 0 ] 2>/dev/null || total=5000
 step 15 "Installing system files"
-set -o pipefail 2>/dev/null
-part rootfs.tar.gz | gunzip -c | tar -xv -C / | {
+# tar's own exit status decides success (the progress counter's status must not: a loop ending on
+# a false "[ i % 50 = 0 ]" once failed a fully written update). tar's messages go to the log.
+rm -f /tmp/fr-tar.rc
+{ part rootfs.tar.gz | gunzip -c | tar -xv -C / 2>/tmp/fr-tar.err; echo $? > /tmp/fr-tar.rc; } | {
     i=0
     while read -r _; do
         i=$((i + 1))
-        [ $((i % 50)) = 0 ] && step $((15 + 70 * i / total)) "Installing system files: $i of $total"
+        if [ $((i % 50)) = 0 ]; then step $((15 + 70 * i / total)) "Installing system files: $i of $total"; fi
     done
-} || fail "system files could not be written"
-set +o pipefail 2>/dev/null
+    true
+}
+rc=$(cat /tmp/fr-tar.rc 2>/dev/null)
+if [ "$rc" != 0 ]; then
+    tail -n 20 /tmp/fr-tar.err >> "$LOG"
+    fail "system files could not be written (tar exit ${rc:-?})"
+fi
+[ -s /tmp/fr-tar.err ] && { log "tar warnings:"; tail -n 20 /tmp/fr-tar.err >> "$LOG"; }
 rm -rf /etc/player-flags /var/lib/display
 cp -a /tmp/keep/player-flags /etc/ 2>/dev/null
 mkdir -p /var/lib && cp -a /tmp/keep/display /var/lib/ 2>/dev/null
