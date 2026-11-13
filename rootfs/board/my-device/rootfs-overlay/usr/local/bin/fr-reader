@@ -6,12 +6,39 @@ H=/home/player
 CONF=$H/.config/koreader
 mkdir -p "$H/read" "$CONF" "$H/.local/share/fonts" "$H/.config/fakers36s"
 [ -f "$CONF/settings.reader.lua" ] || cp /usr/share/fakers36s/koreader/settings.reader.lua "$CONF/"
+# our defaults (page turns on the D-pad, offline-useless plugins off), merged without touching
+# anything changed inside KOReader
+/opt/koreader/luajit /usr/share/fakers36s/koreader/fr-settings.lua "$CONF/settings.reader.lua" 2>/dev/null
 
 export HOME=$H XDG_CONFIG_HOME=$H/.config XDG_DATA_HOME=$H/.local/share
 export SDL_VIDEODRIVER=kmsdrm
+# button mode: KOReader's desktop build assumes a touchscreen, where lists have no selection to
+# move with the D-pad. Touchless mode is the one it uses on e-readers with keys.
+export DISABLE_TOUCH=1
 . /etc/profile.d/sdl_controller.sh 2>/dev/null
-doas /usr/local/bin/cpuprofile light 2>/dev/null   # reading needs little CPU: the battery lasts longer
-/usr/bin/fr-padwatch /opt/koreader/koreader.sh "$H/read" >> "$H/.config/fakers36s/reader.log" 2>&1
+LOG=$H/.config/fakers36s/reader.log
+# Starting takes a while (KOReader builds its font list the first time), so it starts at full CPU
+# speed behind a spinner. Once the library is up (KOReader opens the gamepad last) the spinner
+# stops and the CPU drops to the battery saving profile: reading needs little.
+killall fr-loading 2>/dev/null
+[ -x /usr/bin/fr-loading ] && setsid /usr/bin/fr-loading 240 </dev/null >/dev/null 2>&1 &
+doas /usr/local/bin/cpuprofile normal 2>/dev/null
+[ "$(wc -c < "$LOG" 2>/dev/null || echo 0)" -gt 500000 ] && : > "$LOG"   # keep the log small
+echo "=== reader start $(date)" >> "$LOG"
+start=$(wc -c < "$LOG")
+(
+    i=0
+    while [ $i -lt 240 ]; do
+        tail -c +$((start + 1)) "$LOG" | grep -q 'opened gamecontroller' && break
+        sleep 1; i=$((i + 1))
+    done
+    killall fr-loading 2>/dev/null
+    doas /usr/local/bin/cpuprofile light 2>/dev/null
+) &
+WATCH=$!
+/usr/bin/fr-padwatch /opt/koreader/koreader.sh "$H/read" >> "$LOG" 2>&1
 rc=$?
+kill $WATCH 2>/dev/null
+killall fr-loading 2>/dev/null
 doas /usr/local/bin/cpuprofile normal 2>/dev/null
 exit $rc

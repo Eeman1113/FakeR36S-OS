@@ -26,6 +26,12 @@ define KOREADER_INSTALL_TARGET_CMDS
 		$(TARGET_DIR)/opt/koreader/plugins/coverbrowser.koplugin/main.lua
 	grep -q 'saveSetting("filemanager_display_mode", "mosaic_image")' \
 		$(TARGET_DIR)/opt/koreader/plugins/coverbrowser.koplugin/main.lua
+	# gamepad: Select does nothing in KOReader (it is half of the Select+Start exit, and it was
+	# mapped to both page back and page forward); L1/R1 are the page turn keys of button mode
+	sed -i -e '/button_key_names = {/,/^    },/{ /^        \[4\] = "RPgBack",$$/d; /^        \[5\] = "RPgFwd",$$/d; s/^        \[9\] = "RPgBack",$$/        [9] = "LPgBack",/; s/^        \[10\] = "RPgFwd",$$/        [10] = "LPgFwd",/; }' \
+		$(TARGET_DIR)/opt/koreader/frontend/device/sdl/gamepad.lua
+	grep -q '\[9\] = "LPgBack"' $(TARGET_DIR)/opt/koreader/frontend/device/sdl/gamepad.lua
+	! grep -q '\[4\] = "RPgBack"' $(TARGET_DIR)/opt/koreader/frontend/device/sdl/gamepad.lua
 endef
 
 $(eval $(generic-package))

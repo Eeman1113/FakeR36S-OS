@@ -12,4 +12,5 @@ return {
     ["copt_line_spacing"] = 110,
     ["night_mode"] = false,
     ["quickstart_shown_version"] = 999999999,
+    ["left_right_keys_turn_pages"] = true,
 }

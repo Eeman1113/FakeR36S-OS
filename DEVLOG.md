@@ -1113,3 +1113,16 @@ First real run of the on-card updater, and it told me "system files could not be
 The culprit was the little loop that moves the progress bar. It updates the bar every 50 files, and the last line of that loop was a test for "is this a multiple of 50". With 6,355 files the answer at the end was no, the loop returned false, and the updater took that as tar failing. Every update with a file count not divisible by 50 would have done the same. Classic.
 
 Now tar's own exit status is the only thing that decides, and whatever tar complains about goes into `update.log`, so next time I'll see the real error instead of guessing. On my card I finished the skipped last step by hand, and Reader is finally in Options.
+
+#### reader-buttons · Reading with my thumbs
+
+*Eeman1113* · fr-reader, koreader.mk, fr-settings.lua
+
+Reader opened on the console for the first time today and it was beautiful, and then I pressed the D-pad and nothing happened. KOReader had seen my gamepad fine. The catch is that its desktop build thinks it's on a touchscreen, and touch lists have no highlighted item for a D-pad to move. One environment variable, `DISABLE_TOUCH=1`, flips it into the mode it uses on e-readers with real buttons, and suddenly the whole library is navigable.
+
+The layout now:
+- D-pad moves, A opens, B goes back (and closes a book), Start is the menu, Y is the options for a book
+- reading: D-pad left/right and L1/R1 turn pages
+- Select does nothing on its own anymore. It was mapped to page back AND page forward at the same time, which is a special kind of useless, and it's half of the Select+Start exit
+
+Startup was the other pain: almost a minute and a half the first time, with a spinner that stopped after 20 seconds so it looked frozen. Now Reader starts at full CPU speed behind a spinner that keeps going until the library is actually up (KOReader opens the gamepad last, so I watch the log for that), then drops to the battery saver for reading. The online-only plugins (OPDS, news, Wallabag, sync...) are switched off once, through a small Lua merge that never touches anything I change inside KOReader.
