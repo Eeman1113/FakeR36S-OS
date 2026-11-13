@@ -190,13 +190,13 @@
         <polygon points="91.45 52.8 65.25 37.67 91.28 22.64 117.48 37.77"/>
       </g>
     </svg>
-    <h1>Install FakeR36S-OS</h1>
-    <p>Custom firmware for fake R36S handhelds on the GA36-MB board with an Allwinner A23.</p>
-    <span class="pill">Your card image is built in this browser. Nothing is uploaded.</span>
+    <h1 data-tip="heroTitle">Install FakeR36S-OS</h1>
+    <p data-tip="heroSub">Custom firmware for fake R36S handhelds on the GA36-MB board with an Allwinner A23.</p>
+    <span class="pill" data-tip="pillNoUpload">Your card image is built in this browser. Nothing is uploaded.</span>
   </div>
 
 
-  <div class="mobile-note">
+  <div class="mobile-note" data-tip="mobileNote">
     <b>Best opened on a computer</b>
     This builds an SD card image and writes it to a card, so you need a desktop or laptop with a card
     reader. Read it here by all means, then come back on a PC or Mac when you are ready to install.
@@ -207,17 +207,17 @@
   <!-- ============ 0. fork ============ -->
   <section class="screen on card" data-step="0">
     <p class="eyebrow">Start here</p>
-    <h2>What are you doing today?</h2>
+    <h2 data-tip="h2Fork">What are you doing today?</h2>
     <div class="choices">
-      <button class="choice" data-go="1">
+      <button class="choice" data-go="1" data-tip="choiceInstall">
         <b>Installing for the first time</b>
         <span>You have the console and the card it came with. Takes about 20 minutes.</span>
       </button>
-      <button class="choice" data-go="90">
+      <button class="choice" data-go="90" data-tip="choiceUpdate">
         <b>Updating, I already run FakeR36S-OS</b>
         <span>Keeps your games, saves, remaps, art and ports. No reflash.</span>
       </button>
-      <button class="choice" data-go="80">
+      <button class="choice" data-go="80" data-tip="choiceBroken">
         <b>Something is wrong after installing</b>
         <span>Black screen, no sound, will not boot.</span>
       </button>
@@ -227,26 +227,26 @@
   <!-- ============ 1. what you need ============ -->
   <section class="screen card" data-step="1">
     <p class="eyebrow">Step 1 of 5</p>
-    <h2>What you need</h2>
+    <h2 data-tip="h2Needs">What you need</h2>
     <p class="muted">Check you have all four before starting. The first one is the only one you cannot buy.</p>
     <ul class="needs">
-      <li><span class="ic">1</span><div><b>The SD card that came with the console</b>
+      <li data-tip="needStockCard"><span class="ic">1</span><div><b>The SD card that came with the console</b>
         <span>It holds the bootloader, which cannot legally be shared. Without it nothing can boot.</span></div></li>
-      <li><span class="ic">2</span><div><b>A second, blank microSD card</b>
+      <li data-tip="needBlankCard"><span class="ic">2</span><div><b>A second, blank microSD card</b>
         <span>8 GB or larger. Your original card stays untouched as a backup.</span></div></li>
-      <li><span class="ic">3</span><div><b>Chrome or Edge</b>
+      <li data-tip="needBrowser"><span class="ic">3</span><div><b>Chrome or Edge</b>
         <span>This page writes to drives, which other browsers do not allow.</span></div></li>
-      <li><span class="ic">4</span><div><b>An SD card writer</b>
+      <li data-tip="needWriter"><span class="ic">4</span><div><b>An SD card writer</b>
         <span><a href="https://www.raspberrypi.com/software/">Raspberry Pi Imager</a> or
         <a href="https://etcher.balena.io">balenaEtcher</a>. Both are free, both work everywhere.</span></div></li>
     </ul>
 
-    <div class="note" id="browserNote" style="display:none">
+    <div class="note" id="browserNote" data-tip="noteBrowserBlocked" style="display:none">
       <b>This browser cannot write to drives.</b> You can still build your image here, but the
       automatic steps will ask you to copy files by hand. Chrome or Edge makes it one click.
     </div>
 
-    <div class="note warn">
+    <div class="note warn" data-tip="noteA23Check">
       <b>Is your console actually an A23?</b> On the stock firmware open
       <b>System Information</b> and look at <b>CPU NUMBER</b>. <b>2</b> means A23 and you are in the
       right place. <b>4</b> means A33, and you want
@@ -255,7 +255,7 @@
     </div>
 
     <div class="row">
-      <button data-go="2">I have everything</button>
+      <button data-go="2" data-tip="btnHaveEverything">I have everything</button>
       <button class="ghost" data-go="0">Back</button>
     </div>
   </section>
@@ -263,56 +263,56 @@
   <!-- ============ 2. backup ============ -->
   <section class="screen card" data-step="2">
     <p class="eyebrow">Step 2 of 5</p>
-    <h2>Back up the stock card</h2>
+    <h2 data-tip="h2Backup">Back up the stock card</h2>
     <p>Put the console's card in your computer. You are going to copy it to a file. This only
       <b>reads</b> the card, it does not change it.</p>
 
     <div class="tabs" role="tablist">
-      <button class="tab" role="tab" data-os="mac">macOS</button>
-      <button class="tab" role="tab" data-os="win">Windows</button>
-      <button class="tab" role="tab" data-os="linux">Linux</button>
+      <button class="tab" role="tab" data-os="mac" data-tip="tabMac">macOS</button>
+      <button class="tab" role="tab" data-os="win" data-tip="tabWin">Windows</button>
+      <button class="tab" role="tab" data-os="linux" data-tip="tabLinux">Linux</button>
     </div>
 
     <div class="pane" data-os="mac">
       <p class="muted">Open Terminal. First find the card, then copy it.</p>
-      <div class="cmd"><pre>diskutil list external physical</pre></div>
+      <div class="cmd" data-tip="cmdMacFind"><pre>diskutil list external physical</pre></div>
       <p class="muted">Look for the one whose size matches your card, for example <code>/dev/disk4</code>.
         Put that number in the next command, and check it twice.</p>
-      <div class="cmd"><pre>sudo dd if=/dev/rdisk4 of=~/stock_backup.img bs=4m status=progress</pre></div>
+      <div class="cmd" data-tip="cmdMacCopy"><pre>sudo dd if=/dev/rdisk4 of=~/stock_backup.img bs=4m status=progress</pre></div>
       <p class="muted">About 15 minutes for a 16 GB card. The <code>r</code> in <code>rdisk</code> is not a typo,
         it is much faster.</p>
     </div>
 
     <div class="pane" data-os="win">
       <p class="muted">Download <a href="https://sourceforge.net/projects/win32diskimager/">Win32 Disk Imager</a>, then:</p>
-      <ol class="muted">
+      <ol class="muted" data-tip="winImager">
         <li>Pick the card's drive letter under <b>Device</b></li>
         <li>Under <b>Image File</b>, type a new file name ending in <code>stock_backup.img</code></li>
         <li>Click <b>Read</b>, not Write</li>
       </ol>
-      <div class="note warn">If Windows pops up asking to <b>format the card</b>, click <b>Cancel</b>.
+      <div class="note warn" data-tip="noteWinFormat">If Windows pops up asking to <b>format the card</b>, click <b>Cancel</b>.
         The card uses Linux partitions Windows cannot read. Formatting would destroy the bootloader.</div>
     </div>
 
     <div class="pane" data-os="linux">
-      <div class="cmd"><pre>lsblk</pre></div>
+      <div class="cmd" data-tip="cmdLinuxFind"><pre>lsblk</pre></div>
       <p class="muted">Find your card, for example <code>/dev/sdb</code>, and check the size matches.</p>
-      <div class="cmd"><pre>sudo dd if=/dev/sdb of=~/stock_backup.img bs=4M status=progress conv=fsync</pre></div>
+      <div class="cmd" data-tip="cmdLinuxCopy"><pre>sudo dd if=/dev/sdb of=~/stock_backup.img bs=4M status=progress conv=fsync</pre></div>
     </div>
 
-    <div class="note bad">
+    <div class="note bad" data-tip="noteDeviceName">
       <b>Get the device name right.</b> Pointing this at the wrong disk reads the wrong thing, and a
       typo in the later write step can erase your computer's drive. Check the size matches your card
       before pressing enter.
     </div>
 
-    <details>
+    <details data-tip="detailPartialCopy">
       <summary>Can I copy less than the whole card?</summary>
       <p class="muted">Yes. Only the first 128 MB is needed. Add <code>count=128</code> on macOS with
         <code>bs=1m</code>, or <code>count=32</code> on Linux with <code>bs=4M</code>. A full backup is
         still better, because it also preserves the games and saves that shipped on the card.</p>
     </details>
-    <details>
+    <details data-tip="detailLostCard">
       <summary>I lost the original card</summary>
       <p class="muted">The bootloader belongs to the manufacturer and cannot be shipped with this
         project, so it has to come from your own card. Any old image or backup of it works too.</p>
@@ -321,7 +321,7 @@
     </details>
 
     <div class="row">
-      <button data-go="3">I have my backup file</button>
+      <button data-go="3" data-tip="btnHaveBackup">I have my backup file</button>
       <button class="ghost" data-go="1">Back</button>
     </div>
   </section>
@@ -329,7 +329,7 @@
   <!-- ============ 3. identify + build ============ -->
   <section class="screen card" data-step="3">
     <p class="eyebrow">Step 3 of 5</p>
-    <h2>Build your image</h2>
+    <h2 data-tip="h2Build">Build your image</h2>
     <p>Choose the <code>stock_backup.img</code> you just made. This page reads 128 KB of it to work out
       exactly which board you have, then builds an image for it.</p>
 
@@ -361,28 +361,28 @@
   <!-- ============ 4. flash ============ -->
   <section class="screen card" data-step="4">
     <p class="eyebrow">Step 4 of 5</p>
-    <h2>Write it to the new card</h2>
-    <div class="note bad"><b>Use the blank card, not the stock one.</b> Your original card is the only
+    <h2 data-tip="h2Flash">Write it to the new card</h2>
+    <div class="note bad" data-tip="noteBlankCard"><b>Use the blank card, not the stock one.</b> Your original card is the only
       copy of the bootloader that belongs to your console. Keep it safe.</div>
 
     <h3>The easy way</h3>
     <p>Open <a href="https://www.raspberrypi.com/software/">Raspberry Pi Imager</a>:</p>
-    <ol class="muted">
+    <ol class="muted" data-tip="flashSteps">
       <li><b>Choose OS</b>, scroll to the bottom, <b>Use custom</b>, pick <code>fakers36s.img</code></li>
       <li><b>Choose Storage</b>, pick the blank card</li>
       <li><b>Write</b>, and say no if it offers to apply customisation settings</li>
     </ol>
     <p class="muted">balenaEtcher works the same way: image, drive, flash.</p>
 
-    <details>
+    <details data-tip="detailFlashCli">
       <summary>Command line instead</summary>
-      <div class="cmd"><pre>sudo dd if=fakers36s.img of=/dev/rdisk4 bs=4m status=progress   <span class="cmt"># macOS</span>
+      <div class="cmd" data-tip="cmdFlashDd"><pre>sudo dd if=fakers36s.img of=/dev/rdisk4 bs=4m status=progress   <span class="cmt"># macOS</span>
 sudo dd if=fakers36s.img of=/dev/sdb    bs=4M status=progress   <span class="cmt"># Linux</span></pre></div>
       <p class="muted">This one <b>writes</b>, so a wrong device name destroys whatever is on it. Check twice.</p>
     </details>
 
     <div class="row">
-      <button data-go="5">Done, it is written</button>
+      <button data-go="5" data-tip="btnWritten">Done, it is written</button>
       <button class="ghost" data-go="3">Back</button>
     </div>
   </section>
@@ -390,19 +390,19 @@ sudo dd if=fakers36s.img of=/dev/sdb    bs=4M status=progress   <span class="cmt
   <!-- ============ 5. first boot ============ -->
   <section class="screen card" data-step="5">
     <p class="eyebrow">Step 5 of 5</p>
-    <h2>First boot</h2>
-    <p>Put the new card in slot <b>TF1</b>, the one the stock card came out of, and power on.</p>
-    <p class="muted">You will see the logo, a chime, then EmulationStation. The first boot takes longer
+    <h2 data-tip="h2FirstBoot">First boot</h2>
+    <p data-tip="tf1Slot">Put the new card in slot <b>TF1</b>, the one the stock card came out of, and power on.</p>
+    <p class="muted" data-tip="firstBootSlow">You will see the logo, a chime, then EmulationStation. The first boot takes longer
       than usual because it grows the games partition to fill your card.</p>
 
-    <div class="note warn">
+    <div class="note warn" data-tip="noteBlackScreen">
       <b>Black screen but the device seems alive?</b> You may have the other panel.
-      <button class="link" data-go="81">Read the panel guide</button>
+      <button class="link" data-go="81" data-tip="panelLink">Read the panel guide</button>
     </div>
 
     <h3>Add your games</h3>
-    <p>Plug the card into your computer. The <b>HOME</b> drive mounts normally everywhere, including Windows.</p>
-    <ul class="muted">
+    <p data-tip="homeDrive">Plug the card into your computer. The <b>HOME</b> drive mounts normally everywhere, including Windows.</p>
+    <ul class="muted" data-tip="romFolders">
       <li><code>roms/&lt;system&gt;/</code> for games, folder names match the stock card</li>
       <li><code>.config/retroarch/system/</code> for BIOS files</li>
       <li><code>read/</code> for epubs, which show up under Options as Reader</li>
@@ -412,7 +412,7 @@ sudo dd if=fakers36s.img of=/dev/sdb    bs=4M status=progress   <span class="cmt
 
     <h3>Box art, automatically</h3>
     <p>With the card still plugged in, this adds cover art to every game that has none, from the
-      <a href="https://github.com/libretro-thumbnails/libretro-thumbnails">libretro thumbnail library</a>.
+      <a href="https://github.com/libretro-thumbnails/libretro-thumbnails" data-tip="libretroLink">libretro thumbnail library</a>.
       Art you already have is left alone.</p>
     <button id="artBtn">Choose the HOME drive</button>
     <progress id="artProg" class="hidden" max="1" value="0"></progress>
@@ -426,32 +426,32 @@ sudo dd if=fakers36s.img of=/dev/sdb    bs=4M status=progress   <span class="cmt
   <!-- ============ 80. troubleshooting ============ -->
   <section class="screen card" data-step="80">
     <p class="eyebrow">Help</p>
-    <h2>Something is wrong</h2>
+    <h2 data-tip="h2Help">Something is wrong</h2>
 
-    <details open>
+    <details open data-tip="fixBlackScreen">
       <summary>Black screen, but there is sound or the power light is on</summary>
       <p>Almost certainly the wrong display panel.
-        <button class="link" data-go="81">Open the panel guide</button></p>
+        <button class="link" data-go="81" data-tip="panelLink">Open the panel guide</button></p>
     </details>
-    <details>
+    <details data-tip="fixDead">
       <summary>Nothing at all, completely dead</summary>
       <p class="muted">Check the card is in slot <b>TF1</b>, not TF2. If it still does nothing, put the
         original card back in. If the stock firmware boots, the console is fine and the image is the
         problem. Rebuild it and make sure your backup came from this exact console.</p>
     </details>
-    <details>
+    <details data-tip="fixTextConsole">
       <summary>It boots to a text console or a plain launcher</summary>
       <p class="muted">EmulationStation failed to start and fell back. Plug the card into a computer and
         read <code>.config/fakers36s/</code> on the HOME drive, which holds the logs.</p>
     </details>
-    <details>
+    <details data-tip="fixUnknownBoard">
       <summary>The installer says my board is unknown</summary>
       <p class="muted">Your card has a hardware config this project has not catalogued. Installing
         anyway could produce a console that does not boot, so the installer stops. Please
-        <a href="https://github.com/Eeman1113/FakeR36S-OS/issues">open an issue</a> with the fingerprint
+        <a href="https://github.com/Eeman1113/FakeR36S-OS/issues" data-tip="issues">open an issue</a> with the fingerprint
         it showed you, and it can be added.</p>
     </details>
-    <details>
+    <details data-tip="fixSlowSystem">
       <summary>Games run, but one system is slow</summary>
       <p class="muted">Open <b>Options, System Dashboard</b> and turn on <b>Performance mode</b> for the
         1.2 GHz clock. The battery saver caps 8 and 16 bit systems at 816 MHz on purpose, where they
@@ -463,36 +463,36 @@ sudo dd if=fakers36s.img of=/dev/sdb    bs=4M status=progress   <span class="cmt
   <!-- ============ 81. panel guide ============ -->
   <section class="screen card" data-step="81">
     <p class="eyebrow">Help</p>
-    <h2>Panel 1 and panel 2</h2>
+    <h2 data-tip="h2Panel">Panel 1 and panel 2</h2>
     <p>These clone boards shipped with two different screens. They are not compatible: a kernel built
       for one leaves the other dark. Everything else about the console is identical.</p>
 
-    <div class="note">
+    <div class="note" data-tip="notePanel2">
       <b>The published image is built for panel 2</b>, the screen on the board this project is tested
       on. Most A23 boards seen so far use it.
     </div>
 
-    <h3>How to tell</h3>
-    <p class="muted">There is no label to read, so you find out by booting. If after flashing you get a
+    <h3 data-tip="panelHowToTell">How to tell</h3>
+    <p class="muted" data-tip="panelHowToTell">There is no label to read, so you find out by booting. If after flashing you get a
       <b>black or scrambled screen</b> while the console is otherwise alive, the boot chime plays, or
       it responds to the power button, you have panel 1 and the wrong kernel.</p>
 
-    <h3>The fix</h3>
-    <p>Only the kernel differs. Your card, the system and your games all stay exactly as they are, so
+    <h3 data-tip="panelFix">The fix</h3>
+    <p data-tip="panelFix">Only the kernel differs. Your card, the system and your games all stay exactly as they are, so
       you swap one piece rather than starting over. You need Docker and about ten minutes.</p>
-    <div class="cmd"><pre>git clone https://github.com/Eeman1113/FakeR36S-OS
+    <div class="cmd" data-tip="cmdPanelBuild"><pre>git clone https://github.com/Eeman1113/FakeR36S-OS
 cd FakeR36S-OS/kernel &amp;&amp; ./build.sh          <span class="cmt"># about 6 minutes</span></pre></div>
     <p class="muted">Then write the panel 1 kernel over the one on the card. It lives at a fixed offset,
       outside both partitions:</p>
-    <div class="cmd"><pre>sudo dd if=out/android_boot_a23_panel1.img of=/dev/sdb \
+    <div class="cmd" data-tip="cmdPanelDd"><pre>sudo dd if=out/android_boot_a23_panel1.img of=/dev/sdb \
         bs=512 seek=172032 conv=notrunc status=progress
 sync</pre></div>
     <p class="muted">That is the whole fix. Put the card back and power on.</p>
 
-    <div class="note warn">
+    <div class="note warn" data-tip="noteUntested">
       <b>Panel 1 has not been tested on real hardware.</b> It is built from the same device trees and
       should work, but nobody has confirmed it. If you try it, please
-      <a href="https://github.com/Eeman1113/FakeR36S-OS/issues">say so in an issue</a>, with or without
+      <a href="https://github.com/Eeman1113/FakeR36S-OS/issues" data-tip="issues">say so in an issue</a>, with or without
       success. That is how it stops being untested.
     </div>
     <div class="row">
@@ -504,29 +504,29 @@ sync</pre></div>
   <!-- ============ 90. update ============ -->
   <section class="screen card" data-step="90">
     <p class="eyebrow">Update</p>
-    <h2>Update without reflashing</h2>
-    <p>Everything of yours stays: games, saves and save states, RetroArch and per core settings, button
+    <h2 data-tip="h2Update">Update without reflashing</h2>
+    <p data-tip="updKeeps">Everything of yours stays: games, saves and save states, RetroArch and per core settings, button
       remaps, themes, box art, BIOS and ports.</p>
 
-    <h3>1. Get the package</h3>
+    <h3 data-tip="updStep1">1. Get the package</h3>
     <button id="updFetch">Fetch the update</button>
     <progress id="updProg" class="hidden" max="1" value="0"></progress>
     <div class="status" id="updStatus"></div>
     <input type="file" id="updFile" accept=".tar" class="hidden">
     <p class="muted">Or download
-      <a id="updLink" href="https://github.com/Eeman1113/FakeR36S-OS/releases/latest">fakers36s-update-a23_panel2.tar</a>
+      <a id="updLink" data-tip="updTar" href="https://github.com/Eeman1113/FakeR36S-OS/releases/latest">fakers36s-update-a23_panel2.tar</a>
       from the release page.</p>
 
-    <h3>2. Put it on the card</h3>
-    <p class="muted">Plug the console's card into this computer, then pick its <b>HOME</b> drive.</p>
+    <h3 data-tip="updStep2">2. Put it on the card</h3>
+    <p class="muted" data-tip="updStep2">Plug the console's card into this computer, then pick its <b>HOME</b> drive.</p>
     <button id="updWrite" disabled>Put it on the HOME drive</button>
 
-    <h3>3. Boot the console</h3>
-    <p class="muted">Eject the card, put it back in the console and power on. The logo and spinner stay
+    <h3 data-tip="updStep3">3. Boot the console</h3>
+    <p class="muted" data-tip="updStep3">Eject the card, put it back in the console and power on. The logo and spinner stay
       up for a few minutes while it installs, then it restarts into the new version. The log is in
       <code>HOME/.config/fakers36s/update.log</code>.</p>
 
-    <details>
+    <details data-tip="updNoChrome">
       <summary>Without Chrome or Edge</summary>
       <p class="muted">Make a folder called <code>update</code> in the root of the HOME drive and copy
         the <code>.tar</code> into it, unchanged. Eject and power on. On macOS or Linux you can also run
@@ -538,7 +538,7 @@ sync</pre></div>
   <footer>
     <p>FakeR36S-OS by Eeman1113, built on
       <a href="https://github.com/CodeZombie/goodluckOS">goodluckOS</a> by CodeZombie and contributors,
-      with recipes from <a href="https://github.com/Bepok/Debianator">Debianator</a> by Bepok.</p>
+      with recipes from <a href="https://github.com/Bepok/Debianator" data-tip="debianator">Debianator</a> by Bepok.</p>
     <p><a href="https://github.com/Eeman1113/FakeR36S-OS">Source on GitHub</a> &middot; GPL-2.0 &middot;
       <a href="https://github.com/Eeman1113/FakeR36S-OS/issues">Report a problem</a></p>
   </footer>
@@ -871,7 +871,297 @@ const LINES = {
             "Current step. You're not lost.",
             "Title of the chapter you're in.",
             "Yes, that's a heading. I contain so much insight.",
-            "You're here. Me too. Obviously."]
+            "You're here. Me too. Obviously."],
+
+  /* --- per element, specific to exactly what is under the cursor --- */
+  heroTitle: ["FakeR36S-OS. Named after the lie printed on the box. Felt appropriate.",
+              "That's the firmware. Real kernel, real display driver, real EmulationStation.",
+              "This replaces the ArkOS 2.0 cosplay your console shipped with.",
+              "Five steps below and that title is running on your handheld.",
+              "It's a fork of goodluckOS, retargeted at the A23 board you've got."],
+  heroSub: ["GA36-MB board, Allwinner A23 chip. That's the exact hardware this is for.",
+            "Real R36S units have a Rockchip. Yours doesn't. That's why ArkOS won't boot.",
+            "If your console reports 2 CPU cores, this sentence is describing you.",
+            "A23 only. Four cores means A33, and goodluckOS is your project instead.",
+            "Two Cortex-A7 cores and a Mali-400. Humble. Still going to run N64."],
+  pillNoUpload: ["No server, no upload, no account. The image gets built right here in your tab.",
+                 "Your card backup never leaves your laptop. I'd tell you if it did.",
+                 "It's all JavaScript running on your machine. Go read the source if you like.",
+                 "Nothing is uploaded. Not your backup, not your bootloader, nothing.",
+                 "That's why this page can touch your bootloader at all. It never travels."],
+  mobileNote: ["Phone gang, welcome, but you can't write an SD card from here. Read now, flash later.",
+               "You need a desktop or laptop with a card reader for the actual install.",
+               "Nothing wrong with reading it through on mobile. Come back on a PC to do it.",
+               "The build and write steps need a real card reader. Phones can't help.",
+               "Also I hide on small screens. Rude of me, I know."],
+  h2Fork: ["Three paths. Fresh install, update, or something broke. Pick the true one.",
+           "Nothing you click here touches a card yet. It's just routing.",
+           "Guess wrong and press Back. There's no penalty, promise.",
+           "I'll follow you into whichever one you pick. Obviously.",
+           "Start here. By the end your fake R36S is a real console."],
+  h2Needs: ["Step 1. Gather your bits before you start, not halfway through.",
+            "Four things. The stock card is the one money can't replace.",
+            "This is the checklist people skip. Then they come back annoyed.",
+            "Nothing to install yet. Go find two SD cards and open Chrome.",
+            "Check CPU NUMBER on the stock firmware while you're here too."],
+  h2Backup: ["Step 2. We copy your card to a file. Read only, nothing gets written.",
+             "Your bootloader lives on that card and can't legally be shipped, so we borrow yours.",
+             "Roughly fifteen minutes for a 16 GB card. Good time for tea.",
+             "The card comes out exactly as it went in. This step only reads.",
+             "Pick your OS tab below. The commands are genuinely different per system."],
+  h2Build: ["Step 3. My favourite. Your backup goes in, a bootable image comes out.",
+            "It reads 128 KB of your backup to fingerprint the board, then builds for it.",
+            "Base image is about 380 MB. That download is the slow part, not the build.",
+            "Sectors 1 to 172031 of your card get spliced in. That's your bootloader.",
+            "All in the browser. No upload, no server, no telemetry."],
+  h2Flash: ["Step 4. The BLANK card. Not the stock one. Say it with me.",
+            "One write and you're basically done. Pi Imager is the safe route.",
+            "Your stock card stays as a backup, forever if you like.",
+            "This is the only destructive step on the page. Aim carefully.",
+            "Image, drive, flash. Three fields and no device names to mistype."],
+  h2FirstBoot: ["Step 5. Card in TF1, power on, logo and chime. That's the win condition.",
+                "First boot is slow because it grows the games partition to fill your card.",
+                "Then it's games, BIOS and box art. The fun admin.",
+                "If the screen stays black but it chimed, that's panel 1 and it's fixable.",
+                "You made it. Genuinely, nice work."],
+  h2Help: ["Nothing here is bricked. Put the stock card back and the console is normal.",
+           "Almost every report is the wrong panel or the wrong slot. Check both first.",
+           "Open the one that matches your symptoms. They're all fixable.",
+           "Logs live in .config/fakers36s/ on the HOME drive if you want proof.",
+           "Deep breath my g. This hardware is cheap, not fragile."],
+  h2Panel: ["Two different screens shipped on these boards and they need different kernels.",
+            "The released image targets panel 2, the one this project is tested on.",
+            "If you drew panel 1, you swap the kernel only. Games and saves stay put.",
+            "No sticker tells you which you have. You find out by booting.",
+            "Panel 1 is built but untested on real hardware. You could be the first."],
+  h2Update: ["Update in place. No reflash, no rebuild, nothing of yours moves.",
+             "Saves, remaps, art, ports, BIOS, themes. All kept.",
+             "Fetch a .tar, drop it on HOME, boot. The console does the rest.",
+             "Way less work than a fresh install. This is the good path.",
+             "Log ends up in HOME/.config/fakers36s/update.log."],
+  choiceInstall: ["First time! This is the full run. Two cards, five steps, about 20 minutes.",
+                  "You need the console's own card for this. It's the only source of the bootloader.",
+                  "This writes a brand new card. Your stock one stays untouched as a backup.",
+                  "Take this if FakeR36S-OS has never been on this console.",
+                  "Backup, build, flash, boot. That's the whole shape of it."],
+  choiceUpdate: ["Already running FakeR36S-OS? This one. No reflash, nothing of yours is lost.",
+                 "Keeps games, saves, remaps, themes, art, BIOS and ports. All of it.",
+                 "One .tar on the HOME drive and the console installs it on next boot.",
+                 "Much shorter than a fresh install, and no second card needed.",
+                 "Only pick this if the console already boots FakeR36S-OS."],
+  choiceBroken: ["Something went dark? Start here. Your stock card still boots, you're not bricked.",
+                 "Black screen with a chime is usually panel 1. That's the common one by a mile.",
+                 "Completely dead is usually the card sitting in TF2 instead of TF1.",
+                 "Also covers unknown board, text console fallback, and one system running slow.",
+                 "Put the stock card back any time and the console is normal again."],
+  needStockCard: ["This is the one you cannot buy. It carries YOUR console's bootloader.",
+                  "Sectors 1 to 172031 of it get spliced into your image. Nothing else will do.",
+                  "Nobody can legally ship that bootloader, which is why you supply it.",
+                  "An old full backup of the same card works too. It just has to exist.",
+                  "Go find it before anything else. Everything after this needs it."],
+  needBlankCard: ["8 GB or bigger, and it's getting wiped. Not the one with holiday photos.",
+                  "A second card means your stock one survives as a backup forever.",
+                  "The new image goes here. First boot grows the games partition to fill it.",
+                  "Bigger card, more ROMs. That's the only reason to go large.",
+                  "Any brand. These boards aren't fussy, they're barely picky about reality."],
+  needBrowser: ["Chrome or Edge. They're the ones allowed to write to drives from a page.",
+                "Firefox and Safari can still build the image, you just copy files by hand.",
+                "The File System Access API is the whole reason for this rule.",
+                "Wrong browser? The page notices and switches to manual steps for you.",
+                "Not gatekeeping, just what the web platform allows right now."],
+  needWriter: ["Pi Imager or balenaEtcher. Both free, both much safer than dd.",
+               "A GUI writer won't let you accidentally aim at your own boot drive.",
+               "Pick image, pick card, flash. No device names to mistype.",
+               "Whichever one you already have installed is the correct answer.",
+               "Pi Imager will ask about customisation settings. Say no, this isn't a Pi."],
+  noteBrowserBlocked: ["Your browser can't write drives, so a couple of steps go manual. The build still works.",
+                       "Nothing is broken. You'll just copy the files across yourself.",
+                       "Chrome or Edge turns those manual bits into one click, if you fancy switching.",
+                       "You can finish the whole install from here regardless. Just more clicking."],
+  noteA23Check: ["CPU NUMBER 2 means Allwinner A23 and you're in the right place.",
+                 "4 means A33. Stop here and go to goodluckOS, this image won't boot for you.",
+                 "System Information on the stock firmware. Takes ten seconds to check.",
+                 "Step 3 fingerprints your card anyway, so a wrong board gets caught.",
+                 "Two Cortex-A7 cores is the correct, slightly sad answer."],
+  btnHaveEverything: ["Both cards in hand? Chrome open? Then yes, go.",
+                      "Next up is the backup, and it only reads your card. Safe step.",
+                      "If you haven't found the stock card yet, don't press this. Go dig.",
+                      "Onwards to step 2. The fifteen minute tea break step."],
+  tabMac: ["macOS route is diskutil then dd. Two commands, copy them exactly.",
+           "You'll use rdisk, not disk. The r means raw mode and it's much faster.",
+           "Terminal only, no extra software to install.",
+           "Pick this only if you're actually on a Mac. Wrong tab, wrong commands."],
+  tabWin: ["Windows gets a GUI tool, Win32 Disk Imager. No dd needed, lucky you.",
+           "Read, not Write. That's the button that matters over here.",
+           "If Windows offers to format the card, click Cancel. It's Linux inside.",
+           "No Terminal, no device names. Honestly the easiest of the three."],
+  tabLinux: ["Linux route is lsblk then dd. You know the drill.",
+             "Match the size in lsblk to your card before you touch dd.",
+             "conv=fsync is in there so the copy is really flushed. Keep it.",
+             "Only pick this tab if you're on Linux. The commands differ per OS."],
+  cmdMacFind: ["This only LISTS disks. It changes nothing, run it freely.",
+               "Find the entry whose size matches your SD card. That's your disk number.",
+               "External and physical, so your internal drive stays out of the list. Nice.",
+               "Write that disk number down. The next command needs it.",
+               "Nothing shows up? Reseat the card reader and run it again."],
+  cmdMacCopy: ["Change disk4 to YOUR number first. That's an example, not your card.",
+               "if is the card, of is the file. In that order, or you overwrite your card.",
+               "rdisk, not disk. The r is raw mode, it's several times faster.",
+               "About fifteen minutes for a 16 GB card. status=progress keeps you company.",
+               "It asks for your password because reading a raw disk needs root."],
+  winImager: ["Device is the card's drive letter. Image File is the new .img you're creating.",
+              "Click Read. Not Write. Write would destroy your stock card.",
+              "Name the file stock_backup.img so step 3 is easy to find.",
+              "If the card has no drive letter, that's just Windows not reading Linux partitions."],
+  noteWinFormat: ["Click Cancel. Formatting would wipe the bootloader you came here to copy.",
+                  "Windows can't read Linux partitions, so it assumes the card is broken. It isn't.",
+                  "This popup catches loads of people. Cancel, every single time.",
+                  "Your card is fine. Windows is just confused about ext4."],
+  cmdLinuxFind: ["Read only, lists block devices. Nothing happens to your card.",
+                 "Find your card by size, probably /dev/sdb or /dev/mmcblk0.",
+                 "Note the whole device, not a partition. No trailing number for sd names.",
+                 "Unsure? Run it before and after inserting the card and compare."],
+  cmdLinuxCopy: ["Swap sdb for YOUR device. That's an example and yours may differ.",
+                 "if is the card, of is the output file. Getting those backwards is bad.",
+                 "conv=fsync makes sure it's really flushed to disk before dd exits.",
+                 "Point of at a file in your home folder, never at another disk."],
+  noteDeviceName: ["Real warning: dd writes wherever you point it, with no confirmation and no undo.",
+                   "A wrong device name in the later write step can erase your computer's drive.",
+                   "Check the size matches your SD card before you press enter. That's your only check.",
+                   "There's no recycle bin for dd. Read the device name twice, out loud if it helps.",
+                   "Right now you're only reading, but build the habit before step 4."],
+  detailPartialCopy: ["Only the first 128 MB is actually needed. The rest is just nice to have.",
+                      "count=128 with bs=1m on macOS, count=32 with bs=4M on Linux.",
+                      "A full backup also preserves the games and saves that shipped on the card.",
+                      "Short version for the impatient. The boot region is all the builder reads."],
+  detailLostCard: ["No card, no bootloader, and this project can't legally supply one.",
+                   "Any old image or dump of your card works. It just has to be from this board.",
+                   "Other owners of the same board leave dumps out at sea sometimes. Wink.",
+                   "It's a licensing wall, not a technical one. Sorry about that."],
+  btnHaveBackup: ["Got a stock_backup.img sat on disk? Then yes, next step reads it.",
+                  "The builder only needs the first 128 KB, so a partial backup is fine.",
+                  "Keep that backup file. It saves you ever redoing this step.",
+                  "Onwards. Step 3 is the clever bit."],
+  noteBlankCard: ["Write to the BLANK card. The stock one is your only copy of your bootloader.",
+                  "Overwrite the stock card and you lose the bootloader source. Please don't.",
+                  "Keep the stock card somewhere safe. It's your permanent escape hatch.",
+                  "Two cards, two jobs. Stock one gets read, blank one gets written."],
+  flashSteps: ["Use custom is right at the bottom of the OS list. Easy to miss.",
+               "Choose Storage means the blank card. Check the size shown matches it.",
+               "Say no to customisation settings. That's a Raspberry Pi feature, not ours.",
+               "Three fields, no device names to mistype. This is the safe path.",
+               "Etcher is the same three steps if you prefer it."],
+  detailFlashCli: ["dd works fine if you're comfortable. Just far less forgiving of mistakes.",
+                   "Pi Imager does the same job with fewer ways to ruin your day.",
+                   "The command inside here WRITES. Read the device name before running it.",
+                   "Same result as Pi Imager, just with sharper edges. Your call."],
+  cmdFlashDd: ["This one WRITES. Wrong device name and that device is gone, no undo.",
+               "Change rdisk4 or sdb to your BLANK card. Check the size first.",
+               "of is the destination. Aim it at your laptop's drive and you lose your laptop's drive.",
+               "Run the list command again right before this. Device names move between reboots.",
+               "macOS line on a Mac, Linux line on Linux. Don't mix them up."],
+  btnWritten: ["Card written? Eject it properly before you yank it out.",
+               "Next is first boot. Logo, chime, EmulationStation.",
+               "Keep the stock card. You never stop needing it.",
+               "Nearly there my g. One power button away."],
+  tf1Slot: ["TF1 is the slot your stock card came out of. The other one won't boot.",
+            "TF2 is for extra storage, not booting. Classic mistake, happens constantly.",
+            "If the card won't seat, it's the wrong way round. Don't force it.",
+            "Nothing happening at all? This line is the first thing to recheck."],
+  firstBootSlow: ["First boot is slow on purpose. It's resizing the games partition to fill your card.",
+                  "Logo, then a chime, then EmulationStation. In that order.",
+                  "Give it a couple of minutes before you decide something's wrong.",
+                  "It only does the slow boot once. After that it's quick."],
+  noteBlackScreen: ["Alive but dark almost always means panel 1 and the wrong display kernel.",
+                    "If you heard the chime, the system booted fine. Only the screen is wrong.",
+                    "The fix writes one kernel and leaves your games exactly where they are.",
+                    "Panel guide is one click away. About ten minutes to sort out."],
+  homeDrive: ["HOME is the big partition, and it mounts on Windows, macOS and Linux.",
+              "The system partition doesn't mount. That's fine, you don't need it.",
+              "Everything you add, games, BIOS, art, music, goes on HOME.",
+              "Eject it properly before pulling the card. Half written ROMs are sad."],
+  romFolders: ["Folder names under roms/ match the stock card exactly. Copy that pattern.",
+               "BIOS goes in .config/retroarch/system/. None are included, bring your own.",
+               "read/ takes epubs and shows up under Options as Reader. Yes, really.",
+               "Drop MP3s in roms/bgmusic/ for menu music. The decoder is built in.",
+               "No games are included and none ever will be. Use your own dumps."],
+  libretroLink: ["That's the thumbnail library the art fetcher pulls from. Huge and free.",
+                 "Community maintained box art for basically every system. Good people.",
+                 "It matches on game names, so oddly named ROMs can miss.",
+                 "Opens on GitHub. Your place here stays exactly as it is."],
+  fixBlackScreen: ["Sound but no picture is the panel 1 signature. Most common issue by far.",
+                   "The system is running fine, the display kernel just doesn't match your screen.",
+                   "Fix is one dd of a different kernel. Your games and saves don't move.",
+                   "If you hear the chime, you're not bricked. Promise."],
+  fixDead: ["Check TF1 versus TF2 first. It's the answer more often than you'd think.",
+            "Put the stock card back. If that boots, the console is fine and the image isn't.",
+            "If the stock card boots, rebuild from a backup of THIS exact console.",
+            "No light, no chime, nothing means it isn't reading the card at all."],
+  fixTextConsole: ["That's EmulationStation failing and the system falling back. It still booted.",
+                   "Logs are in .config/fakers36s/ on the HOME drive. Plug the card in and read.",
+                   "Usually a bad config or a half copied update. The logs will tell you.",
+                   "Good news: the kernel and the display are clearly fine."],
+  fixUnknownBoard: ["The installer stops rather than build something that might not boot. On purpose.",
+                    "Your card has a hardware config nobody has catalogued yet. That's useful data.",
+                    "Open an issue with the fingerprint it showed you and it can be added.",
+                    "These clones vary a lot. Yours might be the one that helps the next person."],
+  fixSlowSystem: ["Options, System Dashboard, Performance mode. That unlocks the 1.2 GHz clock.",
+                  "8 and 16 bit systems are capped at 816 MHz on purpose, to save battery.",
+                  "At 816 MHz those older systems still run full speed. The cap isn't a bug.",
+                  "Only two Cortex-A7 cores here, so give the heavy stuff all the clock it can get."],
+  notePanel2: ["The released image is built for panel 2, the screen this project is tested on.",
+               "Most A23 boards seen so far are panel 2. Decent odds in your favour.",
+               "If panel 2 is yours, you never have to think about any of this again.",
+               "Panel choice only affects the kernel. Everything else is identical."],
+  panelHowToTell: ["No label, no sticker. You find out by flashing and looking at the screen.",
+                   "Black or scrambled screen while the console is clearly alive means panel 1.",
+                   "Chime plays or the power button responds? The system booted, the screen didn't.",
+                   "Got the logo and EmulationStation? You're panel 2 and you're done here."],
+  panelFix: ["Only the kernel changes. Your card, the system and your games all stay as they are.",
+             "You need Docker and about ten minutes, six of which is the kernel build.",
+             "Two commands to build, one dd to install. That's the whole fix.",
+             "No reflash, no rebuilding the image, nothing of yours lost."],
+  cmdPanelBuild: ["This builds the kernels in Docker. Nothing touches your card yet.",
+                  "Roughly six minutes. It drops the panel 1 boot image in out/.",
+                  "Safe to run as many times as you like. It's only a build.",
+                  "Docker has to be running first, or build.sh stops immediately."],
+  cmdPanelDd: ["This WRITES. Make sure /dev/sdb is really the card and not your own drive.",
+               "seek=172032 puts the kernel at its fixed offset, outside both partitions.",
+               "conv=notrunc matters. Without it you'd truncate everything after. Keep it.",
+               "Your games and saves live in the partitions, so this doesn't touch them.",
+               "Run sync after, then eject. A half written kernel doesn't boot."],
+  noteUntested: ["Panel 1 is built from the same device trees, but nobody has confirmed it works.",
+                 "If you try it, open an issue either way. Working or not, the data helps.",
+                 "You'd be the first person to report back on it. That's a real contribution.",
+                 "It should work. Should is doing a lot of load bearing in that sentence."],
+  updKeeps: ["Games, saves, save states, RetroArch configs, remaps, themes, art, BIOS, ports. Kept.",
+             "Nothing of yours is touched. Only the system partition gets replaced.",
+             "This is why updating beats reflashing. No recopying your collection.",
+             "Your stock card can stay in its drawer. Not needed for an update."],
+  updStep1: ["One .tar file, fetched straight from the releases page.",
+             "Or download it yourself from the link below. Same file either way.",
+             "It's the whole system, packaged so the console can install it on itself.",
+             "Don't unpack it. The console wants the .tar exactly as it comes."],
+  updTar: ["That's the update package. fakers36s-update-a23_panel2.tar, unchanged.",
+           "Download it by hand if the fetch button sulks. Same result.",
+           "Opens the releases page on GitHub. Your place here is kept.",
+           "That's the panel 2 build. Panel 1 users still swap kernels separately."],
+  updStep2: ["Pick the HOME drive, the big partition that mounts everywhere.",
+             "It lands in a folder called update at the root of HOME. That's the magic word.",
+             "No Chrome? Make that update folder yourself and copy the .tar in unchanged.",
+             "Don't rename it or unpack it. The installer looks for the .tar as is."],
+  updStep3: ["Eject properly, card back in TF1, power on. Then wait.",
+             "Logo and spinner for a few minutes while it installs, then it restarts itself.",
+             "Don't pull the power during that. Let it finish.",
+             "Log lands in HOME/.config/fakers36s/update.log if you want to read along."],
+  updNoChrome: ["Folder called update at the root of HOME, .tar inside, unchanged. That's all.",
+                "tools/update-os.sh from the repo writes the new system straight to the card.",
+                "Works from any browser, since you're doing the file copy yourself.",
+                "Same update, same result. Just manual."],
+  debianator: ["Debianator by Bepok. Some of the build recipes here came out of that project.",
+               "Credit where it's due. This project leans on other people's work.",
+               "Opens on GitHub. Worth a look if you like build scripts.",
+               "Open source compounds. That repo made parts of this much easier."],
 };
 
 const lastSaid = {};
