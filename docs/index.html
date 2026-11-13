@@ -124,32 +124,34 @@
   .mobile-note b{display:block;margin-bottom:3px}
 
   /* ---------- Pocket, the guide ---------- */
-  #pocket{position:fixed;right:22px;bottom:22px;z-index:40;display:flex;align-items:flex-end;gap:10px;
-    max-width:min(340px,calc(100vw - 44px));pointer-events:none}
-  #pocket.gone{display:none}
-  #bubble{pointer-events:auto;position:relative;background:var(--card-2);border:1px solid var(--line);
-    border-radius:12px;padding:12px 32px 12px 14px;font-size:13.5px;line-height:1.5;color:var(--paper);
-    box-shadow:0 10px 30px rgba(0,0,0,.45);animation:pop .3s cubic-bezier(.2,1.4,.4,1)}
-  #bubble:after{content:"";position:absolute;right:-6px;bottom:16px;width:10px;height:10px;
-    background:var(--card-2);border-right:1px solid var(--line);border-bottom:1px solid var(--line);transform:rotate(-45deg)}
-  #bubble .x{position:absolute;top:6px;right:8px;background:none;border:0;color:var(--slate);
-    font-size:15px;line-height:1;padding:2px;cursor:pointer}
-  #bubble .x:hover{color:var(--paper)}
-  @keyframes pop{from{opacity:0;transform:translateY(8px) scale(.96)}to{opacity:1;transform:none}}
-  #sprite{pointer-events:auto;width:76px;height:auto;flex:none;cursor:pointer;
-    image-rendering:pixelated;animation:bob 3.4s ease-in-out infinite;
-    filter:drop-shadow(0 6px 14px rgba(0,0,0,.5))}
-  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-  #sprite .eye{transform-box:fill-box;transform-origin:center;animation:blink 5s steps(1,end) infinite}
-  @keyframes blink{0%,92%{transform:scaleY(1)}94%,97%{transform:scaleY(.15)}99%,100%{transform:scaleY(1)}}
-  #sprite.talking{animation:bob 1s ease-in-out infinite}
-  @media(prefers-reduced-motion:reduce){ #sprite,#sprite .eye{animation:none} }
+  #pocket{position:fixed;left:0;top:0;z-index:60;pointer-events:none;
+    will-change:transform;transition:opacity .25s}
+  #pocket.off{display:none}
+  #pocket.hush{opacity:0}
+  #sprite{width:62px;height:auto;display:block;image-rendering:pixelated;
+    filter:drop-shadow(0 6px 14px rgba(0,0,0,.55));animation:bob 3.4s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+  #sprite.talking{animation:nod .5s ease-in-out}
+  @keyframes nod{0%,100%{transform:translateY(0) rotate(0)}30%{transform:translateY(-3px) rotate(-5deg)}
+                 65%{transform:translateY(1px) rotate(3deg)}}
+  #sprite .eye{transform-box:fill-box;transform-origin:center}
+  #sprite.blink .eye{transform:scaleY(.12)}
+  #bubble{position:absolute;bottom:46px;right:0;width:max-content;max-width:248px;
+    background:var(--card-2);border:1px solid var(--line);border-radius:12px;
+    padding:10px 13px;font-size:13px;line-height:1.5;color:var(--paper);
+    box-shadow:0 12px 32px rgba(0,0,0,.5);opacity:0;transform:translateY(5px);
+    transition:opacity .18s,transform .18s}
+  #bubble.show{opacity:1;transform:none}
+  #bubble:after{content:"";position:absolute;right:18px;bottom:-5px;width:9px;height:9px;
+    background:var(--card-2);border-right:1px solid var(--line);border-bottom:1px solid var(--line);
+    transform:rotate(45deg)}
+  #pocket.flip #bubble{right:auto;left:0}
+  #pocket.flip #bubble:after{right:auto;left:18px}
+  @media(prefers-reduced-motion:reduce){ #sprite{animation:none} #pocket{transition:none} }
 
   @media(max-width:760px){
     .mobile-note{display:block}
-    #pocket{right:12px;bottom:12px;max-width:calc(100vw - 24px)}
-    #sprite{width:54px}
-    #bubble{font-size:13px;padding:10px 28px 10px 12px}
+    #pocket{display:none !important}
   }
   @media(max-width:560px){
     main{padding:22px 13px 150px}
@@ -172,8 +174,9 @@
 
   <div class="hero">
     <svg class="mark" viewBox="0 0 182.73 90.47" role="img" aria-label="FakeR36S-OS">
-      <defs><linearGradient id="g" x1="0" y1="1" x2="1" y2="0">
-        <stop offset="0" stop-color="#5d6477"/><stop offset="1" stop-color="#ccd6ed"/>
+      <defs><linearGradient id="g" gradientUnits="userSpaceOnUse"
+          x1="0" y1="90.47" x2="182.73" y2="0">
+        <stop offset="0" stop-color="#6a7186"/><stop offset="1" stop-color="#b9c4dc"/>
       </linearGradient></defs>
       <g fill="url(#g)">
         <polygon points="130.5 30.25 104.3 15.13 130.34 .09 156.53 15.22"/>
@@ -542,8 +545,8 @@ sync</pre></div>
 </main>
 
 <div id="pocket">
-  <div id="bubble"><button class="x" id="pocketHide" title="Hide">&times;</button><span id="pocketSay"></span></div>
-  <svg id="sprite" viewBox="0 0 18 16" shape-rendering="crispEdges" role="img" aria-label="Pocket, your guide">
+  <div id="bubble"><span id="pocketSay"></span></div>
+  <svg id="sprite" viewBox="0 0 18 16" shape-rendering="crispEdges" role="img" aria-label="Pocket">
     <g fill="#5d6477">
       <rect x="2" y="2" width="14" height="12"/><rect x="1" y="4" width="1" height="8"/>
       <rect x="16" y="4" width="1" height="8"/><rect x="3" y="1" width="12" height="1"/>
@@ -551,7 +554,7 @@ sync</pre></div>
     </g>
     <rect x="3" y="1" width="12" height="1" fill="#8c93a5"/>
     <rect x="4" y="3" width="10" height="6" fill="#11131a"/>
-    <g fill="#ccd6ed">
+    <g id="eyes" fill="#ccd6ed">
       <rect class="eye" x="6" y="5" width="2" height="2"/>
       <rect class="eye" x="10" y="5" width="2" height="2"/>
     </g>
@@ -574,37 +577,237 @@ const mb = (n) => (n / 1e6).toFixed(0) + " MB";
 
 
 /* ---------------- Pocket, the guide ---------------- */
-const TIPS = {
-  "0":  "Hi, I'm Pocket. Tell me what you're here for and I'll stay with you the whole way.",
-  "1":  "The card that came in the box is the one thing you can't replace. Everything else is buyable.",
-  "2":  "Check the disk name twice before you press enter. The size should match your card exactly.",
-  "3":  "I only read 128 KB of your backup, just enough to recognise the board. It never leaves this page.",
-  "4":  "The blank card. Not the stock one. I'll be here when it's written.",
-  "5":  "Slot TF1, the one the stock card came out of. The first boot is slow on purpose.",
-  "80": "Nothing here is permanent. Your stock card still boots the original firmware.",
-  "81": "Only the kernel is different between the two panels. Everything else on your card stays.",
-  "90": "An update keeps all of it: saves, remaps, art, ports. Nothing gets copied again.",
+const pocket = $("pocket"), bubble = $("bubble"), sprite = $("sprite"), eyesG = $("eyes");
+const DESKTOP = matchMedia("(hover: hover) and (pointer: fine)").matches && innerWidth >= 880;
+if (!DESKTOP) pocket.classList.add("off");
+
+/* --- what Pocket can say. context -> lines, picked at random without repeating --- */
+const LINES = {
+  step0: ["Hi, I'm Pocket. Point at anything and I'll tell you what it does.",
+          "Three ways in. Pick the one that sounds like your afternoon.",
+          "I live down here. I'll follow you around and try to be useful."],
+  step1: ["Four things. Only the first one can't be replaced.",
+          "Go and find that original card before you start. Trust me.",
+          "If you're missing the blank card, now's the moment to notice."],
+  step2: ["This step only reads. Nothing gets written to your card here.",
+          "Measure twice, dd once.",
+          "Coffee time. A 16 GB card takes about fifteen minutes."],
+  step3: ["I read 128 KB of your backup, work out the board, and that's it.",
+          "Nothing leaves this page. The whole image is built in your browser.",
+          "This is the clever bit, honestly."],
+  step4: ["Blank card. Not the stock one. I'll keep saying it.",
+          "Raspberry Pi Imager is the boring, reliable choice. Take the boring choice.",
+          "Almost there. One write and you're done."],
+  step5: ["Slot TF1. The one the stock card came out of.",
+          "First boot is slow because it's growing the games partition. Let it.",
+          "Go put some games on it. That was the whole point."],
+  step80: ["Nothing here is permanent. Your stock card still boots the original firmware.",
+           "Most problems are the wrong panel or the wrong slot.",
+           "Deep breath. This is all recoverable."],
+  step81: ["Two screens, two kernels. Everything else is identical.",
+           "You only swap the kernel. Your games stay exactly where they are.",
+           "If you try panel 1, please say so in an issue. Nobody has yet."],
+  step90: ["Updating keeps everything. Saves, remaps, art, ports, all of it.",
+           "No reflash, no copying games across again.",
+           "This is the easy one."],
+
+  idle: ["Still here.", "Take your time.", "Point at something and I'll explain it.",
+         "I've got opinions about all of these buttons.",
+         "That handheld lied about its own processor, you know.",
+         "Two cores. A Mali-400. And it runs Ocarina of Time.",
+         "Nothing on this page gets uploaded anywhere. Promise.",
+         "I'm a tiny console. It seemed fitting."],
+  bored: ["I'll be right here when you get back.",
+          "Did you wander off? That's fine. I'm patient.",
+          "Taking a break is allowed."],
+
+  logo: ["That's the mark. Nine tiles. It's on your boot screen too.",
+         "You'll see this light up when the console starts."],
+  rail: ["That's how far along you are.", "Five steps. You're fine."],
+  choice: ["Pick whichever one is true today.", "You can always come back and change your mind."],
+  back: ["Nothing is lost going back.", "Back up a step. No harm done."],
+  next: ["Onwards.", "Ready when you are.", "Next bit."],
+  needs: ["Worth checking before you start, not halfway through.",
+          "Missing one of these is the usual reason people get stuck."],
+
+  tab: ["Pick your operating system and the commands change to match.",
+        "I guessed from your browser, but change it if I got it wrong."],
+  cmd: ["Copy it, don't retype it. Typos here are expensive.",
+        "There's a copy button in the corner.",
+        "Paste this into Terminal exactly as it is."],
+  copy: ["Go on, it's faster than typing.", "One click and it's on your clipboard."],
+  code: ["Replace the number with whichever disk is actually yours.",
+         "That's an example. Yours will be different."],
+  summary: ["There's more under here if you want it.", "Extra detail, only if you need it."],
+
+  danger: ["This is the one that bites people. Check the device name.",
+           "A wrong disk name here can wipe the wrong drive. Slow down.",
+           "Read this one twice. I'll wait."],
+  warn: ["Worth reading before you carry on.", "Not a disaster, just something to know."],
+  note: ["Context, not instructions. You can keep going.",
+         "Just something I thought you'd want to know."],
+
+  stockPick: ["The file you made in the last step. Usually in your home folder.",
+              "I'll tell you exactly which board you have in a second.",
+              "If it's a full card backup, that works too. I only read the start of it."],
+  build: ["About 380 MB to download, then a few seconds of assembly.",
+          "Your card's boot region gets spliced in here. That's the bit I can't ship.",
+          "Press it and go make tea."],
+  save: ["That's your image. Keep it, you can reflash from it later.",
+         "Save it somewhere you'll find it again."],
+  baseFile: ["Only needed if the automatic download failed. Grab the .gz from the release page.",
+             "Pick the file you downloaded and I'll carry on from there."],
+  art: ["This scans your games and fetches covers for the ones without any.",
+        "Art you already added is left alone.",
+        "Needs the HOME drive, the one that mounts normally."],
+  updFetch: ["About 380 MB. Same contents as a fresh install, packaged differently.",
+             "Then it goes on the card and the console does the rest."],
+  updWrite: ["Pick the HOME drive and I'll drop the package in the right folder.",
+             "The console finds it at boot and installs it itself."],
+  progress: ["Downloading. This is the slow part.", "Still going. It's a big file."],
+
+  github: ["All of it is open. Every commit, every mistake.",
+           "GPL-2.0, same as goodluckOS underneath it."],
+  issues: ["Genuinely, open an issue. Unknown boards only get added if someone reports them."],
+  goodluck: ["goodluckOS came first and did the hardest part. Go star it.",
+             "The display driver took them about a hundred hours. Worth remembering."],
+  writer: ["Free, works everywhere, hard to get wrong. Either one is fine."],
+  extern: ["That opens in a new place. Come back when you're done.", "Have a look, I'll wait."],
+  panelLink: ["Two different screens shipped on these boards. This explains which you have."],
+  heading: ["That's where you are.", "This bit."]
 };
-const bubble = $("bubble"), sprite = $("sprite");
-let pocketOff = false;
-function pocketSay(step) {
-  if (pocketOff) return;
-  const t = TIPS[String(step)];
-  if (!t) return;
-  $("pocketSay").textContent = t;
-  bubble.style.display = "";
-  bubble.style.animation = "none"; void bubble.offsetWidth; bubble.style.animation = "";
-  sprite.classList.add("talking");
-  setTimeout(() => sprite.classList.remove("talking"), 900);
+
+const lastSaid = {};
+function pick(key) {
+  const arr = LINES[key];
+  if (!arr || !arr.length) return null;
+  if (arr.length === 1) return arr[0];
+  let i, guard = 0;
+  do { i = Math.floor(Math.random() * arr.length); } while (i === lastSaid[key] && ++guard < 8);
+  lastSaid[key] = i;
+  return arr[i];
 }
-$("pocketHide").addEventListener("click", () => { bubble.style.display = "none"; });
-sprite.addEventListener("click", () => {
-  pocketOff = false;
-  bubble.style.display === "none" ? pocketSay(current) : (bubble.style.display = "none");
-});
+
+/* --- which line applies to whatever is under the cursor --- */
+const RULES = [
+  [(e) => e.closest("[data-tip]"), (e) => e.closest("[data-tip]").dataset.tip],
+  [(e) => e.closest("#stock"), "stockPick"],
+  [(e) => e.closest("#build"), "build"],
+  [(e) => e.closest("#save"), "save"],
+  [(e) => e.closest("#baseFile"), "baseFile"],
+  [(e) => e.closest("#artBtn"), "art"],
+  [(e) => e.closest("#updFetch,#updFile"), "updFetch"],
+  [(e) => e.closest("#updWrite"), "updWrite"],
+  [(e) => e.closest("progress"), "progress"],
+  [(e) => e.closest(".cp"), "copy"],
+  [(e) => e.closest(".cmd"), "cmd"],
+  [(e) => e.closest(".note.bad"), "danger"],
+  [(e) => e.closest(".note.warn"), "warn"],
+  [(e) => e.closest(".note"), "note"],
+  [(e) => e.closest(".tab"), "tab"],
+  [(e) => e.closest(".choice"), "choice"],
+  [(e) => e.closest(".needs li"), "needs"],
+  [(e) => e.closest("summary"), "summary"],
+  [(e) => e.closest(".mark"), "logo"],
+  [(e) => e.closest(".rail"), "rail"],
+  [(e) => e.closest("code"), "code"],
+  [(e) => e.closest('a[href*="github.com/Eeman1113"][href*="issues"]'), "issues"],
+  [(e) => e.closest('a[href*="goodluckOS"]'), "goodluck"],
+  [(e) => e.closest('a[href*="raspberrypi"],a[href*="etcher"],a[href*="win32diskimager"]'), "writer"],
+  [(e) => e.closest('a[href*="github.com"]'), "github"],
+  [(e) => e.closest('button[data-go="81"]'), "panelLink"],
+  [(e) => e.closest('button[data-go]'), (e) => {
+      const t = (e.closest("button").textContent || "").toLowerCase();
+      return t.includes("back") ? "back" : "next";
+    }],
+  [(e) => e.closest('a[href^="http"]'), "extern"],
+  [(e) => e.closest("h2"), "heading"],
+];
+
+function resolve(el) {
+  for (const [test, key] of RULES) {
+    try { if (test(el)) return typeof key === "function" ? key(el) : key; } catch {}
+  }
+  return null;
+}
+
+/* --- speaking --- */
+let hideT = null;
+function talk(text, hold = 4200) {
+  if (!DESKTOP || !text) return;
+  $("pocketSay").textContent = text;
+  bubble.classList.add("show");
+  sprite.classList.remove("talking"); void sprite.offsetWidth; sprite.classList.add("talking");
+  clearTimeout(hideT);
+  hideT = setTimeout(() => bubble.classList.remove("show"), hold);
+}
+let current = "0";
+function pocketSay(step) { talk(pick("step" + step), 5200); }
+
+/* --- hover context --- */
+let lastKey = null, hoverT = null, idleAt = Date.now();
+if (DESKTOP) {
+  document.addEventListener("mouseover", (e) => {
+    const key = resolve(e.target);
+    idleAt = Date.now();
+    if (key === lastKey) return;
+    lastKey = key;
+    clearTimeout(hoverT);
+    if (!key) return;
+    hoverT = setTimeout(() => { const l = pick(key); if (l) talk(l); }, 160);
+  });
+
+  /* ambient chatter when nothing is happening */
+  setInterval(() => {
+    const quiet = Date.now() - idleAt;
+    if (quiet > 26000) { talk(pick("bored"), 4000); idleAt = Date.now(); }
+    else if (quiet > 13000 && !bubble.classList.contains("show")) {
+      talk(pick("idle"), 3600); idleAt = Date.now() - 6000;
+    }
+  }, 4000);
+}
+
+/* --- following the cursor --- */
+if (DESKTOP) {
+  let cx = innerWidth - 120, cy = innerHeight - 120;   // cursor
+  let px = cx, py = cy;                                 // pocket
+  const SIZE = 62, GAP = 26;
+  addEventListener("mousemove", (e) => { cx = e.clientX; cy = e.clientY; idleAt = Date.now(); });
+  addEventListener("mouseleave", () => pocket.classList.add("hush"));
+  addEventListener("mouseenter", () => pocket.classList.remove("hush"));
+
+  const ease = matchMedia("(prefers-reduced-motion: reduce)").matches ? 1 : 0.085;
+  (function frame() {
+    // sit down-right of the cursor, flipping near the right edge, clamped on screen
+    const flip = cx > innerWidth - 330;
+    let tx = flip ? cx - SIZE - GAP : cx + GAP;
+    let ty = cy + GAP;
+    tx = Math.max(8, Math.min(tx, innerWidth - SIZE - 8));
+    ty = Math.max(70, Math.min(ty, innerHeight - SIZE - 12));
+    px += (tx - px) * ease;
+    py += (ty - py) * ease;
+    pocket.style.transform = `translate3d(${px.toFixed(1)}px, ${py.toFixed(1)}px, 0)`;
+    // bubble grows leftward by default; swap it only when Pocket is near the left edge
+    pocket.classList.toggle("flip", px < 272);
+
+    // eyes look at the cursor
+    const ex = Math.max(-1, Math.min(1, (cx - (px + SIZE / 2)) / 90));
+    const ey = Math.max(-1, Math.min(1, (cy - (py + SIZE / 2)) / 90));
+    eyesG.setAttribute("transform", `translate(${(ex * 0.9).toFixed(2)} ${(ey * 0.7).toFixed(2)})`);
+    requestAnimationFrame(frame);
+  })();
+
+  /* blinking */
+  (function blink() {
+    sprite.classList.add("blink");
+    setTimeout(() => sprite.classList.remove("blink"), 110);
+    setTimeout(blink, 2600 + Math.random() * 4200);
+  })();
+
+  sprite.addEventListener("click", () => talk(pick("idle"), 3600));
+}
 
 /* ---------------- wizard navigation ---------------- */
-let current = "0";
 const screens = [...document.querySelectorAll(".screen")];
 const FLOW = ["0", "1", "2", "3", "4", "5"];
 const rail = $("rail");
