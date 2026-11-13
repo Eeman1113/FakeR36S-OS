@@ -17,12 +17,12 @@ export SDL_VIDEODRIVER=kmsdrm
 export DISABLE_TOUCH=1
 . /etc/profile.d/sdl_controller.sh 2>/dev/null
 LOG=$H/.config/fakers36s/reader.log
-# KOReader runs at the normal CPU profile: the light one cost ~20% on every page layout and made
-# the first start crawl. (The governor still idles the cores between page turns.) A spinner covers
+# KOReader runs at the max CPU profile (turbo, pinned at the top clock) for the whole session, back
+# to normal when it closes: page layout on two A7 cores needs every MHz. A spinner covers
 # the start until the library is up (KOReader opens the gamepad last).
 killall fr-loading 2>/dev/null
 [ -x /usr/bin/fr-loading ] && setsid /usr/bin/fr-loading 240 </dev/null >/dev/null 2>&1 &
-doas /usr/local/bin/cpuprofile normal 2>/dev/null
+doas /usr/local/bin/cpuprofile max 2>/dev/null
 [ "$(wc -c < "$LOG" 2>/dev/null || echo 0)" -gt 500000 ] && : > "$LOG"   # keep the log small
 echo "=== reader start $(date)" >> "$LOG"
 start=$(wc -c < "$LOG")

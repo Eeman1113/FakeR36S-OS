@@ -1,11 +1,22 @@
 #!/bin/sh
-# cpuprofile light|normal: CPU ceiling for the running game (root, via doas).
-#   light  = 816 MHz (vendor 1.10 V point): 8/16-bit systems run full speed here, saves battery
-#   normal = no cap (1008 MHz, or 1200 MHz when Performance mode is on)
+# cpuprofile light|normal|max: CPU speed for the running app (root, via doas).
+#   light  = 816 MHz cap (vendor 1.10 V point): 8/16-bit systems run full speed here, saves battery
+#   normal = no cap (1008 MHz, or 1200 MHz when Performance mode is on), idles when there's no work
+#   max    = turbo (1.2 GHz) on and pinned at the top clock, no idling: Reader. Hot and hungry, but
+#            every page layout runs flat out. light/normal undo it (turbo back to the user's setting).
 P=/sys/devices/system/cpu/cpufreq/policy0
+B=/sys/devices/system/cpu/cpufreq/boost
 [ -d "$P" ] || exit 0
+restore() {
+    # turbo back to what Performance mode says, clock floor back to the hardware minimum
+    if [ "$(cat /etc/player-flags/perfmode 2>/dev/null)" = on ]; then echo 1 > "$B"; else echo 0 > "$B"; fi 2>/dev/null
+    cat "$P/cpuinfo_min_freq" > "$P/scaling_min_freq"
+}
 case "$1" in
-  light)  echo 816000 > "$P/scaling_max_freq" ;;
-  normal) cat "$P/cpuinfo_max_freq" > "$P/scaling_max_freq" ;;
-  *) echo "usage: cpuprofile light|normal" >&2; exit 2 ;;
+  light)  restore; echo 816000 > "$P/scaling_max_freq" ;;
+  normal) restore; cat "$P/cpuinfo_max_freq" > "$P/scaling_max_freq" ;;
+  max)    echo 1 > "$B" 2>/dev/null
+          cat "$P/cpuinfo_max_freq" > "$P/scaling_max_freq"
+          cat "$P/cpuinfo_max_freq" > "$P/scaling_min_freq" ;;
+  *) echo "usage: cpuprofile light|normal|max" >&2; exit 2 ;;
 esac
