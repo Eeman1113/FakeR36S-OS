@@ -158,10 +158,12 @@ On macOS or Linux you can also write a new flashable image's system straight to 
 
 **Options > Reader** opens [KOReader](https://github.com/koreader/koreader) on a cover dashboard of everything in the `read` folder on the card: EPUB, PDF, MOBI, AZW3, FB2, CBZ, DjVu, TXT and more. Copy books into `read/` (folders are fine).
 
-- **Buttons:** D-pad to move, A to open, B to go back, L1 / R1 to turn pages, Start for the menu, Y for the context menu. **Select+Start** closes the reader and keeps your place.
+- **Buttons:** D-pad to move, A to open, Start for the menu, Y for the context menu. In a book: D-pad left / right or L1 / R1 turn pages, B goes back to the library.
+- **Bookmarks:** **Select+R1** bookmarks the page you're on (again to remove it), **Select+L1** opens your bookmarks; pick one with A to jump there.
+- **Select+Start** closes the reader and keeps your place.
 - **Dark mode:** KOReader's top menu has **Night mode**.
-- **Fonts:** any font you copy to `.local/share/fonts` on the card shows up in KOReader's font menu (FakeR36S-OS sets a reading font called Bookerly as the default, if it's there). No fonts are included beyond KOReader's own.
-- Settings, highlights and reading positions live on the card in `.config/koreader`, so OS updates keep them. The reader runs at the battery-saving CPU speed.
+- **Fonts:** any font you copy to `.local/share/fonts` on the card shows up in KOReader's font menu (FakeR36S-OS sets a reading font called Bookerly as the default, if it's there). No fonts are included beyond KOReader's own (its Chinese, Japanese, Korean, Arabic and Indic fonts are left out to keep it light, so those scripts show as boxes).
+- Settings, highlights and reading positions live on the card in `.config/koreader`, so OS updates keep them. The reader runs at full CPU speed (turbo on) while it's open, and only its offline plugins are included, so it opens in a few seconds and stays smooth on 512 MB.
 
 ## Box art and menu music
 
@@ -200,7 +202,7 @@ FakeR36S-OS stands on the shoulders of people who did the hard work first. Huge 
   look and feel FakeR36S-OS aims for.
 - **[libretro-thumbnails](https://github.com/libretro-thumbnails/libretro-thumbnails)** and its contributors, for the box art library `tools/fetch-art.py` downloads from.
 - **[ga36-ports](https://github.com/rincewindcz/ga36-ports)** by rincewindcz, the native game ports for GA36-MB handhelds that the Ports system is built around.
-- **[KOReader](https://github.com/koreader/koreader)** and its contributors, the reader behind Options > Reader (AGPL-3.0, shipped unmodified from its official armhf release apart from using the system SDL3 and the cover grid as first view).
+- **[KOReader](https://github.com/koreader/koreader)** and its contributors, the reader behind Options > Reader (AGPL-3.0, from its official armhf release, with the system SDL3, the cover grid as first view, a gamepad button map for the handheld, and fewer fonts and plugins; the changes are in `rootfs/package/koreader/koreader.mk`).
 - **[RetroArch](https://github.com/libretro/RetroArch)** and the **[libretro](https://www.libretro.com)** team,
   plus the authors of every core: FCEUmm, Nestopia, Snes9x 2005 / 2010, ParaLLEl N64, Gambatte, gpSP, mGBA,
   PicoDrive, Genesis Plus GX, Beetle (Mednafen) PCE / SuperGrafx / NeoPop / WonderSwan / VB, PCSX ReARMed,

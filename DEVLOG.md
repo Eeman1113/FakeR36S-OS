@@ -1146,3 +1146,11 @@ Not all of it is explained yet: there are still about 22 seconds before KOReader
 Reader is smooth now, honestly smoother than I expected from this little thing. The one thing that bugged me while reading Dungeon Crawler Carl: B in a book first says "location history is empty", and pressing it again asks to quit KOReader. There was no button to just go back to my shelf.
 
 KOReader has a setting for exactly this, `back_in_reader = "filebrowser"`, so now B in a book goes straight back to the library, B in the library goes up a folder, and only at the top does it ask to exit. It gets switched once on existing installs too (KOReader saves its own default the first time it reads the key, so a plain "if missing" check would never kick in), and if I ever change it inside KOReader, that choice sticks.
+
+#### reader-bookmarks · Save and load, but for books
+
+*Eeman1113* · home/overlay/.config/koreader/plugins/fakers36s.koplugin
+
+The startup trace came back and I just sat there grinning: the library is up two to three seconds after KOReader starts, at 1.2 GHz with 435 MB of RAM still free. It used to be about 85 seconds.
+
+Since my thumbs already know Select+R1 to save and Select+L1 to load from Zelda and the emulators, I wanted the same thing for books. Gamepad buttons on this console skip KOReader's modifier key handling, so a tiny plugin of my own watches the gamepad instead: while Select is held, R1 bookmarks the page (or removes the bookmark if there already is one, with a little "Bookmark saved" note) and L1 opens the bookmark list, where A jumps to one. In the library, L1 and R1 keep paging the list like before. It lives in KOReader's user plugin folder on the card, so it went onto my card straight away without waiting for an OS build. B in a book also goes back to the library now instead of asking to quit.
