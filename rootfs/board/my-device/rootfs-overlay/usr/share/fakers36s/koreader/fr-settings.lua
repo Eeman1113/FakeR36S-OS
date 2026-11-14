@@ -14,6 +14,14 @@ default("left_right_keys_turn_pages", true)
 default("cre_storage_size_factor", 5)
 default("cre_partial_rerendering", false)
 
+-- B in a book goes back to the library. Set once (KOReader saves its own default the first time it
+-- reads the key, so a plain "if missing" would never apply); changing it in KOReader is kept after.
+if not t.fakers36s_back_v1 then
+    t.back_in_reader = "filebrowser"
+    t.fakers36s_back_v1 = true
+    changed = true
+end
+
 -- plugins that need internet (or hardware this handheld lacks) only slow the start down
 if not t.fakers36s_plugins_v1 then
     t.plugins_disabled = type(t.plugins_disabled) == "table" and t.plugins_disabled or {}

@@ -1138,3 +1138,11 @@ The startup: on a fresh config KOReader runs about sixty one-time migrations, an
 The lag: the first time a book opens, crengine registers every font it has, and 16 MB of that was one Chinese font, plus Arabic, Indic and two FreeFonts. That's gone now: fonts went from 24.7 MB to 4.6 MB, keeping Noto Sans/Serif, the icon font and my Bookerly. Twenty-eight plugins are removed from the build entirely (network ones, touch and e-ink ones, and the statistics and vocabulary databases that wrote to the card on every page). It also runs flat out now: a new `cpuprofile max` turns on the 1.2 GHz turbo and pins the clock at the top for the whole Reader session (by raising the minimum clock, so it works with whatever governor the kernel has), and everything goes back to my own Performance mode setting when Reader closes, and crengine's RAM cache is capped at 5x instead of 40x, which on this console could have meant up to 500 MB.
 
 Not all of it is explained yet: there are still about 22 seconds before KOReader even opens the screen. So the launcher now writes a small trace every 2 seconds while starting (process state, CPU time, clock speed, free memory) and the time until the library appears. The next log will tell me what those seconds are.
+
+#### reader-back · B takes me home
+
+*Eeman1113* · settings.reader.lua, fr-settings.lua
+
+Reader is smooth now, honestly smoother than I expected from this little thing. The one thing that bugged me while reading Dungeon Crawler Carl: B in a book first says "location history is empty", and pressing it again asks to quit KOReader. There was no button to just go back to my shelf.
+
+KOReader has a setting for exactly this, `back_in_reader = "filebrowser"`, so now B in a book goes straight back to the library, B in the library goes up a folder, and only at the top does it ask to exit. It gets switched once on existing installs too (KOReader saves its own default the first time it reads the key, so a plain "if missing" check would never kick in), and if I ever change it inside KOReader, that choice sticks.
