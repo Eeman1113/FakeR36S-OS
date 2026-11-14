@@ -42,7 +42,9 @@ define KOREADER_INSTALL_TARGET_CMDS
 		$(TARGET_DIR)/opt/koreader/frontend/ui/font.lua
 	grep -q '\[2\] = "nerdfonts/symbols.ttf"' $(TARGET_DIR)/opt/koreader/frontend/ui/font.lua
 	! grep -q 'NotoSansCJKsc-Regular.otf",' $(TARGET_DIR)/opt/koreader/frontend/ui/font.lua
-	# plugins: network-only, touch/e-ink-only, or sqlite-on-every-page ones
+	# plugins: network-only, touch/e-ink-only, or sqlite-on-every-page ones. hotkeys too: its default
+	# gamepad map (Select = page back, L1/R1 = right page keys) overrides gamepad.lua and swallows
+	# Select, so the fakers36s plugin's Select+L1/R1 bookmark combos never fire
 	cd $(TARGET_DIR)/opt/koreader/plugins && rm -rf exporter.koplugin newsdownloader.koplugin \
 		opds.koplugin wallabag.koplugin calibre.koplugin cloudstorage.koplugin kosync.koplugin \
 		httpinspector.koplugin qrclipboard.koplugin terminal.koplugin hello.koplugin \
@@ -50,7 +52,7 @@ define KOREADER_INSTALL_TARGET_CMDS
 		statistics.koplugin systemstat.koplugin perceptionexpander.koplugin movetoarchive.koplugin \
 		coverimage.koplugin autodim.koplugin autoturn.koplugin autosuspend.koplugin \
 		autostandby.koplugin keepalive.koplugin batterystat.koplugin texteditor.koplugin \
-		archiveviewer.koplugin
+		archiveviewer.koplugin hotkeys.koplugin
 	test -d $(TARGET_DIR)/opt/koreader/plugins/coverbrowser.koplugin
 	# settings.reader.lua pre-sets last_migration_date to this KOReader's value, so a fresh config
 	# skips ~60 one-time migrations (two of which delete the font cache right after it is built).

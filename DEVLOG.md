@@ -1154,3 +1154,11 @@ KOReader has a setting for exactly this, `back_in_reader = "filebrowser"`, so no
 The startup trace came back and I just sat there grinning: the library is up two to three seconds after KOReader starts, at 1.2 GHz with 435 MB of RAM still free. It used to be about 85 seconds.
 
 Since my thumbs already know Select+R1 to save and Select+L1 to load from Zelda and the emulators, I wanted the same thing for books. Gamepad buttons on this console skip KOReader's modifier key handling, so a tiny plugin of my own watches the gamepad instead: while Select is held, R1 bookmarks the page (or removes the bookmark if there already is one, with a little "Bookmark saved" note) and L1 opens the bookmark list, where A jumps to one. In the library, L1 and R1 keep paging the list like before. It lives in KOReader's user plugin folder on the card, so it went onto my card straight away without waiting for an OS build. B in a book also goes back to the library now instead of asking to quit.
+
+#### reader-select · Who turned my page
+
+*Eeman1113* · koreader.mk, fr-settings.lua
+
+First real try of the bookmark combos, and pressing Select just flipped me back a page. I had already taken Select out of KOReader's gamepad map, so something else was grabbing it. Turns out KOReader's hotkeys plugin builds its own default gamepad map the first time it runs, with Select as "page back" and L1/R1 as the right-hand page keys, and it gets the button before anything else does. So Select turned pages, and my bookmark plugin never even saw Select+R1 or Select+L1.
+
+The hotkeys plugin is gone now. Every button still works through the map I set up (D-pad, A, B, Y, Start, L1/R1), the only thing it really added was keyboard shortcuts, and this console has no keyboard. On installs that already have it, it gets switched off once.

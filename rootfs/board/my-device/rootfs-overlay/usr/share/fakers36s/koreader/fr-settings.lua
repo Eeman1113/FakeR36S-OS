@@ -22,6 +22,15 @@ if not t.fakers36s_back_v1 then
     changed = true
 end
 
+-- hotkeys plugin off (existing installs; new builds don't ship it): its default gamepad map turns
+-- Select into "page back" and swallows the Select+L1/R1 bookmark combos
+if not t.fakers36s_hotkeys_off_v1 then
+    t.plugins_disabled = type(t.plugins_disabled) == "table" and t.plugins_disabled or {}
+    t.plugins_disabled.hotkeys = true
+    t.fakers36s_hotkeys_off_v1 = true
+    changed = true
+end
+
 -- plugins that need internet (or hardware this handheld lacks) only slow the start down
 if not t.fakers36s_plugins_v1 then
     t.plugins_disabled = type(t.plugins_disabled) == "table" and t.plugins_disabled or {}
