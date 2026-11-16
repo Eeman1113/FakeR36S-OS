@@ -25,6 +25,11 @@ jobs:
     steps:
       - name: Install the armhf cross toolchain
         run: |
+          # bullseye is retired: its packages now live on archive.debian.org
+          rm -f /etc/apt/sources.list.d/*
+          printf '%s\n' 'deb http://archive.debian.org/debian bullseye main' \
+            'deb http://archive.debian.org/debian-security bullseye-security main' > /etc/apt/sources.list
+          echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99archive
           dpkg --add-architecture armhf
           apt-get update
           apt-get install -y --no-install-recommends python3 git dpkg-dev build-essential binutils python3-clang \
@@ -59,7 +64,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          apt-get install -y --no-install-recommends gh 2>/dev/null || {
+          {
             curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg -o /usr/share/keyrings/gh.gpg
             echo "deb [signed-by=/usr/share/keyrings/gh.gpg] https://cli.github.com/packages stable main" > /etc/apt/sources.list.d/gh.list
             apt-get update && apt-get install -y gh; }
