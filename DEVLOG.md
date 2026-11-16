@@ -1180,3 +1180,9 @@ No game files are in the repo, only the tool. Haven't played it on the console y
 *Eeman1113* · README.md
 
 Undertale runs on this thing now (well, should, first test on the console is next), and it lives in its own repo: [FakeR36S-Undertale](https://github.com/Eeman1113/FakeR36S-Undertale). The OS is the OS, games get their own place, same as Ocarina. PortMaster's port is 64-bit only, so that repo builds gmloader-next for 32-bit ARM and packs my Steam copy with the 32-bit GameMaker runner. The Ports section here just links to it now.
+
+#### balatro-repo · Balatro moves out too
+
+*Eeman1113* · tools/, README.md
+
+Same thing for Balatro: it's in [FakeR36S-Balatro](https://github.com/Eeman1113/FakeR36S-Balatro) now, the setup tool and launcher with it. LÖVE stays in the OS, because that's an engine anyone's LÖVE game can use, not a game. The OS repo is just the OS again, and the README links out to the game repos.
