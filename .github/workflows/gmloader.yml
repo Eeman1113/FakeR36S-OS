@@ -54,7 +54,7 @@ jobs:
 
       - name: Check what it links against
         run: |
-          file gmloadernext.armhf
+          arm-linux-gnueabihf-readelf -h gmloadernext.armhf | grep -E "Class|Machine|Flags"
           arm-linux-gnueabihf-readelf -d gmloadernext.armhf | grep NEEDED
           echo "highest glibc symbol version:"
           arm-linux-gnueabihf-objdump -T gmloadernext.armhf | grep -o 'GLIBC_[0-9.]*' | sort -uV | tail -1
