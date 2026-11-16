@@ -13,6 +13,7 @@ RUN git clone --depth 1 -b 2026.08-rc2 https://gitlab.com/buildroot.org/buildroo
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     gcc-multilib \
+    g++-multilib \
     libncurses-dev \
     file \
     wget \
