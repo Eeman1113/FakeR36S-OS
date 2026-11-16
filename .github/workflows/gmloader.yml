@@ -1,0 +1,70 @@
+name: Build gmloader-next (armhf)
+
+# GMLoader-next (GPL-2.0, github.com/PortsMaster/gmloader-next) runs GameMaker games that ship as
+# Android-runner bytecode, like PortMaster's Undertale. PortMaster publishes it for aarch64 only;
+# this builds the 32-bit armhf version with their own CI recipe (Debian bullseye cross build),
+# pinned to one commit, and publishes it on the 'gmloader' release for tools/undertale-port.sh.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, gmloader]
+    paths: [".github/workflows/gmloader.yml"]
+
+permissions:
+  contents: write
+
+env:
+  GMLOADER_COMMIT: 2a9aa04580f98d2a26cd3afb51eb9d2e3042ee88
+
+jobs:
+  armhf:
+    runs-on: ubuntu-latest
+    container:
+      image: debian:bullseye
+    steps:
+      - name: Install the armhf cross toolchain
+        run: |
+          dpkg --add-architecture armhf
+          apt-get update
+          apt-get install -y --no-install-recommends python3 git dpkg-dev build-essential binutils python3-clang \
+            binutils-arm-linux-gnueabihf libstdc++-10-dev-armhf-cross linux-libc-dev-armhf-cross make \
+            gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf libsdl2-dev:armhf libzip-dev:armhf ca-certificates curl
+
+      - name: Fetch gmloader-next at the pinned commit
+        run: |
+          git init gml && cd gml
+          git remote add origin https://github.com/PortsMaster/gmloader-next
+          git fetch --depth 1 origin "$GMLOADER_COMMIT" && git checkout -q FETCH_HEAD
+          git submodule update --init --recursive --depth 1
+
+      - name: Build
+        working-directory: gml
+        run: |
+          make -f Makefile.gmloader ARCH=arm-linux-gnueabihf GITHUB_REF_NAME=master \
+            LLVM_FILE=/usr/lib/llvm-11/lib/libclang-11.so \
+            LLVM_INC=/usr/arm-linux-gnueabihf/include/c++/10/arm-linux-gnueabihf -j$(nproc)
+          cp build/arm-linux-gnueabihf/gmloader/gmloadernext.armhf ..
+          cp LICENSE.md ../LICENSE.gmloader-next.md
+
+      - name: Check what it links against
+        run: |
+          file gmloadernext.armhf
+          arm-linux-gnueabihf-readelf -d gmloadernext.armhf | grep NEEDED
+          echo "highest glibc symbol version:"
+          arm-linux-gnueabihf-objdump -T gmloadernext.armhf | grep -o 'GLIBC_[0-9.]*' | sort -uV | tail -1
+          sha256sum gmloadernext.armhf | tee gmloadernext.armhf.sha256
+
+      - name: Publish on the 'gmloader' release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          apt-get install -y --no-install-recommends gh 2>/dev/null || {
+            curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg -o /usr/share/keyrings/gh.gpg
+            echo "deb [signed-by=/usr/share/keyrings/gh.gpg] https://cli.github.com/packages stable main" > /etc/apt/sources.list.d/gh.list
+            apt-get update && apt-get install -y gh; }
+          R=${{ github.repository }}
+          gh release view gmloader -R $R >/dev/null 2>&1 || gh release create gmloader -R $R --target ${{ github.sha }} \
+            --title "gmloader-next for armhf" --latest=false \
+            --notes "GMLoader-next (GPL-2.0, https://github.com/PortsMaster/gmloader-next) built for 32-bit ARM from commit $GMLOADER_COMMIT with PortMaster's own CI recipe. Used by tools/undertale-port.sh. Source: the commit above."
+          gh release upload gmloader -R $R --clobber gmloadernext.armhf gmloadernext.armhf.sha256 LICENSE.gmloader-next.md
