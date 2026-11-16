@@ -1,0 +1,19 @@
+config BR2_PACKAGE_LOVE
+	bool "love"
+	depends on BR2_PACKAGE_LUAJIT_ARCH_SUPPORTS
+	depends on BR2_INSTALL_LIBSTDCPP
+	depends on BR2_TOOLCHAIN_HAS_THREADS
+	depends on BR2_PACKAGE_SDL2
+	depends on BR2_PACKAGE_LUAJIT # selecting it loops through EFL; enabled in the defconfig
+	select BR2_PACKAGE_ZLIB
+	select BR2_PACKAGE_OPENAL
+	select BR2_PACKAGE_FREETYPE
+	select BR2_PACKAGE_LIBMODPLUG
+	select BR2_PACKAGE_LIBVORBIS
+	select BR2_PACKAGE_LIBTHEORA
+	help
+	  LOVE 11.5, the 2D game framework (Lua via LuaJIT). Runs .love
+	  games such as Balatro, drawing with OpenGL ES 2 on the Mali-400
+	  (LOVE_GRAPHICS_USE_OPENGLES=1).
+
+	  https://love2d.org

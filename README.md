@@ -139,6 +139,16 @@ Plug the card into your computer: the **HOME** partition mounts normally. Put RO
 
 Native PC games rebuilt for this handheld show up in EmulationStation under **Ports**. FakeR36S-OS uses the same layout as goodluckOS, so ports from [ga36-ports](https://github.com/rincewindcz/ga36-ports) (published at [ga36.genserek.net](https://ga36.genserek.net)) work as they are: unzip a port into the root of the HOME partition and it appears in Ports with its name, description and icon on the next start of EmulationStation. You can also drop your own `.sh` launchers into `roms/ports`. Ports run at full CPU speed and log to `.config/fakers36s/port.log`.
 
+### Balatro
+
+Balatro runs on the built-in [LÖVE 11.5](https://love2d.org) (OpenGL ES 2), with [PortMaster](https://portmaster.games)'s handheld patches: a layout made for small screens, performance tweaks and controller fixes. You need your own copy (Steam, the Mac `Balatro.app`, `Balatro.love` or Windows `Balatro.exe`). With the card's HOME partition mounted on a computer:
+
+```sh
+tools/balatro-port.sh /Applications/Balatro.app /Volumes/HOME     # or Balatro.love / Balatro.exe
+```
+
+It patches a copy of your game on the computer (your original isn't touched), then puts it in `ports/balatro` on the card with a **Balatro** entry in Ports. It needs bash, python3, curl and GNU sed (on macOS: `brew install gnu-sed`). In game it starts at 30 fps with the CRT effect off, both changeable in Settings. **Select+Start** quits, saves stay in `ports/balatro/saves`, and the log is `.config/fakers36s/balatro.log`.
+
 ## Updating (keeps your games and saves)
 
 Already running FakeR36S-OS? Don't reflash. Update instead, and everything of yours stays: games, saves and save states, RetroArch and per-core settings, button remaps, themes, box art, BIOS and ports.
@@ -202,6 +212,8 @@ FakeR36S-OS stands on the shoulders of people who did the hard work first. Huge 
   look and feel FakeR36S-OS aims for.
 - **[libretro-thumbnails](https://github.com/libretro-thumbnails/libretro-thumbnails)** and its contributors, for the box art library `tools/fetch-art.py` downloads from.
 - **[ga36-ports](https://github.com/rincewindcz/ga36-ports)** by rincewindcz, the native game ports for GA36-MB handhelds that the Ports system is built around.
+- **[LÖVE](https://love2d.org)** and its contributors (zlib license), the engine Balatro runs on.
+- **[PortMaster](https://portmaster.games)** and the authors of its **[Balatro port](https://github.com/PortsMaster/PortMaster-New/tree/main/ports/balatro)** (MIT), whose handheld patches and patchscript `tools/balatro-port.sh` applies unchanged. **Balatro** itself is by **LocalThunk** and **Playstack**: buy it, it's wonderful.
 - **[KOReader](https://github.com/koreader/koreader)** and its contributors, the reader behind Options > Reader (AGPL-3.0, from its official armhf release, with the system SDL3, the cover grid as first view, a gamepad button map for the handheld, and fewer fonts and plugins; the changes are in `rootfs/package/koreader/koreader.mk`).
 - **[RetroArch](https://github.com/libretro/RetroArch)** and the **[libretro](https://www.libretro.com)** team,
   plus the authors of every core: FCEUmm, Nestopia, Snes9x 2005 / 2010, ParaLLEl N64, Gambatte, gpSP, mGBA,

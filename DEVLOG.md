@@ -1162,3 +1162,15 @@ Since my thumbs already know Select+R1 to save and Select+L1 to load from Zelda 
 First real try of the bookmark combos, and pressing Select just flipped me back a page. I had already taken Select out of KOReader's gamepad map, so something else was grabbing it. Turns out KOReader's hotkeys plugin builds its own default gamepad map the first time it runs, with Select as "page back" and L1/R1 as the right-hand page keys, and it gets the button before anything else does. So Select turned pages, and my bookmark plugin never even saw Select+R1 or Select+L1.
 
 The hotkeys plugin is gone now. Every button still works through the map I set up (D-pad, A, B, Y, Start, L1/R1), the only thing it really added was keyboard shortcuts, and this console has no keyboard. On installs that already have it, it gets switched off once.
+
+#### love-balatro · Poker on a potato
+
+*Eeman1113* · rootfs/package/love, tools/balatro-port.sh, tools/balatro/run.sh
+
+I wanted Balatro on this thing so badly. It's made with LÖVE, which is just Lua running on LuaJIT plus SDL and OpenGL ES 2, and all of that exists for 32-bit ARM. So unlike Stardew or full Celeste (big .NET runtimes, way too much RAM), this one actually has a chance on my two little cores.
+
+LÖVE 11.5 is now part of the OS, built from source in Buildroot. Two fun traps on the way: making LÖVE select LuaJIT creates a Kconfig loop through EFL, GStreamer and half of Buildroot, so it depends on LuaJIT instead and the defconfig turns it on. And Buildroot only builds 32-bit LuaJIT on an x86-64 machine with a 32-bit x86 compiler next to it, so the build container now installs gcc-multilib. My ARM Mac couldn't even see the option, which confused me for a minute.
+
+For the game itself I'm standing on PortMaster's shoulders. Their Balatro port has a whole set of handheld patches (small-screen layout, performance, controls, a particle leak fix) and a script that applies them with exact checks. `tools/balatro-port.sh` takes my own copy (the Mac app, a .love or the Windows .exe), fetches their patches pinned to one commit, runs their script unchanged on the computer, and puts the result in `ports/balatro` with a Ports entry. My Steam version passed every one of their checks, and all 57 Lua files compile in LuaJIT. On the console it starts at 30 fps with the CRT effect off, full CPU, and Select+Start quits.
+
+No game files are in the repo, only the tool. Haven't played it on the console yet: this build is the first one with LÖVE in it, so fingers crossed.
