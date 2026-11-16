@@ -1174,3 +1174,9 @@ LÖVE 11.5 is now part of the OS, built from source in Buildroot. Two fun traps 
 For the game itself I'm standing on PortMaster's shoulders. Their Balatro port has a whole set of handheld patches (small-screen layout, performance, controls, a particle leak fix) and a script that applies them with exact checks. `tools/balatro-port.sh` takes my own copy (the Mac app, a .love or the Windows .exe), fetches their patches pinned to one commit, runs their script unchanged on the computer, and puts the result in `ports/balatro` with a Ports entry. My Steam version passed every one of their checks, and all 57 Lua files compile in LuaJIT. On the console it starts at 30 fps with the CRT effect off, full CPU, and Select+Start quits.
 
 No game files are in the repo, only the tool. Haven't played it on the console yet: this build is the first one with LÖVE in it, so fingers crossed.
+
+#### undertale-repo · Undertale gets its own home
+
+*Eeman1113* · README.md
+
+Undertale runs on this thing now (well, should, first test on the console is next), and it lives in its own repo: [FakeR36S-Undertale](https://github.com/Eeman1113/FakeR36S-Undertale). The OS is the OS, games get their own place, same as Ocarina. PortMaster's port is 64-bit only, so that repo builds gmloader-next for 32-bit ARM and packs my Steam copy with the 32-bit GameMaker runner. The Ports section here just links to it now.
