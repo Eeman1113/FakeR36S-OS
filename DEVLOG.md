@@ -1200,3 +1200,9 @@ I keep starring games with Y and then hunting for them in twenty different syste
 I starred a bunch of games with Y, and after a power off they were all gone. EmulationStation only writes its gamelists (favourites, play counts, last played) when it quits properly. ES's own Quit menu does that, but the hold-power menu goes through appd, and appd's shutdown sent SIGKILL to everything straight away. No chance to save anything. The game wasn't asked nicely either.
 
 Now shutdown asks first: SIGTERM to the game, up to 12 seconds to save and close, then the same for EmulationStation (SDL turns SIGTERM into a normal quit, so it writes every gamelist), and only what's still alive after that gets killed. The stars I lost were never written, so those are gone, but from now on they stick.
+
+#### nes-normal · NES at full clock
+
+*Eeman1113* · home/overlay/.emulationstation/es_systems.cfg
+
+NES games went into slow motion after a few seconds and then took the whole console down with them, every game, on FCEUmm and on QuickNES too. A little monitor I left running on the card showed RetroArch eating a full core and the sound card running dry over and over, with plenty of memory free. The one thing both NES emulators had in common was the battery saver profile, which caps the CPU at 816 MHz. Running the same game at the normal profile: smooth, no freeze. So NES and Famicom launch at the normal profile now, like SNES. The other 8 and 16 bit systems stay on the saver because they're happy there.
