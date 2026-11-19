@@ -1,0 +1,26 @@
+#!/bin/sh
+# S00fsck-home: mount HOME (the FAT32 partition with games, saves and settings), repairing it first
+# when the last session didn't end cleanly. Linux sets the FAT "dirty" bit while HOME is mounted and
+# clears it on a clean unmount, so it is only still set after a forced power-off or a crash. Without
+# this, the kernel finds the half-written clusters later, switches HOME to read-only mid-session, and
+# nothing can save (seen 2026-11-20: Super Mario 64 couldn't create its folder, ES couldn't save).
+# A clean boot only reads one byte. Runs after the loading splash, before S00update needs HOME.
+PART=/dev/mmcblk0p2
+MNT=/home/player
+LOG=/var/log/fsck-home.log
+case "$1" in start | "") ;; *) exit 0 ;; esac
+mountpoint -q "$MNT" && exit 0
+
+# FAT32 boot sector byte 0x41 (BS_Reserved1): bit 0 = volume dirty
+flag=$(dd if="$PART" bs=1 skip=65 count=1 2>/dev/null | od -An -tu1 | tr -d ' ')
+if [ -n "$flag" ] && [ $((flag & 1)) = 1 ] && [ -x /sbin/fsck.fat ]; then
+    echo "$(date) HOME was not unmounted cleanly: repairing" > "$LOG"
+    /sbin/fsck.fat -a -w "$PART" >> "$LOG" 2>&1
+    echo "fsck.fat exit code $?" >> "$LOG"
+fi
+
+mount "$MNT" || mount -t vfat -o rw,uid=1000,gid=1000,umask=022 "$PART" "$MNT"
+if [ -s "$LOG" ]; then
+    mkdir -p "$MNT/.config/fakers36s" && cat "$LOG" >> "$MNT/.config/fakers36s/fsck-home.log"
+fi
+exit 0

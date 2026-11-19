@@ -1206,3 +1206,11 @@ Now shutdown asks first: SIGTERM to the game, up to 12 seconds to save and close
 *Eeman1113* · home/overlay/.emulationstation/es_systems.cfg
 
 NES games went into slow motion after a few seconds and then took the whole console down with them, every game, on FCEUmm and on QuickNES too. A little monitor I left running on the card showed RetroArch eating a full core and the sound card running dry over and over, with plenty of memory free. The one thing both NES emulators had in common was the battery saver profile, which caps the CPU at 816 MHz. Running the same game at the normal profile: smooth, no freeze. So NES and Famicom launch at the normal profile now, like SNES. The other 8 and 16 bit systems stay on the saver because they're happy there.
+
+#### fsck-home · HOME stops going read-only
+
+*Eeman1113* · rootfs/board/my-device/rootfs-overlay/etc/init.d/S00fsck-home, etc/fstab, goodluck_defconfig
+
+Super Mario 64 flashed the loader and dropped me straight back to the list, without writing a single line of log. The reason was in another log: "Read-only file system". All those forced power-offs during the NES freezes had left a few half-written clusters on HOME, and when Linux tripped over them it switched the whole partition to read-only to protect it. No game could save, ES couldn't save its lists, and SM64 couldn't even make its own folder. My Mac's disk checker found 3 orphaned clusters and fixed them in a second.
+
+Now the console does that itself. HOME isn't mounted blindly at boot anymore: a new early script reads the FAT "dirty" bit first, which Linux only leaves set when the last session didn't end cleanly. If it's set, fsck.fat repairs the partition before mounting it, and the result goes in .config/fakers36s/fsck-home.log. A normal boot just reads one byte and moves on.
