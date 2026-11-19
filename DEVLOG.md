@@ -1186,3 +1186,9 @@ Undertale runs on this thing now (well, should, first test on the console is nex
 *Eeman1113* · tools/, README.md
 
 Same thing for Balatro: it's in [FakeR36S-Balatro](https://github.com/Eeman1113/FakeR36S-Balatro) now, the setup tool and launcher with it. LÖVE stays in the OS, because that's an engine anyone's LÖVE game can use, not a game. The OS repo is just the OS again, and the README links out to the game repos.
+
+#### es-collections · Favourites in one place
+
+*Eeman1113* · home/overlay/.emulationstation/es_settings.cfg
+
+I keep starring games with Y and then hunting for them in twenty different systems. EmulationStation already has a Favorites collection and a Last Played one, they were just switched off. New installs now get both: everything I star shows up in one Favorites system in the carousel, and Last Played has the stuff I was just playing. On an existing card it's Start > Game Collection Settings > Automatic Game Collections.
