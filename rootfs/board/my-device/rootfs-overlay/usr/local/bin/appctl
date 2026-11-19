@@ -109,8 +109,20 @@ cg_signal() {
     done
 }
 
+# cg_quit <dir> <seconds>: SIGTERM everything in the cgroup, wait up to <seconds> for it to
+# empty (EmulationStation writes its gamelists, favourites and play counts only on a clean
+# exit; games write their saves), then cg_stop whatever is left.
+cg_quit() {
+    cg_populated "$1" || return 0
+    cg_signal "$1" TERM
+    _n=$(($2 * PER_SEC))
+    while cg_populated "$1" && [ "$_n" -gt 0 ]; do nap; _n=$((_n - 1)); done
+    cg_populated "$1" && log "$1 still running after ${2}s of SIGTERM: killing it"
+    cg_stop "$1"
+}
+
 # cg_stop <dir>: SIGKILL everything in the cgroup and wait until it is empty.
-# No grace period; graceful exits are requested via stop-application.
+# No grace period; graceful exits are requested via stop-application (or cg_quit).
 cg_stop() {
     _dir=$1
     cg_populated "$_dir" || return 0
@@ -258,8 +270,9 @@ shutdown_all() {
     trap '' TERM INT HUP
     log "shutting down"
     LAUNCHER_GEN=0; APP_GEN=0
-    cg_stop "$CG_ROOT/launcher"
-    cg_stop "$CG_ROOT/app"
+    # the game first (its saves), then EmulationStation (gamelists, favourites): politely
+    cg_quit "$CG_ROOT/app" 12
+    cg_quit "$CG_ROOT/launcher" 12
     wait
     rmdir "$CG_ROOT/launcher" "$CG_ROOT/app" "$CG_ROOT" 2>/dev/null
     rm -f "$PIDFILE" "$FIFO"
@@ -318,7 +331,7 @@ case "$1" in
         if daemon_running; then
             send stop
             _i=0
-            while daemon_running && [ "$_i" -lt $((20 * PER_SEC)) ]; do nap; _i=$((_i + 1)); done
+            while daemon_running && [ "$_i" -lt $((35 * PER_SEC)) ]; do nap; _i=$((_i + 1)); done
             if daemon_running; then
                 read -r _pid <"$PIDFILE"; kill -KILL "$_pid" 2>/dev/null
             fi

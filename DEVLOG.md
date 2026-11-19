@@ -1192,3 +1192,11 @@ Same thing for Balatro: it's in [FakeR36S-Balatro](https://github.com/Eeman1113/
 *Eeman1113* · home/overlay/.emulationstation/es_settings.cfg
 
 I keep starring games with Y and then hunting for them in twenty different systems. EmulationStation already has a Favorites collection and a Last Played one, they were just switched off. New installs now get both: everything I star shows up in one Favorites system in the carousel, and Last Played has the stuff I was just playing. On an existing card it's Start > Game Collection Settings > Automatic Game Collections.
+
+#### appd-graceful · Where did my favourites go
+
+*Eeman1113* · rootfs/board/my-device/rootfs-overlay/usr/local/bin/appctl
+
+I starred a bunch of games with Y, and after a power off they were all gone. EmulationStation only writes its gamelists (favourites, play counts, last played) when it quits properly. ES's own Quit menu does that, but the hold-power menu goes through appd, and appd's shutdown sent SIGKILL to everything straight away. No chance to save anything. The game wasn't asked nicely either.
+
+Now shutdown asks first: SIGTERM to the game, up to 12 seconds to save and close, then the same for EmulationStation (SDL turns SIGTERM into a normal quit, so it writes every gamelist), and only what's still alive after that gets killed. The stars I lost were never written, so those are gone, but from now on they stick.
