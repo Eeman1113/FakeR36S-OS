@@ -20,18 +20,31 @@ for f in "$OUT"/*.sh; do
     [ -f "$f" ] && sed -n 2p "$f" | grep -qx "$TAG" && rm -f "$f"
 done
 
+# Favourites live in the gamelist we are about to rewrite, so read them back first: without
+# this every port silently unstars itself on each boot.
+FAVS=
+if [ -f "$OUT/gamelist.xml" ]; then
+    FAVS=$(tr '\n' ' ' < "$OUT/gamelist.xml" | sed 's|<game>|\n|g' \
+           | grep '<favorite>[[:space:]]*true' \
+           | sed -n 's|.*<path>\./\{0,1\}\([^<]*\)</path>.*|\1|p')
+fi
+is_fav() { [ -n "$FAVS" ] && printf '%s\n' "$FAVS" | grep -qxF "$1"; }
+
 entries=
 add_entry() {   # name command description icon
     file=$(safe "$1").sh
     [ -n "$file" ] && [ "$file" != .sh ] || return
     printf '#!/bin/sh\n%s\nexec "%s"\n' "$TAG" "$2" > "$OUT/$file"
     chmod +x "$OUT/$file" 2>/dev/null
+    fav=
+    is_fav "$file" && fav="
+		<favorite>true</favorite>"
     entries="$entries
 	<game>
 		<path>./$(xml "$file")</path>
 		<name>$(xml "$1")</name>
 		<desc>$(xml "$3")</desc>
-		<image>$(xml "$4")</image>
+		<image>$(xml "$4")</image>$fav
 	</game>"
 }
 
