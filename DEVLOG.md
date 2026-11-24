@@ -1214,3 +1214,9 @@ NES games went into slow motion after a few seconds and then took the whole cons
 Super Mario 64 flashed the loader and dropped me straight back to the list, without writing a single line of log. The reason was in another log: "Read-only file system". All those forced power-offs during the NES freezes had left a few half-written clusters on HOME, and when Linux tripped over them it switched the whole partition to read-only to protect it. No game could save, ES couldn't save its lists, and SM64 couldn't even make its own folder. My Mac's disk checker found 3 orphaned clusters and fixed them in a second.
 
 Now the console does that itself. HOME isn't mounted blindly at boot anymore: a new early script reads the FAT "dirty" bit first, which Linux only leaves set when the last session didn't end cleanly. If it's set, fsck.fat repairs the partition before mounting it, and the result goes in .config/fakers36s/fsck-home.log. A normal boot just reads one byte and moves on.
+
+#### readme-games · Five games, five repos
+
+*Eeman1113* · README.md
+
+The Ports section only listed three of the game repos, and I've been busy. Super Mario 64 runs now (Ghostship, pulled out of my own ROM on the first start), and so does OMORI, on José Pilas's ReZig engine, a native Zig rewrite that skips RPG Maker and its browser runtime entirely. No way a browser was ever going to run on two A7 cores with 512 MB, but a native engine does. The README now lists all five: Ocarina, Super Mario 64, OMORI, Undertale and Balatro, each with its own repo and its own setup.

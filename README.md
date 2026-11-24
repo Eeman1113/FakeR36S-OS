@@ -139,7 +139,13 @@ Plug the card into your computer: the **HOME** partition mounts normally. Put RO
 
 Native PC games rebuilt for this handheld show up in EmulationStation under **Ports**. FakeR36S-OS uses the same layout as goodluckOS, so ports from [ga36-ports](https://github.com/rincewindcz/ga36-ports) (published at [ga36.genserek.net](https://ga36.genserek.net)) work as they are: unzip a port into the root of the HOME partition and it appears in Ports with its name, description and icon on the next start of EmulationStation. You can also drop your own `.sh` launchers into `roms/ports`. Ports run at full CPU speed and log to `.config/fakers36s/port.log`.
 
-Games with their own repos: [FakeR36S-Ocarina](https://github.com/Eeman1113/FakeR36S-Ocarina) (Ocarina of Time, native), [FakeR36S-Balatro](https://github.com/Eeman1113/FakeR36S-Balatro) and [FakeR36S-Undertale](https://github.com/Eeman1113/FakeR36S-Undertale) (Undertale, bring your own Steam or GOG copy).
+Games with their own repos (each brings its own setup; you provide your own copy of the game):
+
+- [FakeR36S-Ocarina](https://github.com/Eeman1113/FakeR36S-Ocarina): The Legend of Zelda: Ocarina of Time, native (Ship of Harkinian), with save states on the card
+- [FakeR36S-SM64](https://github.com/Eeman1113/FakeR36S-SM64): Super Mario 64, native (HarbourMasters' Ghostship), extracted from your ROM on the first start
+- [FakeR36S-Omori](https://github.com/Eeman1113/FakeR36S-Omori): OMORI, native (José Pilas's OMORI ReZig engine), no RPG Maker or browser runtime needed
+- [FakeR36S-Undertale](https://github.com/Eeman1113/FakeR36S-Undertale): Undertale (gmloader-next for 32-bit ARM), from your Steam or GOG copy
+- [FakeR36S-Balatro](https://github.com/Eeman1113/FakeR36S-Balatro): Balatro on the built-in LÖVE 11.5, with PortMaster's handheld patches
 
 ### LÖVE games
 
