@@ -1220,3 +1220,9 @@ Now the console does that itself. HOME isn't mounted blindly at boot anymore: a 
 *Eeman1113* · README.md
 
 The Ports section only listed three of the game repos, and I've been busy. Super Mario 64 runs now (Ghostship, pulled out of my own ROM on the first start), and so does OMORI, on José Pilas's ReZig engine, a native Zig rewrite that skips RPG Maker and its browser runtime entirely. No way a browser was ever going to run on two A7 cores with 512 MB, but a native engine does. The README now lists all five: Ocarina, Super Mario 64, OMORI, Undertale and Balatro, each with its own repo and its own setup.
+
+#### readme-dashes · Tidy punctuation
+
+*Eeman1113* · README.md
+
+The Celeste line in the game list had slipped in an em dash. Swapped it for brackets so the README reads the same as everything else here.
