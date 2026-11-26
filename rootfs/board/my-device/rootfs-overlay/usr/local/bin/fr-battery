@@ -7,13 +7,26 @@
 # On the charger: no warnings; only a critical voltage (under 3.35 V) still triggers the safe shutdown.
 # At start it raises the AXP223's USB input current limit (default 500 mA, less than a running game
 # draws, so the battery drained even while plugged in and never showed as charging).
+# LEDs: red = charging, red heartbeat = 10% or less on battery, blue = charged on the charger.
+# Blue also means "sleeping" (toggle-screen.sh), so blue stays on whenever /tmp/sleep-state exists.
 # Log: HOME/.config/fakers36s/battery.log (one line a minute: level, voltage, current, charger).
 B=/sys/class/power_supply/axp20x-battery
 U=/sys/class/power_supply/axp20x-usb
 for lim in 1500000 900000; do echo $lim > "$U/input_current_limit" 2>/dev/null && break; done
 LOG=/home/player/.config/fakers36s/battery.log
 [ -d "$B" ] || exit 0
-warned=100; sag=0; tick=0
+warned=100; sag=0; tick=0; red_now=; blue_now=
+RED=/sys/class/leds/red:indicator; BLUE=/sys/class/leds/blue:status
+red() {        # off | on | pulse
+    [ "$1" = "$red_now" ] && return; red_now=$1
+    if [ "$1" = pulse ]; then echo heartbeat > "$RED/trigger" 2>/dev/null
+    else echo none > "$RED/trigger" 2>/dev/null; [ "$1" = on ] && echo 1 > "$RED/brightness" || echo 0 > "$RED/brightness"; fi
+}
+blue() {       # 0 | 1, always on while sleeping
+    b=$1; [ -e /tmp/sleep-state ] && b=1
+    [ "$b" = "$blue_now" ] && [ "$(cat "$BLUE/brightness" 2>/dev/null)" = "$b" ] && return
+    blue_now=$b; echo "$b" > "$BLUE/brightness" 2>/dev/null
+}
 while sleep 20; do
     st=$(cat "$B/status" 2>/dev/null); cap=$(cat "$B/capacity" 2>/dev/null); uv=$(cat "$B/voltage_now" 2>/dev/null)
     ua=$(cat "$B/current_now" 2>/dev/null); usb=$(cat "$U/online" 2>/dev/null); lim=$(cat "$U/input_current_limit" 2>/dev/null)
@@ -22,6 +35,11 @@ while sleep 20; do
     if [ $((tick % 3)) = 0 ] && [ -d "${LOG%/*}" ]; then
         [ -f "$LOG" ] && [ "$(wc -c < "$LOG")" -gt 200000 ] && : > "$LOG"
         echo "$(cut -d' ' -f1 /proc/uptime)s ${cap}% ${uv}uV ${ua}uA $st usb=$usb limit=$lim" >> "$LOG"
+    fi
+    if [ "$usb" = 1 ]; then
+        if [ "$st" = Full ] || [ "$cap" -ge 100 ]; then red off; blue 1; else red on; blue 0; fi
+    elif [ "$cap" -le 10 ]; then red pulse; blue 0
+    else red off; blue 0
     fi
     if [ "$usb" = 1 ]; then                       # on the charger: only a critical sag matters
         warned=100

@@ -1242,3 +1242,9 @@ Second, autosave. My last change turned it on in the default retroarch.cfg, but 
 *Eeman1113* · fr-battery
 
 While playing on the charger there was never a charging icon, and EmulationStation wasn't wrong about it. The AXP223 lets only 500 mA in from USB by default, and a running game pulls more than that, so the battery kept draining even with the cable in. At boot the battery watcher now raises the USB input limit (1.5 A, or 900 mA if the driver won't take that), so playing on the charger really charges, and ES shows it. On the charger the watcher also stays quiet: no low-battery messages, and only a truly critical voltage still triggers the safe shutdown. Its log now records current and charger state too, so I can check the numbers on the device.
+
+#### leds · Charge colours
+
+*Eeman1113* · fr-battery
+
+The board has two LEDs I can drive, a blue one and a red one, and so far blue only meant "sleeping". Now the battery watcher uses them for charge too: red while charging, blue once it's full on the charger, and a red heartbeat pulse at 10% or less on battery. Sleeping keeps its blue, so sleeping while charging shows both. Off while playing on battery, like before.
