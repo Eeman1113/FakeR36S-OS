@@ -1,0 +1,7 @@
+#!/bin/sh
+# S95battery: start fr-battery (low-battery warnings and a safe shutdown before the battery dies)
+case "$1" in
+    start | "") start-stop-daemon -S -b -q -x /usr/local/bin/fr-battery ;;
+    stop) killall fr-battery 2>/dev/null ;;
+esac
+exit 0

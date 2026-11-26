@@ -1,0 +1,32 @@
+#!/bin/sh
+# fr-battery: low-battery watcher (root, started by S95battery). On battery only:
+#   10% and 5%  a message on screen in RetroArch games (fr-osd)
+#   3%, or under 3.45 V twice in a row: "saving and shutting down", then fr-poweroff, which asks the
+#   game and EmulationStation to quit (RetroArch writes its save and auto state) before powering off,
+#   instead of the battery simply dying mid-game.
+# Log: HOME/.config/fakers36s/battery.log (one line a minute while discharging).
+B=/sys/class/power_supply/axp20x-battery
+LOG=/home/player/.config/fakers36s/battery.log
+[ -d "$B" ] || exit 0
+warned=100; sag=0; tick=0
+while sleep 20; do
+    st=$(cat "$B/status" 2>/dev/null); cap=$(cat "$B/capacity" 2>/dev/null); uv=$(cat "$B/voltage_now" 2>/dev/null)
+    [ -n "$cap" ] || continue
+    if [ "$st" != Discharging ]; then warned=100; sag=0; continue; fi
+    tick=$((tick + 1))
+    if [ $((tick % 3)) = 0 ] && [ -d "${LOG%/*}" ]; then
+        [ -f "$LOG" ] && [ "$(wc -c < "$LOG")" -gt 200000 ] && : > "$LOG"
+        echo "$(cut -d' ' -f1 /proc/uptime)s ${cap}% ${uv}uV" >> "$LOG"
+    fi
+    if [ "${uv:-9999999}" -lt 3450000 ]; then sag=$((sag + 1)); else sag=0; fi
+    if [ "$cap" -le 3 ] || [ "$sag" -ge 2 ]; then
+        echo "$(cut -d' ' -f1 /proc/uptime)s EMPTY at ${cap}% ${uv}uV: saving and shutting down" >> "$LOG" 2>/dev/null
+        /usr/bin/fr-osd "Battery empty: saving your game and shutting down" 2>/dev/null
+        sleep 4
+        exec /usr/local/bin/fr-poweroff
+    elif [ "$cap" -le 5 ] && [ "$warned" -gt 5 ]; then
+        /usr/bin/fr-osd "Battery 5%: plug in now. At 3% it saves and shuts down." 2>/dev/null; warned=5
+    elif [ "$cap" -le 10 ] && [ "$warned" -gt 10 ]; then
+        /usr/bin/fr-osd "Battery low: 10%" 2>/dev/null; warned=10
+    fi
+done
