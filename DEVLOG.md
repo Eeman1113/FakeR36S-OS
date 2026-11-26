@@ -1236,3 +1236,9 @@ Twice now the battery just ran out mid-game: no warning, screen off, progress go
 First, a small watcher reads the battery every 20 seconds. On battery power it puts a message on screen at 10% and at 5% (RetroArch can show text sent to it over a local port, so a tiny C helper, fr-osd, does exactly that). At 3%, or if the voltage sags under 3.45 V twice in a row, it says it's saving and does a proper shutdown: the game gets asked to quit, RetroArch writes its save and a save state, and then the power goes off. Every minute on battery it logs the level, so I can see how the battery really behaves.
 
 Second, autosave. My last change turned it on in the default retroarch.cfg, but the updater never overwrites settings a card already has, so my own console kept it off. Now fr-launch appends an OS-owned config on every launch: in-game saves every 60 seconds, a state on exit, resume on launch. Always, whatever the old config says.
+
+#### charging · Actually charge while playing
+
+*Eeman1113* · fr-battery
+
+While playing on the charger there was never a charging icon, and EmulationStation wasn't wrong about it. The AXP223 lets only 500 mA in from USB by default, and a running game pulls more than that, so the battery kept draining even with the cable in. At boot the battery watcher now raises the USB input limit (1.5 A, or 900 mA if the driver won't take that), so playing on the charger really charges, and ES shows it. On the charger the watcher also stays quiet: no low-battery messages, and only a truly critical voltage still triggers the safe shutdown. Its log now records current and charger state too, so I can check the numbers on the device.
