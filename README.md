@@ -146,6 +146,7 @@ Games with their own repos (each brings its own setup; you provide your own copy
 - [FakeR36S-Omori](https://github.com/Eeman1113/FakeR36S-Omori): OMORI, native (José Pilas's OMORI ReZig engine), no RPG Maker or browser runtime needed
 - [FakeR36S-Undertale](https://github.com/Eeman1113/FakeR36S-Undertale): Undertale (gmloader-next for 32-bit ARM), from your Steam or GOG copy
 - [FakeR36S-Balatro](https://github.com/Eeman1113/FakeR36S-Balatro): Balatro on the built-in LÖVE 11.5, with PortMaster's handheld patches
+- [FakeR36S-Celeste](https://github.com/Eeman1113/FakeR36S-Celeste): Celeste, from your DRM-free Linux copy, on an armhf Mono with FNA3D over gl4es — built, not yet confirmed playable on the hardware
 
 ### LÖVE games
 
